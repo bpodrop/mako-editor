@@ -18,9 +18,24 @@
       <ChannelPicker />
     </section>
 
-    <section class="card grid">
+  <section class="card grid">
       <PcSender />
       <CcSender />
+    </section>
+
+    <section class="card">
+      <h2>Controls</h2>
+      <p v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
+      <div v-else class="controls-grid">
+        <ControlRenderer
+          v-for="c in selectedConfig.controls"
+          :key="c.id"
+          :control="c as any"
+          :channel="selectedConfig.midi.channel"
+          :value="values[c.id]"
+          @update:value="(v: number) => onValue(c.id, v)"
+        />
+      </div>
     </section>
 
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -35,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue';
+import { onMounted, computed, ref, reactive, watch } from 'vue';
 import { midiStore } from '../store/midi.store';
 import DeviceSelect from './components/DeviceSelect.vue';
 import ChannelPicker from './components/ChannelPicker.vue';
@@ -43,19 +58,57 @@ import PcSender from './components/PcSender.vue';
 import CcSender from './components/CcSender.vue';
 import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
+import { ControlRenderer } from '../components/controls';
+import { midi } from '../core/midi/midi';
 
-onMounted(() => {
+onMounted(async () => {
   void midiStore.init();
+  try { await midi.init(); } catch {}
 });
 
 const errorMessage = computed(() => midiStore.errorMessage.value);
 
 // Config selection from pedalConfig.ts
 const pedalOptions = listPedals();
-const selectedDevice = ref<string>(pedalOptions[0]?.value ?? '');
+const savedDevice = typeof localStorage !== 'undefined' ? localStorage.getItem('pedal-selected') ?? '' : '';
+const selectedDevice = ref<string>(
+  pedalOptions.find(p => p.value === savedDevice)?.value ?? pedalOptions[0]?.value ?? ''
+);
 const selectedConfig = computed<PedalConfig | undefined>(() =>
   selectedDevice.value ? getPedalByDevice(selectedDevice.value) : undefined
 );
+
+// Values per control (persisted by device)
+const values = reactive<Record<string, number>>({});
+
+function loadValues(device: string) {
+  // reset
+  for (const k of Object.keys(values)) delete (values as any)[k];
+  if (!device) return;
+  try {
+    const raw = localStorage.getItem(`pedal-values:${device}`);
+    if (!raw) return;
+    const obj = JSON.parse(raw) as Record<string, number>;
+    for (const [k, v] of Object.entries(obj)) values[k] = v;
+  } catch {}
+}
+
+function onValue(id: string, v: number) {
+  values[id] = v;
+  const device = selectedDevice.value;
+  if (!device) return;
+  try {
+    const snapshot: Record<string, number> = {};
+    for (const [k, val] of Object.entries(values)) snapshot[k] = val as number;
+    localStorage.setItem(`pedal-values:${device}`, JSON.stringify(snapshot));
+  } catch {}
+}
+
+// Persist selection
+watch(selectedDevice, (d) => {
+  try { localStorage.setItem('pedal-selected', d); } catch {}
+  loadValues(d);
+}, { immediate: true });
 </script>
 
 <style scoped>
@@ -89,6 +142,11 @@ const selectedConfig = computed<PedalConfig | undefined>(() =>
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
+}
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
 }
 .error {
   color: #b00020;
