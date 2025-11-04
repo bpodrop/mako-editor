@@ -2,10 +2,18 @@
   <div class="container">
     <header class="header">
       <h1>MIDI Controller (PWA)</h1>
-      <p class="subtitle">PC & CC via Web MIDI — Walrus Audio Mako</p>
+      <p class="subtitle">PC & CC via Web MIDI - Walrus Audio Mako</p>
     </header>
 
     <section class="card">
+      <div class="form-row">
+        <div>
+          <label class="label" for="pedal-config">Configuration</label>
+          <select id="pedal-config" v-model="selectedDevice">
+            <option v-for="p in pedalOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
+          </select>
+        </div>
+      </div>
       <DeviceSelect />
       <ChannelPicker />
     </section>
@@ -27,18 +35,27 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { midiStore } from '../store/midi.store';
 import DeviceSelect from './components/DeviceSelect.vue';
 import ChannelPicker from './components/ChannelPicker.vue';
 import PcSender from './components/PcSender.vue';
 import CcSender from './components/CcSender.vue';
+import { listPedals, getPedalByDevice } from '../config/pedalConfig';
+import type { PedalConfig } from '../config/types';
 
 onMounted(() => {
   void midiStore.init();
 });
 
 const errorMessage = computed(() => midiStore.errorMessage.value);
+
+// Config selection from pedalConfig.ts
+const pedalOptions = listPedals();
+const selectedDevice = ref<string>(pedalOptions[0]?.value ?? '');
+const selectedConfig = computed<PedalConfig | undefined>(() =>
+  selectedDevice.value ? getPedalByDevice(selectedDevice.value) : undefined
+);
 </script>
 
 <style scoped>
@@ -60,6 +77,13 @@ const errorMessage = computed(() => midiStore.errorMessage.value);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
+}
+.form-row {
+  margin-bottom: 0.75rem;
+}
+.label {
+  display: block;
+  margin-bottom: 0.25rem;
 }
 .grid {
   display: grid;
