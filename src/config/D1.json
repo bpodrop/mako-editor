@@ -1,0 +1,74 @@
+{
+  "device": "Walrus Audio Mako D1",
+  "schemaVersion": 1,
+  "midi": {
+    "channel": 1,
+    "pc": {
+      "range": [0, 127],
+      "banks": [
+        { "bank": "A", "presets": { "red": 0, "green": 1, "blue": 2 } },
+        { "bank": "B", "presets": { "red": 3, "green": 4, "blue": 5 } },
+        { "bank": "C", "presets": { "red": 6, "green": 7, "blue": 8 } }
+      ]
+    }
+  },
+  "controls": [
+    { "id": "time",     "label": "Time",     "cc": 14, "type": "range",   "min": 0, "max": 127 },
+    { "id": "repeats",  "label": "Repeats",  "cc": 15, "type": "range",   "min": 0, "max": 127 },
+    { "id": "mix",      "label": "Mix",      "cc": 20, "type": "range",   "min": 0, "max": 127 },
+    { "id": "mod",      "label": "Mod",      "cc": 21, "type": "range",   "min": 0, "max": 127 },
+    { "id": "tone",     "label": "Tone",     "cc": 22, "type": "range",   "min": 0, "max": 127 },
+    { "id": "age",      "label": "Age",      "cc": 23, "type": "range",   "min": 0, "max": 127 },
+
+    {
+      "id": "program",
+      "label": "Program",
+      "cc": 24,
+      "type": "enum",
+      "map": { "dig": 0, "mod": 1, "vint": 2, "dual": 3, "rev": 4 }
+    },
+
+    { "id": "attack",   "label": "Attack",   "cc": 25, "type": "range",   "min": 0, "max": 127 },
+
+    {
+      "id": "tweakSwitch",
+      "label": "Tweak Switch",
+      "cc": 26,
+      "type": "zoneEnum",
+      "zones": [
+        { "name": "Mod",  "min": 0,  "max": 42 },
+        { "name": "Tone", "min": 43, "max": 85 },
+        { "name": "Age",  "min": 86, "max": 127 }
+      ]
+    },
+    {
+      "id": "bankSwitch",
+      "label": "A|B|C Bank",
+      "cc": 27,
+      "type": "zoneEnum",
+      "zones": [
+        { "name": "A", "min": 0,  "max": 42 },
+        { "name": "B", "min": 43, "max": 85 },
+        { "name": "C", "min": 86, "max": 127 }
+      ]
+    },
+    {
+      "id": "division",
+      "label": "Division",
+      "cc": 28,
+      "type": "zoneEnum",
+      "zones": [
+        { "name": "Quarter",        "min": 0,  "max": 42 },
+        { "name": "Eighth",         "min": 43, "max": 85 },
+        { "name": "Dotted Eighth",  "min": 86, "max": 127 }
+      ]
+    },
+
+    { "id": "bypass",  "label": "Bypass",    "cc": 29, "type": "toggle",    "off": 0, "on": 127 },
+    { "id": "tap",     "label": "Tap Tempo", "cc": 30, "type": "momentary", "value": 127 }
+  ],
+  "notes": [
+    "128 presets rappelables via PC 0-127. Banques A/B/C = PC 0-8.",
+    "Modes de bypass sélectionnables au boot (True, DSP+True, DSP)."
+  ]
+}

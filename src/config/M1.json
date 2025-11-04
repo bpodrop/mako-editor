@@ -1,0 +1,61 @@
+{
+  "device": "Walrus Audio Mako M1",
+  "schemaVersion": 1,
+  "midi": {
+    "channel": 1,
+    "pc": {
+      "range": [0, 127],
+      "banks": [
+        { "bank": "A", "presets": { "red": 0, "green": 1, "blue": 2 } },
+        { "bank": "B", "presets": { "red": 3, "green": 4, "blue": 5 } },
+        { "bank": "C", "presets": { "red": 6, "green": 7, "blue": 8 } }
+      ]
+    }
+  },
+  "controls": [
+    { "id": "rate",   "label": "Rate",   "cc": 3,  "type": "range",   "min": 0, "max": 127 },
+    { "id": "depth",  "label": "Depth",  "cc": 9,  "type": "range",   "min": 0, "max": 127 },
+    { "id": "lofi",   "label": "Lo-Fi",  "cc": 14, "type": "range",   "min": 0, "max": 127 },
+
+    { "id": "shape",     "label": "Shape",     "cc": 15, "type": "enum", "map": { "sine": 0, "triangle": 1, "square": 2 } },
+    { "id": "division",  "label": "Division",  "cc": 16, "type": "enum", "map": { "quarter": 0, "quarterTriplet": 1, "eighth": 2 } },
+    { "id": "type",      "label": "Type",      "cc": 17, "type": "enum", "map": { "I": 0, "II": 1, "III": 2 } },
+
+    {
+      "id": "program",
+      "label": "Program",
+      "cc": 18,
+      "type": "enum",
+      "map": { "chorus": 0, "phaser": 1, "tremolo": 2, "vibrato": 3, "rotary": 4, "filter": 5 }
+    },
+
+    { "id": "tone",   "label": "Tone",   "cc": 19, "type": "range",   "min": 0, "max": 127 },
+    { "id": "sym",    "label": "Sym",    "cc": 20, "type": "range",   "min": 0, "max": 127 },
+    { "id": "x",      "label": "X",      "cc": 21, "type": "range",   "min": 0, "max": 127 },
+
+    { "id": "env",    "label": "Lo-Fi Env",    "cc": 22, "type": "range", "min": 0, "max": 127 },
+    { "id": "drive",  "label": "Lo-Fi Drive",  "cc": 23, "type": "range", "min": 0, "max": 127 },
+    { "id": "space",  "label": "Lo-Fi Space",  "cc": 24, "type": "range", "min": 0, "max": 127 },
+    { "id": "age",    "label": "Lo-Fi Age",    "cc": 25, "type": "enum",  "map": { "modern": 0, "lofi1": 1, "lofi2": 2, "lofi3": 3, "lofi4": 4 } },
+    { "id": "noise",  "label": "Lo-Fi Noise",  "cc": 26, "type": "range", "min": 0, "max": 127 },
+    { "id": "warble", "label": "Lo-Fi Warble", "cc": 27, "type": "range", "min": 0, "max": 127 },
+
+    { "id": "bypass", "label": "Bypass", "cc": 31, "type": "toggle",    "off": 0,   "on": 127 },
+    { "id": "tap",    "label": "Tap",    "cc": 85, "type": "momentary", "value": 127 },
+
+    { "id": "rotarySpeed", "label": "Rotary Speed", "cc": 86, "type": "toggle", "slow": 0, "fast": 127 },
+    { "id": "skipOrBrake", "label": "Skip/Rotary Brake", "cc": 87, "type": "toggle", "off": 0, "on": 127 },
+
+    { "id": "outputVolume",   "label": "Output Volume",   "cc": 88, "type": "range", "min": 0, "max": 127 },
+    { "id": "midiClockIgnore","label": "MIDI Clock Ignore","cc": 89, "type": "toggle", "off": 0, "on": 127 },
+
+    { "id": "tweakSwitch", "label": "Tweak Switch", "cc": 90,  "type": "enum", "map": { "shape": 0, "division": 1, "type": 2 } },
+    { "id": "bankSwitch",  "label": "Bank Switch",  "cc": 102, "type": "enum", "map": { "A": 0, "B": 1, "C": 2 } },
+    { "id": "tuneSwitch",  "label": "Tune Switch",  "cc": 103, "type": "enum", "map": { "tone": 0, "sym": 1, "x": 2 } }
+  ],
+  "notes": [
+    "128 presets via PC 0-127. Banques A/B/C = PC 0-8.",
+    "Lo-Fi Age possède 5 positions discrètes (0-4).",
+    "Tap/Skip matériel. CC85=127 triggère un tap."
+  ]
+}
