@@ -79,7 +79,7 @@
     { "id": "sustainLatch",  "label": "Sus/Latch",   "cc": 31, "type": "toggle", "off": 0, "on": 127 }
   ],
   "notes": [
-    "Stereo width n’est pas exposé en CC. Réglage matériel via Tune=X + maintien Bypass, puis tourner X.",
+    "Stereo width n'est pas exposé en CC. Réglage matériel via Tune=X + maintien Bypass, puis tourner X.",
     "Les 128 presets sont rappelables par PC 0-127."
   ]
 }

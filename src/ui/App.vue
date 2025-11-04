@@ -6,7 +6,8 @@
     </header>
 
     <section class="card">
-      <div class="form-row">
+      <DeviceSelect />
+      <ChannelPicker /><div class="form-row">
         <div>
           <label class="label" for="pedal-config">Configuration</label>
           <select id="pedal-config" v-model="selectedDevice">
@@ -14,13 +15,12 @@
           </select>
         </div>
       </div>
-      <DeviceSelect />
-      <ChannelPicker />
+      
     </section>
 
   <section class="card grid">
       <PcSender />
-      <CcSender />
+      <!-- <CcSender /> -->
     </section>
 
     <section class="card">
