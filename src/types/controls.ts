@@ -5,6 +5,7 @@ export interface BaseControl {
   label: string;
   cc: number;
   type: ControlType;
+  hidden?: boolean;
 }
 
 export interface RangeControl extends BaseControl {
