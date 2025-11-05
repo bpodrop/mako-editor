@@ -28,7 +28,7 @@
       <p v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
       <div v-else class="controls-grid">
         <ControlRenderer
-          v-for="c in selectedConfig.controls"
+          v-for="c in visibleControls"
           :key="c.id"
           :control="c as any"
           :channel="selectedConfig.midi.channel"
@@ -60,6 +60,8 @@ import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
 import { ControlRenderer } from '../components/controls';
 import { midi } from '../core/midi/midi';
+import { getVisibleControls } from '../config/visibility';
+
 
 onMounted(async () => {
   void midiStore.init();
@@ -77,6 +79,9 @@ const selectedDevice = ref<string>(
 const selectedConfig = computed<PedalConfig | undefined>(() =>
   selectedDevice.value ? getPedalByDevice(selectedDevice.value) : undefined
 );
+
+const visibleControls = computed(() => getVisibleControls(selectedConfig.value));
+
 
 // Values per control (persisted by device)
 const values = reactive<Record<string, number>>({});

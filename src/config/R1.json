@@ -48,7 +48,8 @@
         { "name": "Rate",       "min": 0,  "max": 42 },
         { "name": "Depth",      "min": 43, "max": 85 },
         { "name": "Pre Delay",  "min": 86, "max": 127 }
-      ]
+      ],
+      "hidden": true
     },
 
     {
@@ -60,7 +61,8 @@
         { "name": "A", "min": 0,  "max": 42 },
         { "name": "B", "min": 43, "max": 85 },
         { "name": "C", "min": 86, "max": 127 }
-      ]
+      ],
+      "hidden": true
     },
 
     {
@@ -72,7 +74,8 @@
         { "name": "Left",   "min": 0,  "max": 42 },
         { "name": "Middle", "min": 43, "max": 85 },
         { "name": "Right",  "min": 86, "max": 127 }
-      ]
+      ],
+      "hidden": true
     },
 
     { "id": "bypass",        "label": "Bypass",      "cc": 30, "type": "toggle", "off": 0, "on": 127 },
