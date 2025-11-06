@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMidi } from '../../store/useMidi';
 import type { MomentaryControl as MomentaryCtrl } from '../../types/controls';
 
 const props = defineProps<{
@@ -28,14 +27,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
 
-const midi = useMidi();
-
 const id = computed(() => `ctrl-${props.control.id}`);
 
 function fire() {
   const value = props.control.value ?? 127;
   emit('update:value', value);
-  midi.sendControlChange(props.control.cc, value);
 }
 </script>
 

@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { useMidi } from '../../store/useMidi';
 import type { ZoneEnumControl as ZoneEnumCtrl, ZoneDef } from '../../types/controls';
 
 const props = defineProps<{
@@ -26,8 +25,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
-
-const midi = useMidi();
 
 const id = computed(() => `ctrl-${props.control.id}`);
 const collator = new Intl.Collator('fr', { sensitivity: 'base' });
@@ -51,7 +48,6 @@ function onChange() {
   if (!z) return;
   const mid = Math.round((z.min + z.max) / 2);
   emit('update:value', mid);
-  midi.sendControlChange(props.control.cc, mid);
 }
 </script>
 

@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMidi } from '../../store/useMidi';
 import type { ToggleControl as ToggleCtrl } from '../../types/controls';
 
 const props = defineProps<{
@@ -29,8 +28,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
 
-const midi = useMidi();
-
 const id = computed(() => `ctrl-${props.control.id}`);
 const isOn = computed<boolean>(() => props.modelValue === props.control.on);
 
@@ -38,7 +35,6 @@ function onChange(e: Event) {
   const t = e.target as HTMLInputElement;
   const val = t.checked ? props.control.on : props.control.off;
   emit('update:value', val);
-  midi.sendControlChange(props.control.cc, val);
 }
 </script>
 

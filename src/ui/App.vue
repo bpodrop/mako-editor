@@ -39,7 +39,7 @@
             :control="c as any"
             :value="values[c.id]"
             :disabled="!isOutputReady"
-            @update:value="(v: number) => onValue(c.id, v)"
+            @update:value="(v: number) => onValue(c as AnyControl, v)"
           />
         </div>
       </template>
@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import { onMounted, computed, ref, watch } from 'vue';
 import { useMidi } from '../store/useMidi';
+import { useMidiControls } from '../application/use-midi-controls';
 import DeviceSelect from './components/DeviceSelect.vue';
 import ChannelPicker from './components/ChannelPicker.vue';
 import PcSender from './components/PcSender.vue';
@@ -68,8 +69,10 @@ import type { PedalConfig } from '../config/types';
 import { ControlRenderer } from '../components/controls';
 import { getVisibleControls } from '../config/visibility';
 import { useControlValues } from '../composables/useControlValues';
+import type { AnyControl } from '../types/controls';
 
 const { init, errorMessage, isOutputReady, setChannel } = useMidi();
+const { sendControlChange } = useMidiControls();
 
 onMounted(async () => { void init(); });
 
@@ -92,7 +95,10 @@ watch(selectedConfig, (cfg) => {
 
 // Control values (persisted per device)
 const { values, setValue } = useControlValues(selectedDevice);
-function onValue(id: string, v: number) { setValue(id, v); }
+function onValue(ctrl: AnyControl, v: number) {
+  setValue(ctrl.id, v);
+  sendControlChange(ctrl.cc, v);
+}
 </script>
 
 <style scoped>
@@ -140,4 +146,3 @@ function onValue(id: string, v: number) { setValue(id, v); }
   color: #666;
 }
 </style>
-
