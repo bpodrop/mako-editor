@@ -18,12 +18,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { midi } from '../../core/midi/midi';
+import { midiStore } from '../../store/midi.store';
 import type { MomentaryControl as MomentaryCtrl } from '../../types/controls';
 
 const props = defineProps<{
   control: MomentaryCtrl;
-  channel: number;
   disabled?: boolean;
 }>();
 
@@ -34,7 +33,7 @@ const id = computed(() => `ctrl-${props.control.id}`);
 function fire() {
   const value = props.control.value ?? 127;
   emit('update:value', value);
-  midi.sendCC(props.channel, props.control.cc, value);
+  midiStore.sendControlChange(props.control.cc, value);
 }
 </script>
 
@@ -44,4 +43,3 @@ function fire() {
 .btn:disabled { cursor: not-allowed; opacity: .6; }
 .btn:focus { outline: 2px solid #2684ff; outline-offset: 2px; }
 </style>
-

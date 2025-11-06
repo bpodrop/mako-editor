@@ -18,12 +18,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { midi } from '../../core/midi/midi';
+import { midiStore } from '../../store/midi.store';
 import type { ToggleControl as ToggleCtrl } from '../../types/controls';
 
 const props = defineProps<{
   control: ToggleCtrl;
-  channel: number;
   modelValue?: number;
   disabled?: boolean;
 }>();
@@ -37,7 +36,7 @@ function onChange(e: Event) {
   const t = e.target as HTMLInputElement;
   const val = t.checked ? props.control.on : props.control.off;
   emit('update:value', val);
-  midi.sendCC(props.channel, props.control.cc, val);
+  midiStore.sendControlChange(props.control.cc, val);
 }
 </script>
 
@@ -46,4 +45,3 @@ function onChange(e: Event) {
 .row { display: flex; align-items: center; gap: .5rem; }
 .label { font-weight: 500; }
 </style>
-

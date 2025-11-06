@@ -3,7 +3,6 @@
     <RangeControl
       v-if="control.type === 'range'"
       :control="control"
-      :channel="channel"
       :modelValue="value"
       :disabled="disabled"
       @update:value="forward"
@@ -11,7 +10,6 @@
     <EnumControl
       v-else-if="control.type === 'enum'"
       :control="control"
-      :channel="channel"
       :modelValue="value"
       :disabled="disabled"
       @update:value="forward"
@@ -19,7 +17,6 @@
     <ZoneEnumControl
       v-else-if="control.type === 'zoneEnum'"
       :control="control"
-      :channel="channel"
       :modelValue="value"
       :disabled="disabled"
       @update:value="forward"
@@ -27,7 +24,6 @@
     <ToggleControl
       v-else-if="control.type === 'toggle'"
       :control="control"
-      :channel="channel"
       :modelValue="value"
       :disabled="disabled"
       @update:value="forward"
@@ -35,7 +31,6 @@
     <MomentaryControl
       v-else-if="control.type === 'momentary'"
       :control="control"
-      :channel="channel"
       :disabled="disabled"
       @update:value="forward"
     />
@@ -52,7 +47,6 @@ import MomentaryControl from './MomentaryControl.vue';
 
 const props = defineProps<{
   control: AnyControl;
-  channel: number;
   value?: number;
   disabled?: boolean;
 }>();
@@ -65,4 +59,3 @@ function forward(v: number) { emit('update:value', v); }
 <style scoped>
 div { display: flex; flex-direction: column; gap: .5rem; }
 </style>
-

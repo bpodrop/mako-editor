@@ -26,12 +26,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { midi } from '../../core/midi/midi';
+import { midiStore } from '../../store/midi.store';
 import type { RangeControl as RangeCtrl } from '../../types/controls';
 
 const props = defineProps<{
   control: RangeCtrl;
-  channel: number;
   modelValue?: number;
   disabled?: boolean;
 }>();
@@ -55,7 +54,7 @@ function onInput(e: Event) {
   const next = clamp(Math.round(raw), props.control.min, props.control.max);
   current.value = next;
   emit('update:value', next);
-  midi.sendCC(props.channel, props.control.cc, next);
+  midiStore.sendControlChange(props.control.cc, next);
 }
 </script>
 
@@ -66,4 +65,3 @@ function onInput(e: Event) {
 .range { flex: 1; }
 .val { min-width: 2ch; text-align: right; }
 </style>
-

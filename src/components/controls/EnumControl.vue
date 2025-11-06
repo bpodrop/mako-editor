@@ -16,12 +16,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { midi } from '../../core/midi/midi';
+import { midiStore } from '../../store/midi.store';
 import type { EnumControl as EnumCtrl } from '../../types/controls';
 
 const props = defineProps<{
   control: EnumCtrl;
-  channel: number;
   modelValue?: number;
   disabled?: boolean;
 }>();
@@ -51,7 +50,7 @@ function onChange() {
   const value = props.control.map[k];
   if (typeof value !== 'number') return;
   emit('update:value', value);
-  midi.sendCC(props.channel, props.control.cc, value);
+  midiStore.sendControlChange(props.control.cc, value);
 }
 </script>
 
@@ -60,4 +59,3 @@ function onChange() {
 .label { font-weight: 500; }
 .select { max-width: 100%; }
 </style>
-

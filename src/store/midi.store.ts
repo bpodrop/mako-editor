@@ -43,29 +43,37 @@ function setChannel(value: number): void {
   }
 }
 
-function sendProgramChange(program: number): void {
+function sendProgramChange(program: number): Error | null {
   if (!selectedOutput.value) {
-    errorMessage.value = 'No MIDI output selected.';
-    return;
+    const err = new Error('No MIDI output selected.');
+    errorMessage.value = err.message;
+    return err;
   }
   const pc: ProgramChange = { channel: channel.value, program };
   try {
     WebMidiGateway.sendProgramChange(selectedOutput.value, pc);
+    return null;
   } catch (e) {
-    errorMessage.value = e instanceof Error ? e.message : String(e);
+    const err = e instanceof Error ? e : new Error(String(e));
+    errorMessage.value = err.message;
+    return err;
   }
 }
 
-function sendControlChange(controller: number, value: number): void {
+function sendControlChange(controller: number, value: number): Error | null {
   if (!selectedOutput.value) {
-    errorMessage.value = 'No MIDI output selected.';
-    return;
+    const err = new Error('No MIDI output selected.');
+    errorMessage.value = err.message;
+    return err;
   }
   const cc: ControlChange = { channel: channel.value, controller, value };
   try {
     WebMidiGateway.sendControlChange(selectedOutput.value, cc);
+    return null;
   } catch (e) {
-    errorMessage.value = e instanceof Error ? e.message : String(e);
+    const err = e instanceof Error ? e : new Error(String(e));
+    errorMessage.value = err.message;
+    return err;
   }
 }
 

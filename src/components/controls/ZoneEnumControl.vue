@@ -16,12 +16,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { midi } from '../../core/midi/midi';
+import { midiStore } from '../../store/midi.store';
 import type { ZoneEnumControl as ZoneEnumCtrl, ZoneDef } from '../../types/controls';
 
 const props = defineProps<{
   control: ZoneEnumCtrl;
-  channel: number;
   modelValue?: number;
   disabled?: boolean;
 }>();
@@ -50,7 +49,7 @@ function onChange() {
   if (!z) return;
   const mid = Math.round((z.min + z.max) / 2);
   emit('update:value', mid);
-  midi.sendCC(props.channel, props.control.cc, mid);
+  midiStore.sendControlChange(props.control.cc, mid);
 }
 </script>
 
@@ -59,4 +58,3 @@ function onChange() {
 .label { font-weight: 500; }
 .select { max-width: 100%; }
 </style>
-

@@ -31,7 +31,6 @@
           v-for="c in visibleControls"
           :key="c.id"
           :control="c as any"
-          :channel="selectedConfig.midi.channel"
           :value="values[c.id]"
           @update:value="(v: number) => onValue(c.id, v)"
         />
@@ -59,13 +58,11 @@ import CcSender from './components/CcSender.vue';
 import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
 import { ControlRenderer } from '../components/controls';
-import { midi } from '../core/midi/midi';
 import { getVisibleControls } from '../config/visibility';
 
 
 onMounted(async () => {
   void midiStore.init();
-  try { await midi.init(); } catch {}
 });
 
 const errorMessage = computed(() => midiStore.errorMessage.value);
@@ -81,6 +78,13 @@ const selectedConfig = computed<PedalConfig | undefined>(() =>
 );
 
 const visibleControls = computed(() => getVisibleControls(selectedConfig.value));
+
+// Appliquer le canal par défaut de la config au store
+watch(selectedConfig, (cfg) => {
+  if (cfg?.midi?.channel) {
+    midiStore.setChannel(cfg.midi.channel);
+  }
+}, { immediate: true });
 
 
 // Values per control (persisted by device)
