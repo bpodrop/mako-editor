@@ -45,8 +45,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useMidi } from '../../store/useMidi';
+import { useMidiControls } from '../../application/use-midi-controls';
 
-const { isOutputReady, sendControlChange } = useMidi();
+const { isOutputReady } = useMidi();
+const { sendControlChange } = useMidiControls();
 const controller = ref<number>(0);
 const value = ref<number>(0);
 const disabled = computed(() => !isOutputReady.value);
