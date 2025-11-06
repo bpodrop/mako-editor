@@ -1,8 +1,0 @@
-{
-  "name": "MIDI Controller",
-  "short_name": "MIDI Ctrl",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#f7f7f8",
-  "theme_color": "#2f6feb"
-}
