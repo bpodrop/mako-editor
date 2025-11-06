@@ -19,14 +19,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { midiStore } from '../../store/midi.store';
+import { useMidi } from '../../store/useMidi';
 
+const { isOutputReady, sendProgramChange } = useMidi();
 const program = ref<number>(0);
-const disabled = computed(() => !midiStore.selectedOutput.value);
+const disabled = computed(() => !isOutputReady.value);
 
-function send() {
-  midiStore.sendProgramChange(program.value);
-}
+function send() { sendProgramChange(program.value); }
 </script>
 
 <style scoped>

@@ -7,6 +7,9 @@ const selectedOutputId = ref<string | null>(null);
 const channel = ref<MidiChannel>(1);
 const errorMessage = ref<string | null>(null);
 
+// Derived state
+const isOutputReady = computed<boolean>(() => selectedOutput.value !== null);
+
 const selectedOutput = computed<MIDIOutput | null>(() => {
   return outputs.value.find((o) => o.id === selectedOutputId.value) ?? null;
 });
@@ -84,6 +87,7 @@ export const midiStore = {
   selectedOutputId,
   channel,
   errorMessage,
+  isOutputReady,
   // actions
   init,
   refreshOutputs,
