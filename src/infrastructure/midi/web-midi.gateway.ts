@@ -1,16 +1,8 @@
-import { ControlChange, MidiChannel, ProgramChange } from '../domain/midi';
-import { buildControlChangeBytes, buildProgramChangeBytes } from '../domain/commands';
+import type { MidiGateway } from '../../application/ports/midi-gateway';
+import type { ControlChange, ProgramChange } from '../../domain/midi';
+import { buildControlChangeBytes, buildProgramChangeBytes } from '../../domain/commands';
 
-export interface MidiGateway {
-  ensureAccess(): Promise<MIDIAccess>;
-  getOutputs(): Promise<MIDIOutput[]>;
-  onStateChange(cb: () => void): void;
-  sendRaw(output: MIDIOutput, bytes: Uint8Array, timestampMs?: number): void;
-  sendProgramChange(output: MIDIOutput, pc: ProgramChange): void;
-  sendControlChange(output: MIDIOutput, cc: ControlChange): void;
-}
-
-class WebMidiGatewayImpl implements MidiGateway {
+export class WebMidiGateway implements MidiGateway {
   private access: MIDIAccess | null = null;
   private listeners: Array<() => void> = [];
 
@@ -30,7 +22,6 @@ class WebMidiGatewayImpl implements MidiGateway {
     const access = await this.ensureAccess();
     const out: MIDIOutput[] = [];
     access.outputs.forEach((o) => out.push(o));
-    // Keep consistent order by name/id
     out.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     return out;
   }
@@ -53,6 +44,4 @@ class WebMidiGatewayImpl implements MidiGateway {
     this.sendRaw(output, bytes);
   }
 }
-
-export const WebMidiGateway: MidiGateway = new WebMidiGatewayImpl();
 

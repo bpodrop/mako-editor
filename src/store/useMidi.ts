@@ -1,12 +1,8 @@
-import { computed } from 'vue';
-import { midiStore } from './midi.store';
+import { inject } from 'vue';
+import { MidiStoreSymbol, type MidiStore } from './midi.store';
 
-export function useMidi() {
-  const isOutputReady = computed(() => midiStore.isOutputReady.value);
-
-  return {
-    ...midiStore,
-    isOutputReady,
-  } as const;
+export function useMidi(): MidiStore {
+  const store = inject(MidiStoreSymbol);
+  if (!store) throw new Error('MidiStore is not provided');
+  return store;
 }
-

@@ -21,19 +21,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { midiStore } from '../../store/midi.store';
+import { useMidi } from '../../store/useMidi';
 
-const outputs = computed(() => midiStore.outputs.value);
-const selectedId = computed(() => midiStore.selectedOutputId.value ?? '');
+const midi = useMidi();
+const outputs = computed(() => midi.outputs.value);
+const selectedId = computed(() => midi.selectedOutputId.value ?? '');
 
 function onChange(e: Event) {
   const target = e.target as HTMLSelectElement;
   const id = target.value || null;
-  midiStore.setSelectedOutput(id);
+  midi.setSelectedOutput(id);
 }
 
 function refresh() {
-  void midiStore.refreshOutputs();
+  void midi.refreshOutputs();
 }
 </script>
 

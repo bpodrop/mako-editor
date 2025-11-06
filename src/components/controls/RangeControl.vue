@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { midiStore } from '../../store/midi.store';
+import { useMidi } from '../../store/useMidi';
 import type { RangeControl as RangeCtrl } from '../../types/controls';
 
 const props = defineProps<{
@@ -36,6 +36,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
+
+const midi = useMidi();
 
 const id = computed(() => `ctrl-${props.control.id}`);
 const current = ref<number>(
@@ -54,7 +56,7 @@ function onInput(e: Event) {
   const next = clamp(Math.round(raw), props.control.min, props.control.max);
   current.value = next;
   emit('update:value', next);
-  midiStore.sendControlChange(props.control.cc, next);
+  midi.sendControlChange(props.control.cc, next);
 }
 </script>
 

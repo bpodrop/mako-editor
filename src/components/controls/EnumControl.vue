@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { midiStore } from '../../store/midi.store';
+import { useMidi } from '../../store/useMidi';
 import type { EnumControl as EnumCtrl } from '../../types/controls';
 
 const props = defineProps<{
@@ -26,6 +26,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
+
+const midi = useMidi();
 
 const id = computed(() => `ctrl-${props.control.id}`);
 const collator = new Intl.Collator('fr', { sensitivity: 'base' });
@@ -50,7 +52,7 @@ function onChange() {
   const value = props.control.map[k];
   if (typeof value !== 'number') return;
   emit('update:value', value);
-  midiStore.sendControlChange(props.control.cc, value);
+  midi.sendControlChange(props.control.cc, value);
 }
 </script>
 

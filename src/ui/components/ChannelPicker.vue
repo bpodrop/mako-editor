@@ -14,14 +14,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { midiStore } from '../../store/midi.store';
+import { useMidi } from '../../store/useMidi';
 
+const midi = useMidi();
 const channels = Array.from({ length: 16 }, (_, i) => i + 1);
-const channel = computed(() => midiStore.channel.value);
+const channel = computed(() => midi.channel.value);
 
 function onChange(e: Event) {
   const value = Number((e.target as HTMLSelectElement).value);
-  midiStore.setChannel(value);
+  midi.setChannel(value);
 }
 </script>
 
