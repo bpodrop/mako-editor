@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <header class="header">
-      <h1>MIDI Controller (PWA)</h1>
-      <p class="subtitle">PC & CC via Web MIDI - Walrus Audio Mako</p>
+      <h1>Mako MIDI Editor</h1>
+      <p class="subtitle">simple MIDI editor for Walrus Audio Mako series</p>
     </header>
 
     <section class="card">

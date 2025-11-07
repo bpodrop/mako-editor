@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
-    <h2>Program Change</h2>
-    <label class="label" for="pc-program">Program (0-127)</label>
+    <h2>Preset</h2>
+    <label class="label" for="pc-program">Preset (0-127)</label>
     <div class="row">
       <input
         id="pc-program"

@@ -11,7 +11,6 @@
         <option v-if="outputs.length === 0" disabled value="">No output available</option>
         <option v-for="o in outputs" :key="o.id" :value="o.id">
           {{ o.name || 'Unnamed output' }}
-          <span v-if="o.manufacturer"> — {{ o.manufacturer }}</span>
         </option>
       </select>
       <button class="btn" type="button" @click="refresh">Refresh</button>
