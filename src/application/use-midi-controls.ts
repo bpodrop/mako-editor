@@ -1,4 +1,4 @@
-import { useMidi } from '../store/useMidi';
+import { useMidi } from '../ui/composables/useMidiStore';
 
 /**
  * Application service for MIDI control actions used by views.
@@ -20,4 +20,3 @@ export function useMidiControls() {
     sendProgramChange,
   } as const;
 }
-

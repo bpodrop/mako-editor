@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { MomentaryControl as MomentaryCtrl } from '../../types/controls';
+import type { MomentaryControl as MomentaryCtrl } from '../../../core/entities/controls';
 
 const props = defineProps<{
   control: MomentaryCtrl;
@@ -41,3 +41,4 @@ function fire() {
 .btn:disabled { cursor: not-allowed; opacity: .6; }
 .btn:focus { outline: 2px solid #2684ff; outline-offset: 2px; }
 </style>
+

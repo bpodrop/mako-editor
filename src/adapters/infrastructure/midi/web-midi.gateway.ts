@@ -1,6 +1,6 @@
-import type { MidiGateway } from '../../application/ports/midi-gateway';
-import type { ControlChange, ProgramChange } from '../../domain/midi';
-import { buildControlChangeBytes, buildProgramChangeBytes } from '../../domain/commands';
+import type { MidiGateway } from '../../../core/ports/midi-gateway';
+import type { ControlChange, ProgramChange } from '../../../core/entities/midi';
+import { buildControlChangeBytes, buildProgramChangeBytes } from '../../../core/entities/commands';
 
 export class WebMidiGateway implements MidiGateway {
   private access: MIDIAccess | null = null;

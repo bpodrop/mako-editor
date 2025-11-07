@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { EnumControl as EnumCtrl } from '../../types/controls';
+import type { EnumControl as EnumCtrl } from '../../../core/entities/controls';
 
 const props = defineProps<{
   control: EnumCtrl;
@@ -57,3 +57,4 @@ function onChange() {
 .label { font-weight: 500; }
 .select { max-width: 100%; }
 </style>
+

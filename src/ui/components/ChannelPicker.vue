@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMidi } from '../../store/useMidi';
+import { useMidi } from '../../ui/composables/useMidiStore';
 
 const midi = useMidi();
 const channels = Array.from({ length: 16 }, (_, i) => i + 1);

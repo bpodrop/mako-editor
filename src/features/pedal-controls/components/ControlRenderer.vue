@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AnyControl } from '../../types/controls';
+import type { AnyControl } from '../../../core/entities/controls';
 import RangeControl from './RangeControl.vue';
 import EnumControl from './EnumControl.vue';
 import ZoneEnumControl from './ZoneEnumControl.vue';
@@ -59,3 +59,4 @@ function forward(v: number) { emit('update:value', v); }
 <style scoped>
 div { display: flex; flex-direction: column; gap: .5rem; }
 </style>
+

@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { RangeControl as RangeCtrl } from '../../types/controls';
+import type { RangeControl as RangeCtrl } from '../../../core/entities/controls';
 
 const props = defineProps<{
   control: RangeCtrl;
@@ -63,3 +63,4 @@ function onInput(e: Event) {
 .range { flex: 1; }
 .val { min-width: 2ch; text-align: right; }
 </style>
+

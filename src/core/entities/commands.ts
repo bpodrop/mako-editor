@@ -14,3 +14,4 @@ export function buildControlChangeBytes(cc: ControlChange): Uint8Array {
   const value = assertSevenBit(cc.value, 'Value');
   return new Uint8Array([status, controller, value]);
 }
+

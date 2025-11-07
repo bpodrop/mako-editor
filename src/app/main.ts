@@ -2,8 +2,8 @@ import { createApp } from 'vue';
 import App from '../ui/App.vue';
 import '../styles/base.css';
 import { registerSW } from 'virtual:pwa-register';
-import { WebMidiGateway } from '../infrastructure/midi/web-midi.gateway';
-import { createMidiStore, MidiStoreSymbol } from '../store/midi.store';
+import { WebMidiGateway } from '../adapters/infrastructure/midi/web-midi.gateway';
+import { createMidiStore, MidiStoreSymbol } from '../ui/composables/useMidiStore';
 
 // Register PWA (service worker) via vite-plugin-pwa
 registerSW({ immediate: true });

@@ -43,10 +43,3 @@ export type AnyControl =
   | ToggleControl
   | MomentaryControl;
 
-export interface DeviceConfig {
-  device: string;
-  schemaVersion: number;
-  midi: { channel: number; pc: { range: [number,number] } };
-  controls: AnyControl[];
-}
-

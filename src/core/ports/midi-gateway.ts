@@ -1,4 +1,4 @@
-import type { ControlChange, ProgramChange } from '../../domain/midi';
+import type { ControlChange, ProgramChange } from '../entities/midi';
 
 export interface MidiGateway {
   ensureAccess(): Promise<MIDIAccess>;

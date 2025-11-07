@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { onMounted, computed, ref, watch } from 'vue';
-import { useMidi } from '../store/useMidi';
+import { useMidi } from './composables/useMidiStore';
 import { useMidiControls } from '../application/use-midi-controls';
 import DeviceSelect from './components/DeviceSelect.vue';
 import ChannelPicker from './components/ChannelPicker.vue';
@@ -66,10 +66,10 @@ import PcSender from './components/PcSender.vue';
 import CcSender from './components/CcSender.vue';
 import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
-import { ControlRenderer } from '../components/controls';
+import { ControlRenderer } from '../features/pedal-controls';
 import { getVisibleControls } from '../config/visibility';
 import { useControlValues } from '../composables/useControlValues';
-import type { AnyControl } from '../types/controls';
+import type { AnyControl } from '../core/entities/controls';
 
 const { init, errorMessage, isOutputReady, setChannel } = useMidi();
 const { sendControlChange } = useMidiControls();

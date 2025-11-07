@@ -1,7 +1,11 @@
-import { computed, ref, type InjectionKey } from 'vue';
-import type { MidiGateway } from '../application/ports/midi-gateway';
-import { asMidiChannel, ControlChange, MidiChannel, ProgramChange } from '../domain/midi';
+import { computed, ref, inject, type InjectionKey } from 'vue';
+import { MidiService } from '../../core/services/midi-service';
+import { asMidiChannel, type MidiChannel } from '../../core/entities/midi';
+import type { MidiGateway } from '../../core/ports/midi-gateway';
+
 export function createMidiStore(gateway: MidiGateway) {
+  const service = new MidiService(gateway);
+
   const outputs = ref<MIDIOutput[]>([]);
   const selectedOutputId = ref<string | null>(null);
   const channel = ref<MidiChannel>(1);
@@ -13,7 +17,7 @@ export function createMidiStore(gateway: MidiGateway) {
   const isOutputReady = computed<boolean>(() => selectedOutput.value !== null);
 
   async function refreshOutputs(): Promise<void> {
-    const list = await gateway.getOutputs();
+    const list = await service.listOutputs();
     outputs.value = list;
     if (!selectedOutputId.value || !outputs.value.some((o) => o.id === selectedOutputId.value)) {
       selectedOutputId.value = outputs.value[0]?.id ?? null;
@@ -22,8 +26,7 @@ export function createMidiStore(gateway: MidiGateway) {
 
   async function init(): Promise<void> {
     try {
-      await gateway.ensureAccess();
-      gateway.onStateChange(async () => {
+      await service.init(async () => {
         await refreshOutputs();
       });
       await refreshOutputs();
@@ -50,9 +53,8 @@ export function createMidiStore(gateway: MidiGateway) {
       errorMessage.value = err.message;
       return err;
     }
-    const pc: ProgramChange = { channel: channel.value, program };
     try {
-      gateway.sendProgramChange(selectedOutput.value, pc);
+      service.sendProgramChange(selectedOutput.value, channel.value, program);
       return null;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
@@ -67,9 +69,8 @@ export function createMidiStore(gateway: MidiGateway) {
       errorMessage.value = err.message;
       return err;
     }
-    const cc: ControlChange = { channel: channel.value, controller, value };
     try {
-      gateway.sendControlChange(selectedOutput.value, cc);
+      service.sendControlChange(selectedOutput.value, channel.value, controller, value);
       return null;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
@@ -98,3 +99,9 @@ export function createMidiStore(gateway: MidiGateway) {
 
 export type MidiStore = ReturnType<typeof createMidiStore>;
 export const MidiStoreSymbol: InjectionKey<MidiStore> = Symbol('MidiStore');
+
+export function useMidi(): MidiStore {
+  const store = inject(MidiStoreSymbol);
+  if (!store) throw new Error('MidiStore is not provided');
+  return store;
+}

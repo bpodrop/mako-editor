@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useMidi } from '../../store/useMidi';
+import { useMidi } from '../../ui/composables/useMidiStore';
 
 const midi = useMidi();
 const outputs = computed(() => midi.outputs.value);

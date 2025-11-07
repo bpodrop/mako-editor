@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { ToggleControl as ToggleCtrl } from '../../types/controls';
+import type { ToggleControl as ToggleCtrl } from '../../../core/entities/controls';
 
 const props = defineProps<{
   control: ToggleCtrl;
@@ -43,3 +43,4 @@ function onChange(e: Event) {
 .row { display: flex; align-items: center; gap: .5rem; }
 .label { font-weight: 500; }
 </style>
+

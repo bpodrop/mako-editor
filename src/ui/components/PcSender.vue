@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useMidi } from '../../store/useMidi';
+import { useMidi } from '../../ui/composables/useMidiStore';
 import { useMidiControls } from '../../application/use-midi-controls';
 
 const { isOutputReady } = useMidi();

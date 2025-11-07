@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { ZoneEnumControl as ZoneEnumCtrl, ZoneDef } from '../../types/controls';
+import type { ZoneEnumControl as ZoneEnumCtrl, ZoneDef } from '../../../core/entities/controls';
 
 const props = defineProps<{
   control: ZoneEnumCtrl;
@@ -56,3 +56,4 @@ function onChange() {
 .label { font-weight: 500; }
 .select { max-width: 100%; }
 </style>
+
