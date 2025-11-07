@@ -24,10 +24,9 @@
 
     <section class="card grid">
       <PcSender />
-      <!-- <CcSender /> -->
     </section>
 
-    <section class="card">
+    <section class="card" :style="controlsCardStyle">
       <h2>Controls</h2>
       <p v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
       <template v-else>
@@ -87,6 +86,36 @@ const selectedConfig = computed<PedalConfig | undefined>(() =>
 );
 
 const visibleControls = computed(() => getVisibleControls(selectedConfig.value));
+
+function parseHexColor(hex: string): { r: number; g: number; b: number } | undefined {
+  const m = hex.trim().match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
+  if (!m) return undefined;
+  let h = m[1];
+  if (h.length === 3) {
+    h = h.split('').map(ch => ch + ch).join('');
+  }
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+function contrastTextFor(bg: string): string {
+  const rgb = parseHexColor(bg);
+  if (!rgb) return '#000';
+  const yiq = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+  return yiq >= 128 ? '#000' : '#fff';
+}
+
+const controlsCardStyle = computed(() => {
+  const cfg = selectedConfig.value;
+  const bg = cfg?.backgroundColor ?? cfg?.color;
+  const fg = cfg?.textColor ?? (bg ? contrastTextFor(bg) : undefined);
+  const style: Record<string, string> = {};
+  if (bg) style.backgroundColor = bg;
+  if (fg) style.color = fg;
+  return style;
+});
 
 // Appliquer le canal par défaut de la config au store
 watch(selectedConfig, (cfg) => {
