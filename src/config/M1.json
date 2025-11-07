@@ -1,5 +1,7 @@
 {
-  "device": "Walrus Audio Mako M1",
+  "device": "Mako M1",
+  "backgroundColor": "#324A6E",
+  "textColor":"#F4F4F4",
   "schemaVersion": 1,
   "midi": {
     "channel": 1,
@@ -40,8 +42,7 @@
     { "id": "noise",  "label": "Lo-Fi Noise",  "cc": 26, "type": "range", "min": 0, "max": 127 },
     { "id": "warble", "label": "Lo-Fi Warble", "cc": 27, "type": "range", "min": 0, "max": 127 },
 
-    { "id": "bypass", "label": "Bypass", "cc": 31, "type": "toggle",    "off": 0,   "on": 127 },
-    { "id": "tap",    "label": "Tap",    "cc": 85, "type": "momentary", "value": 127 },
+    
 
     { "id": "rotarySpeed", "label": "Rotary Speed", "cc": 86, "type": "toggle", "slow": 0, "fast": 127 },
     { "id": "skipOrBrake", "label": "Skip/Rotary Brake", "cc": 87, "type": "toggle", "off": 0, "on": 127 },
@@ -49,9 +50,12 @@
     { "id": "outputVolume",   "label": "Output Volume",   "cc": 88, "type": "range", "min": 0, "max": 127 },
     { "id": "midiClockIgnore","label": "MIDI Clock Ignore","cc": 89, "type": "toggle", "off": 0, "on": 127 },
 
-    { "id": "tweakSwitch", "label": "Tweak Switch", "cc": 90,  "type": "enum", "map": { "shape": 0, "division": 1, "type": 2 } },
-    { "id": "bankSwitch",  "label": "Bank Switch",  "cc": 102, "type": "enum", "map": { "A": 0, "B": 1, "C": 2 } },
-    { "id": "tuneSwitch",  "label": "Tune Switch",  "cc": 103, "type": "enum", "map": { "tone": 0, "sym": 1, "x": 2 } }
+    { "id": "tweakSwitch", "label": "Tweak Switch", "cc": 90,  "type": "enum", "map": { "shape": 0, "division": 1, "type": 2 }, "hidden": true },
+    { "id": "bankSwitch",  "label": "Bank Switch",  "cc": 102, "type": "enum", "map": { "A": 0, "B": 1, "C": 2 }, "hidden": true },
+    { "id": "tuneSwitch",  "label": "Tune Switch",  "cc": 103, "type": "enum", "map": { "tone": 0, "sym": 1, "x": 2 }, "hidden": true },
+
+    { "id": "bypass", "label": "Bypass", "cc": 31, "type": "toggle",    "off": 0,   "on": 127 },
+    { "id": "tap",    "label": "Tap",    "cc": 85, "type": "toggle", "value": 127, "hidden":"true" }
   ],
   "notes": [
     "128 presets via PC 0-127. Banques A/B/C = PC 0-8.",

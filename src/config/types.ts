@@ -3,6 +3,9 @@ import type { AnyControl } from '../core/entities/controls';
 
 export type PedalConfig = {
   device: string;
+  color?: string;
+  backgroundColor?: string;
+  textColor?: string;
   schemaVersion: number;
   midi: unknown;
   controls: AnyControl[];

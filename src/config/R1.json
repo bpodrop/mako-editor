@@ -1,5 +1,7 @@
 {
-  "device": "Walrus Audio Mako R1",
+  "device": "Mako R1",
+  "backgroundColor": "#121212",
+  "textColor":"#C9A86A",
   "schemaVersion": 1,
   "midi": {
     "channel": 1,
