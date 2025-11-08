@@ -21,6 +21,23 @@
             </select>
           </div>
         </div>
+        <div class="form-row">
+          <div class="row">
+            <button class="btn" type="button" @click="exportConfig" title="Sauvegarder la configuration courante en fichier JSON">
+              Sauvegarder (fichier)
+            </button>
+            <button type="button" @click="() => fileInput?.click()" title="Charger une configuration depuis un fichier JSON">
+              Charger (fichier)
+            </button>
+            <input
+              ref="fileInputEl"
+              type="file"
+              accept="application/json,.json"
+              style="display:none"
+              @change="onImportFile"
+            />
+          </div>
+        </div>
       </section>
 
       <section class="card grid">
@@ -73,7 +90,7 @@ import { getVisibleControls } from '../config/visibility';
 import { useControlValues } from '../composables/useControlValues';
 import type { AnyControl } from '../core/entities/controls';
 
-const { init, errorMessage, isOutputReady, setChannel } = useMidi();
+const { init, errorMessage, isOutputReady, setChannel, channel } = useMidi();
 const { sendControlChange } = useMidiControls();
 
 onMounted(async () => { void init(); });
@@ -130,6 +147,81 @@ const { values, setValue } = useControlValues(selectedDevice);
 function onValue(ctrl: AnyControl, v: number) {
   setValue(ctrl.id, v);
   sendControlChange(ctrl.cc, v);
+}
+
+// --- Export / Import configuration (JSON fichier) ---
+const fileInputEl = ref<HTMLInputElement | null>(null);
+const fileInput = computed(() => fileInputEl.value as HTMLInputElement | null);
+
+function snapshotValues(): Record<string, number> {
+  const snap: Record<string, number> = {};
+  for (const [k, val] of Object.entries(values)) snap[k] = val as number;
+  return snap;
+}
+
+function exportConfig(): void {
+  const device = selectedDevice.value;
+  if (!device) {
+    window.alert('Aucune pédale sélectionnée.');
+    return;
+  }
+  const payload = {
+    $schema: 'mako-editor:preset',
+    version: 1,
+    device,
+    channel: channel.value,
+    values: snapshotValues(),
+    exportedAt: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  a.download = `${device || 'preset'}-mako-config-${date}.json`;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 0);
+}
+
+function isRecord(v: unknown): v is Record<string, unknown> { return !!v && typeof v === 'object' && !Array.isArray(v); }
+
+async function onImportFile(ev: Event) {
+  const input = ev.target as HTMLInputElement;
+  const file = input.files?.[0];
+  try {
+    if (!file) return;
+    const text = await file.text();
+    const data = JSON.parse(text) as unknown;
+    if (!isRecord(data)) throw new Error('Fichier JSON invalide.');
+    const device = typeof data.device === 'string' ? data.device : '';
+    const vals = (isRecord(data.values) ? data.values : null) as Record<string, unknown> | null;
+    const importedChannel = typeof (data as any).channel === 'number' ? (data as any).channel : undefined;
+    if (!device || !vals) throw new Error('Format de configuration non reconnu.');
+
+    // Si la pédale existe dans la liste, la sélectionner
+    const exists = pedalOptions.some(p => p.value === device);
+    if (exists) selectedDevice.value = device;
+    else {
+      // autoriser quand même l import mais prévenir
+      console.warn('Pédale inconnue dans les options:', device);
+    }
+
+    if (importedChannel != null) setChannel(importedChannel);
+
+    // Appliquer les valeurs importées (ne pas envoyer de CC ici)
+    const allowedIds = new Set((selectedConfig.value?.controls ?? []).map(c => c.id));
+    for (const [k, v] of Object.entries(vals)) {
+      if (!allowedIds.size || allowedIds.has(k)) {
+        const num = typeof v === 'number' ? v : Number(v);
+        if (!Number.isNaN(num)) setValue(k, num);
+      }
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    window.alert(`Échec du chargement: ${msg}`);
+  } finally {
+    // reset input pour permettre de re-sélectionner le même fichier
+    if (input) input.value = '';
+  }
 }
 </script>
 

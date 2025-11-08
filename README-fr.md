@@ -52,6 +52,30 @@ Notes:
 - Le navigateur doit exposer l’API Web MIDI et être servi en HTTPS/localhost.
 - Les valeurs des contrôles sont persistées par appareil (localStorage).
 
+## Sauvegarde et chargement
+
+- Bouton « Sauvegarder (fichier) »: exporte un fichier JSON contenant la pédale sélectionnée, le canal courant et toutes les valeurs des contrôles.
+- Bouton « Charger (fichier) »: importe un fichier JSON précédemment exporté et applique les valeurs (sans envoyer de messages MIDI).
+
+Format JSON attendu (exemple):
+
+```json
+{
+  "$schema": "mako-editor:preset",
+  "version": 1,
+  "device": "D1",
+  "channel": 1,
+  "values": { "mix": 64, "bypass": 127 },
+  "exportedAt": "2025-01-01T12:00:00.000Z"
+}
+```
+
+Remarques:
+- À l’import, si `device` existe dans la liste, l’app sélectionne automatiquement cette pédale.
+- Si `channel` est présent, il est appliqué au store; sinon, le canal courant est conservé.
+- Les `values` importées sont appliquées uniquement aux identifiants de contrôles connus par la configuration sélectionnée.
+- L’import ne déclenche pas d’envoi CC; les changements mettent à jour l’état UI et la persistance locale.
+
 ## Appareils pris en charge
 
 Des fichiers JSON décrivent les paramètres MIDI de chaque pédale:
