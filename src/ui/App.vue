@@ -1,58 +1,61 @@
 <template>
   <div class="container">
-    <header class="header">
+    <header class="header" role="banner">
       <h1>Mako MIDI Editor</h1>
       <p class="subtitle">simple MIDI editor for Walrus Audio Mako series</p>
     </header>
 
-    <section class="card">
-      <div class="form-row">
-        <DeviceSelect />
-      </div>
-      <div class="form-row">
-        <ChannelPicker />
-      </div>
-      <div class="form-row">
-        <div>
-          <label class="label" for="pedal-config">Configuration</label>
-          <select id="pedal-config" v-model="selectedDevice">
-            <option v-for="p in pedalOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
-          </select>
+    <main id="main" role="main" aria-describedby="status">
+      <section class="card">
+        <div class="form-row">
+          <DeviceSelect />
         </div>
-      </div>
-    </section>
-
-    <section class="card grid">
-      <PcSender />
-    </section>
-
-    <section class="card" :style="controlsCardStyle">
-      <h2>Controls</h2>
-      <p v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
-      <template v-else>
-        <p v-if="!isOutputReady" aria-live="polite">Aucune sortie MIDI disponible — les contrôles sont désactivés.</p>
-        <div class="controls-grid">
-          <ControlRenderer
-            v-for="c in visibleControls"
-            :key="c.id"
-            :control="c as any"
-            :value="values[c.id]"
-            :disabled="!isOutputReady"
-            @update:value="(v: number) => onValue(c as AnyControl, v)"
-          />
+        <div class="form-row">
+          <ChannelPicker />
         </div>
-      </template>
-    </section>
+        <div class="form-row">
+          <div>
+            <label class="label" for="pedal-config">Configuration</label>
+            <select id="pedal-config" v-model="selectedDevice">
+              <option v-for="p in pedalOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
+            </select>
+          </div>
+        </div>
+      </section>
 
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <section class="card grid">
+        <PcSender />
+      </section>
 
-    <footer class="footer">
+      <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
+        <h2 id="controls-heading">Controls</h2>
+        <p id="status" v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
+        <template v-else>
+          <p v-if="!isOutputReady" aria-live="polite">Aucune sortie MIDI disponible — les contrôles sont désactivés.</p>
+          <div class="controls-grid">
+            <ControlRenderer
+              v-for="c in visibleControls"
+              :key="c.id"
+              :control="c as any"
+              :value="values[c.id]"
+              :disabled="!isOutputReady"
+              @update:value="(v: number) => onValue(c as AnyControl, v)"
+            />
+          </div>
+        </template>
+      </section>
+
+      <p v-if="errorMessage" class="error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
+    </main>
+
+    <footer class="footer" role="contentinfo">
       <small>
         Web MIDI requires a secure context (HTTPS or localhost).<br />
         This app is installable (PWA) - add it to your home screen.
       </small>
     </footer>
   </div>
+  
 </template>
 
 <script setup lang="ts">
@@ -131,47 +134,16 @@ function onValue(ctrl: AnyControl, v: number) {
 </script>
 
 <style scoped>
-.container {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 1rem;
-}
 .header {
   margin-bottom: 1rem;
 }
 .subtitle {
-  color: #666;
   margin: 0.25rem 0 0;
-}
-.card {
-  background: #fff;
-  border: 1px solid #e6e6e6;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
 }
 .form-row {
   margin-bottom: 0.75rem;
 }
-.label {
-  display: block;
-  margin-bottom: 0.25rem;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-}
-.controls-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.75rem;
-}
-.error {
-  color: #b00020;
-}
 .footer {
   margin-top: 2rem;
-  color: #666;
 }
 </style>
