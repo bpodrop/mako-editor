@@ -1,44 +1,20 @@
 <template>
   <div class="container">
     <header class="header" role="banner">
-      <h1>Mako MIDI Editor</h1>
-      <p class="subtitle">simple MIDI editor for Walrus Audio Mako series</p>
+      <div>
+        <h1>Mako MIDI Editor</h1>
+        <p class="subtitle">simple MIDI editor for Walrus Audio Mako series</p>
+      </div>
+      <BurgerMenu
+        :pedal-options="pedalOptions"
+        v-model:selectedDevice="selectedDevice"
+        @export-config="exportConfig"
+        @import-file="onImportFile"
+      />
     </header>
 
     <main id="main" role="main" aria-describedby="status">
-      <section class="card">
-        <div class="form-row">
-          <DeviceSelect />
-        </div>
-        <div class="form-row">
-          <ChannelPicker />
-        </div>
-        <div class="form-row">
-          <div>
-            <label class="label" for="pedal-config">Configuration</label>
-            <select id="pedal-config" v-model="selectedDevice">
-              <option v-for="p in pedalOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="row">
-            <button class="btn" type="button" @click="exportConfig" title="Sauvegarder la configuration courante en fichier JSON">
-              Sauvegarder (fichier)
-            </button>
-            <button type="button" @click="() => fileInput?.click()" title="Charger une configuration depuis un fichier JSON">
-              Charger (fichier)
-            </button>
-            <input
-              ref="fileInputEl"
-              type="file"
-              accept="application/json,.json"
-              style="display:none"
-              @change="onImportFile"
-            />
-          </div>
-        </div>
-      </section>
+      
 
       <section class="card grid">
         <PcSender />
@@ -79,10 +55,9 @@
 import { onMounted, computed, ref, watch } from 'vue';
 import { useMidi } from './composables/useMidiStore';
 import { useMidiControls } from '../application/use-midi-controls';
-import DeviceSelect from './components/DeviceSelect.vue';
-import ChannelPicker from './components/ChannelPicker.vue';
 import PcSender from './components/PcSender.vue';
 import CcSender from './components/CcSender.vue';
+import BurgerMenu from './components/BurgerMenu.vue';
 import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
 import { ControlRenderer } from '../features/pedal-controls';
@@ -142,6 +117,11 @@ watch(selectedConfig, (cfg) => {
   if (cfg?.midi?.channel) setChannel(cfg.midi.channel);
 }, { immediate: true });
 
+// Persister la pédale sélectionnée
+watch(selectedDevice, (dev) => {
+  try { localStorage.setItem('pedal-selected', dev ?? ''); } catch {}
+});
+
 // Control values (persisted per device)
 const { values, setValue } = useControlValues(selectedDevice);
 function onValue(ctrl: AnyControl, v: number) {
@@ -150,9 +130,6 @@ function onValue(ctrl: AnyControl, v: number) {
 }
 
 // --- Export / Import configuration (JSON fichier) ---
-const fileInputEl = ref<HTMLInputElement | null>(null);
-const fileInput = computed(() => fileInputEl.value as HTMLInputElement | null);
-
 function snapshotValues(): Record<string, number> {
   const snap: Record<string, number> = {};
   for (const [k, val] of Object.entries(values)) snap[k] = val as number;
@@ -228,6 +205,9 @@ async function onImportFile(ev: Event) {
 <style scoped>
 .header {
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .subtitle {
   margin: 0.25rem 0 0;
