@@ -128,6 +128,8 @@ function onKeydown(e: KeyboardEvent) {
 function onChangeDevice(e: Event) {
   const value = (e.target as HTMLSelectElement).value;
   emit('update:selectedDevice', value);
+  // Auto-close the menu when a pedal is selected
+  close();
 }
 
 function resetFileInput() {

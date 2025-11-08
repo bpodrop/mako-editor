@@ -17,7 +17,7 @@
       
 
       <section class="card grid">
-        <PcSender />
+        <PcSender :pedal-name="selectedDevice" />
       </section>
 
       <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
