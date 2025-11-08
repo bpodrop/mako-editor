@@ -39,7 +39,6 @@
     >
       <header class="drawer-header">
         <h2 id="drawer-title" class="drawer-title">Menu</h2>
-        <button class="close-btn" type="button" aria-label="Fermer" @click="close">×</button>
       </header>
 
       <div class="drawer-content">
@@ -181,17 +180,11 @@ onBeforeUnmount(() => {
 .drawer-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: .75rem 1rem;
   border-bottom: 1px solid var(--border);
 }
 .drawer-title { margin: 0; font-size: 1.1rem; }
-.close-btn {
-  width: 32px; height: 32px; border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  cursor: pointer;
-}
 .drawer-content { padding: 1rem; overflow: auto; }
 .drawer-section { margin-bottom: 1rem; }
 .row { display: flex; gap: .5rem; align-items: center; }
