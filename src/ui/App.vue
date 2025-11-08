@@ -21,7 +21,10 @@
       </section>
 
       <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
-        <h2 id="controls-heading">Controls</h2>
+        <div class="controls-header">
+          <h2 id="controls-heading">Controls</h2>
+          <button class="btn" type="button" :disabled="!isOutputReady" @click="sendAll">Envoyer tout</button>
+        </div>
         <p id="status" v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
         <template v-else>
           <p v-if="!isOutputReady" aria-live="polite">Aucune sortie MIDI disponible — les contrôles sont désactivés.</p>
@@ -41,10 +44,9 @@
       <p v-if="errorMessage" class="error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
     </main>
 
-    <footer class="footer" role="contentinfo">
-      <small>
-        Web MIDI requires a secure context (HTTPS or localhost).<br />
-        This app is installable (PWA) - add it to your home screen.
+    <footer class="footer">
+      <small class="copyright">
+        © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
       </small>
     </footer>
   </div>
@@ -64,9 +66,16 @@ import { ControlRenderer } from '../features/pedal-controls';
 import { getVisibleControls } from '../config/visibility';
 import { useControlValues } from '../composables/useControlValues';
 import type { AnyControl } from '../core/entities/controls';
+import pkg from '../../package.json';
 
 const { init, errorMessage, isOutputReady, setChannel, channel } = useMidi();
 const { sendControlChange } = useMidiControls();
+
+// Footer info
+const currentYear = new Date().getFullYear();
+const appVersion = `V${pkg?.version ?? '0.0.0'}`;
+
+
 
 onMounted(async () => { void init(); });
 
@@ -127,6 +136,23 @@ const { values, setValue } = useControlValues(selectedDevice);
 function onValue(ctrl: AnyControl, v: number) {
   setValue(ctrl.id, v);
   sendControlChange(ctrl.cc, v);
+}
+
+// Envoi de tous les contrôles visibles avec leurs valeurs courantes
+async function sendAll() {
+  if (!isOutputReady.value) {
+    window.alert('Aucune sortie MIDI sélectionnée.');
+    return;
+  }
+  const controls = visibleControls.value ?? [];
+  for (const c of controls) {
+    const raw = (values as any)[c.id];
+    const v = typeof raw === 'number' ? raw : Number(raw);
+    if (!Number.isNaN(v)) {
+      sendControlChange(c.cc, v);
+      await new Promise((r) => setTimeout(r, 5));
+    }
+  }
 }
 
 // --- Export / Import configuration (JSON fichier) ---
@@ -212,10 +238,13 @@ async function onImportFile(ev: Event) {
 .subtitle {
   margin: 0.25rem 0 0;
 }
+.controls-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
 .form-row {
   margin-bottom: 0.75rem;
 }
 .footer {
   margin-top: 2rem;
+  text-align: center;
 }
+.footer small { display: block; }
 </style>

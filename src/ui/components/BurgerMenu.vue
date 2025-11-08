@@ -74,6 +74,18 @@
             />
           </div>
         </section>
+
+        <section class="drawer-section drawer-meta" role="note" aria-label="Infos pratiques">
+          <div class="info-box">
+            <strong class="info-title">Infos 💡</strong>
+            <ul class="info-list">
+              <li>Cette application a besoin d'un accès au Web MIDI pour communiquer avec vos appareils.
+Autorisez l'accès lorsque votre navigateur le demande.</li>
+              <li>Application installable (PWA) - ajoutez-la à votre écran d'accueil pour l'utiliser aussi en mode hors ligne.
+</li>
+            </ul>
+          </div>
+        </section>
       </div>
     </aside>
   </div>
@@ -100,6 +112,8 @@ const emit = defineEmits<{
 const open = ref(false);
 const fileInputEl = ref<HTMLInputElement | null>(null);
 const fileInput = computed(() => fileInputEl.value as HTMLInputElement | null);
+
+const currentYear = new Date().getFullYear();
 
 function toggle() { open.value = !open.value; }
 function close() { open.value = false; }
@@ -187,6 +201,15 @@ onBeforeUnmount(() => {
 .drawer-title { margin: 0; font-size: 1.1rem; }
 .drawer-content { padding: 1rem; overflow: auto; }
 .drawer-section { margin-bottom: 1rem; }
+.drawer-meta .info-box {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: .75rem .9rem;
+}
+.drawer-meta .info-title { display: block; font-size: .95rem; margin-bottom: .4rem; }
+.drawer-meta .info-list { margin: 0; padding-left: 1rem; font-size: .9rem; color: var(--muted); }
+.drawer-meta .info-list li { margin: .2rem 0; }
 .row { display: flex; gap: .5rem; align-items: center; }
 .label { display: block; margin-bottom: .25rem; }
 select { width: 100%; }

@@ -12,7 +12,7 @@
         step="1"
         v-model.number="program"
       />
-      <button class="btn" type="button" :disabled="disabled" @click="send">Send PC</button>
+      <button class="btn" type="button" :disabled="disabled" @click="send">Selectionner</button>
     </div>
   </div>
 </template>
