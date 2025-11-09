@@ -11,11 +11,6 @@
         :step="1"
         :value="current"
         :disabled="disabled"
-        :aria-label="control.label"
-        role="slider"
-        :aria-valuemin="control.min"
-        :aria-valuemax="control.max"
-        :aria-valuenow="current"
         @input="onInput"
       />
       <output :for="id" class="val" aria-live="polite">{{ current }}</output>

@@ -1,4 +1,6 @@
-# MIDI Controller (PWA)
+# Mako MIDI Editor (PWA)
+
+Current version: V0.1.0-beta
 
 Web MIDI application built with Vue 3 to control Walrus Audio Mako pedals (D1, M1, R1) using Program Change (PC) and Control Change (CC). The UI auto-generates controls from JSON configuration files and ships as a PWA (installable, basic offline capability).
 
@@ -51,6 +53,30 @@ npm run preview
 Notes:
 - The browser must expose the Web MIDI API and be served over HTTPS/localhost.
 - Control values persist per device via localStorage.
+
+## Save / Load
+
+- “Save (file)” exports a JSON file with the selected device, current MIDI channel, and all control values.
+- “Load (file)” imports a previously exported JSON and applies values (no MIDI is sent during import).
+
+Expected JSON shape (example):
+
+```json
+{
+  "$schema": "mako-editor:preset",
+  "version": 1,
+  "device": "D1",
+  "channel": 1,
+  "values": { "mix": 64, "bypass": 127 },
+  "exportedAt": "2025-01-01T12:00:00.000Z"
+}
+```
+
+Notes:
+- On import, if `device` matches a known option, the app selects it automatically.
+- If `channel` is present, it is applied; otherwise the current channel is kept.
+- Only control IDs known by the selected configuration are applied.
+- Import updates UI state and local persistence without sending CC messages.
 
 ## Supported Devices
 
