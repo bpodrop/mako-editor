@@ -153,5 +153,9 @@ Le pattern suit une séparation « UI / Application / Domaine / Infrastructure �
 
 ## Licence
 
-Aucune licence spécifiée dans ce dépôt. Ajoutez un fichier `LICENSE` si nécessaire.
+Ce projet est distribué sous la licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## Avertissement
+
+Walrus Audio et les noms de pédales cités (D1, M1, R1, etc.) sont des marques déposées et/ou des œuvres protégées appartenant à leurs détenteurs respectifs. Ce projet est indépendant, non affilié, non approuvé et non sponsorisé par Walrus Audio. Ces marques et noms n’ont aucun lien avec l’auteur de ce projet.
 

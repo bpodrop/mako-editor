@@ -48,6 +48,9 @@
       <small class="copyright">
         © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
       </small>
+      <small class="disclaimer" role="note">
+        Walrus Audio et les noms de pédales cités sont des marques de leurs propriétaires. Projet indépendant, sans affiliation ni approbation. Aucun lien avec l’auteur.
+      </small>
     </footer>
   </div>
   
@@ -247,4 +250,5 @@ async function onImportFile(ev: Event) {
   text-align: center;
 }
 .footer small { display: block; }
+.footer .disclaimer { color: var(--muted); margin-top: .25rem; }
 </style>
