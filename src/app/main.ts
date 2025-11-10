@@ -5,6 +5,7 @@ import { registerSW } from 'virtual:pwa-register';
 import { WebMidiGateway } from '../adapters/infrastructure/midi/web-midi.gateway';
 import { createMidiStore, MidiStoreSymbol } from '../ui/composables/useMidiStore';
 import pkg from '../../package.json';
+import { router } from './router';
 
 // Register PWA (service worker) via vite-plugin-pwa
 registerSW({ immediate: true });
@@ -15,6 +16,7 @@ const app = createApp(App);
 const gateway = new WebMidiGateway();
 const midiStore = createMidiStore(gateway);
 app.provide(MidiStoreSymbol, midiStore);
+app.use(router);
 
 // Set document title with version from package.json
 try {
