@@ -1,6 +1,6 @@
 # Mako MIDI Editor (PWA)
 
-Current version: V0.1.0-beta
+Current version: V0.1.2-beta
 
 Web MIDI application built with Vue 3 to control Walrus Audio Mako pedals (D1, M1, R1) using Program Change (PC) and Control Change (CC). The UI auto-generates controls from JSON configuration files and ships as a PWA (installable, basic offline capability).
 
