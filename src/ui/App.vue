@@ -16,10 +16,6 @@
     <main id="main" role="main" aria-describedby="status">
       
 
-      <section class="card grid">
-        <PcSender :pedal-name="selectedDevice" />
-      </section>
-
       <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
         <div class="controls-header">
           <h2 id="controls-heading">Controls</h2>
@@ -60,8 +56,6 @@
 import { onMounted, computed, ref, watch } from 'vue';
 import { useMidi } from './composables/useMidiStore';
 import { useMidiControls } from '../application/use-midi-controls';
-import PcSender from './components/PcSender.vue';
-import CcSender from './components/CcSender.vue';
 import BurgerMenu from './components/BurgerMenu.vue';
 import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
