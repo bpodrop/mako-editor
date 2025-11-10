@@ -55,6 +55,6 @@ function onChange() {
 <style scoped>
 .ctrl { display: flex; flex-direction: column; gap: .5rem; }
 .label { font-weight: 500; }
-.select { max-width: 100%; }
+.select { max-width: 100%; background: var(--secondary-surface, var(--surface)); }
 </style>
 

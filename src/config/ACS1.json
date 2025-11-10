@@ -1,6 +1,7 @@
 {
   "device": "Mako ACS1 MK1",
   "backgroundColor": "#C4933A",
+  "secondaryBgColor": "#D9B46A",
   "textColor":"#1C1C1C",
   "schemaVersion": 1,
   "midi": {

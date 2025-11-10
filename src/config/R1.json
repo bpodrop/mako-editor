@@ -1,6 +1,7 @@
 {
   "device": "Mako R1 MK1",
   "backgroundColor": "#121212",
+  "secondaryBgColor": "#2A2A2A",
   "textColor":"#C9A86A",
   "schemaVersion": 1,
   "midi": {

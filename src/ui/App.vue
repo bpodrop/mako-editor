@@ -118,9 +118,11 @@ const controlsCardStyle = computed(() => {
   const cfg = selectedConfig.value;
   const bg = cfg?.backgroundColor ?? cfg?.color;
   const fg = cfg?.textColor ?? (bg ? contrastTextFor(bg) : undefined);
+  const secondary = cfg?.secondaryBgColor;
   const style: Record<string, string> = {};
   if (bg) style.backgroundColor = bg;
   if (fg) style.color = fg;
+  if (secondary) style['--secondary-surface'] = secondary;
   return style;
 });
 
