@@ -45,10 +45,6 @@
       <small class="copyright">
         © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
       </small>
-      <small class="disclaimer" role="note">
-        Projet indépendant, sans affiliation ni approbation de Walrus Audio. Les marques citées appartiennent à leurs propriétaires.
-        Application fournie sans garantie et sans responsabilité du développeur.
-      </small>
       <button class="link-btn legal-link" type="button" @click="navigateLegal">
         Mentions légales
       </button>
