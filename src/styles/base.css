@@ -74,6 +74,23 @@ button.btn {
 }
 button.btn:hover:not(:disabled) { filter: brightness(0.97); }
 button.btn:active:not(:disabled) { transform: translateY(1px); }
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+}
+.link-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+.link-btn:hover:not(:disabled) {
+  color: var(--primary);
+  opacity: .85;
+}
 
 /* Containers */
 .container { max-width: 880px; margin: 0 auto; padding: 1rem; }

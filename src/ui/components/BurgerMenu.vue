@@ -90,6 +90,12 @@ Autorisez l'accès lorsque votre navigateur le demande.</li>
             </ul>
           </div>
         </section>
+
+        <section class="drawer-section">
+          <button class="link-btn" type="button" @click="openLegal">
+            Mentions légales
+          </button>
+        </section>
       </div>
     </aside>
   </div>
@@ -112,13 +118,12 @@ const emit = defineEmits<{
   (e: 'update:selectedDevice', value: string): void;
   (e: 'export-config'): void;
   (e: 'import-file', ev: Event): void;
+  (e: 'open-legal'): void;
 }>();
 
 const open = ref(false);
 const fileInputEl = ref<HTMLInputElement | null>(null);
 const fileInput = computed(() => fileInputEl.value as HTMLInputElement | null);
-
-const currentYear = new Date().getFullYear();
 
 function toggle() { open.value = !open.value; }
 function close() { open.value = false; }
@@ -140,6 +145,11 @@ function onChangeDevice(e: Event) {
 function resetFileInput() {
   const el = fileInput.value;
   if (el) el.value = '';
+}
+
+function openLegal() {
+  emit('open-legal');
+  close();
 }
 
 onMounted(() => {
