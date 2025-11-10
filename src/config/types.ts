@@ -5,6 +5,7 @@ export type PedalConfig = {
   device: string;
   color?: string;
   backgroundColor?: string;
+  secondaryBgColor?: string;
   textColor?: string;
   schemaVersion: number;
   midi: unknown;

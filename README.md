@@ -153,5 +153,9 @@ The project follows a UI / Application / Domain / Infrastructure split to make t
 
 ## License
 
-No license specified in this repository. Add a `LICENSE` file if needed.
+This project is licensed under the MIT License. See `LICENSE` for details.
+
+## Disclaimer
+
+Walrus Audio and the pedal names mentioned (D1, M1, R1, etc.) are trademarks and/or copyrighted works of their respective owners. This project is independent and is not affiliated with, endorsed by, or sponsored by Walrus Audio. These marks and names have no association with the author of this project.
 

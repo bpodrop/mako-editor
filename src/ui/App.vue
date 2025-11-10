@@ -16,10 +16,6 @@
     <main id="main" role="main" aria-describedby="status">
       
 
-      <section class="card grid">
-        <PcSender :pedal-name="selectedDevice" />
-      </section>
-
       <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
         <div class="controls-header">
           <h2 id="controls-heading">Controls</h2>
@@ -48,6 +44,9 @@
       <small class="copyright">
         © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
       </small>
+      <small class="disclaimer" role="note">
+        Walrus Audio et les noms de pédales cités sont des marques de leurs propriétaires. Projet indépendant, sans affiliation ni approbation. Aucun lien avec l’auteur.
+      </small>
     </footer>
   </div>
   
@@ -57,8 +56,6 @@
 import { onMounted, computed, ref, watch } from 'vue';
 import { useMidi } from './composables/useMidiStore';
 import { useMidiControls } from '../application/use-midi-controls';
-import PcSender from './components/PcSender.vue';
-import CcSender from './components/CcSender.vue';
 import BurgerMenu from './components/BurgerMenu.vue';
 import { listPedals, getPedalByDevice } from '../config/pedalConfig';
 import type { PedalConfig } from '../config/types';
@@ -115,18 +112,20 @@ const controlsCardStyle = computed(() => {
   const cfg = selectedConfig.value;
   const bg = cfg?.backgroundColor ?? cfg?.color;
   const fg = cfg?.textColor ?? (bg ? contrastTextFor(bg) : undefined);
+  const secondary = cfg?.secondaryBgColor;
   const style: Record<string, string> = {};
   if (bg) style.backgroundColor = bg;
   if (fg) style.color = fg;
+  if (secondary) style['--secondary-surface'] = secondary;
   return style;
 });
 
-// Appliquer le canal par défaut de la config au store
+// Apply the config default channel to the store
 watch(selectedConfig, (cfg) => {
   if (cfg?.midi?.channel) setChannel(cfg.midi.channel);
 }, { immediate: true });
 
-// Persister la pédale sélectionnée
+// Persist the selected pedal
 watch(selectedDevice, (dev) => {
   try { localStorage.setItem('pedal-selected', dev ?? ''); } catch {}
 });
@@ -138,7 +137,7 @@ function onValue(ctrl: AnyControl, v: number) {
   sendControlChange(ctrl.cc, v);
 }
 
-// Envoi de tous les contrôles visibles avec leurs valeurs courantes
+// Send all visible controls with their current values
 async function sendAll() {
   if (!isOutputReady.value) {
     window.alert('Aucune sortie MIDI sélectionnée.');
@@ -155,7 +154,7 @@ async function sendAll() {
   }
 }
 
-// --- Export / Import configuration (JSON fichier) ---
+// --- Export / Import configuration (JSON file) ---
 function snapshotValues(): Record<string, number> {
   const snap: Record<string, number> = {};
   for (const [k, val] of Object.entries(values)) snap[k] = val as number;
@@ -200,17 +199,17 @@ async function onImportFile(ev: Event) {
     const importedChannel = typeof (data as any).channel === 'number' ? (data as any).channel : undefined;
     if (!device || !vals) throw new Error('Format de configuration non reconnu.');
 
-    // Si la pédale existe dans la liste, la sélectionner
+    // If the pedal exists in the list, select it
     const exists = pedalOptions.some(p => p.value === device);
     if (exists) selectedDevice.value = device;
     else {
-      // autoriser quand même l import mais prévenir
+      // Allow the import anyway but warn
       console.warn('Pédale inconnue dans les options:', device);
     }
 
     if (importedChannel != null) setChannel(importedChannel);
 
-    // Appliquer les valeurs importées (ne pas envoyer de CC ici)
+    // Apply the imported values (do not send CC here)
     const allowedIds = new Set((selectedConfig.value?.controls ?? []).map(c => c.id));
     for (const [k, v] of Object.entries(vals)) {
       if (!allowedIds.size || allowedIds.has(k)) {
@@ -222,7 +221,7 @@ async function onImportFile(ev: Event) {
     const msg = e instanceof Error ? e.message : String(e);
     window.alert(`Échec du chargement: ${msg}`);
   } finally {
-    // reset input pour permettre de re-sélectionner le même fichier
+    // Reset input to allow re-selecting the same file
     if (input) input.value = '';
   }
 }
@@ -247,4 +246,5 @@ async function onImportFile(ev: Event) {
   text-align: center;
 }
 .footer small { display: block; }
+.footer .disclaimer { color: var(--muted); margin-top: .25rem; }
 </style>

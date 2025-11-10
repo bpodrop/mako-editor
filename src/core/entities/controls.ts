@@ -27,13 +27,13 @@ export interface ZoneEnumControl extends BaseControl {
 export interface ToggleControl extends BaseControl {
   type: 'toggle';
   on: number; off: number;
-  // certains JSON peuvent avoir des clés custom p.ex. slow/fast
+  // some JSON may have custom keys e.g. slow/fast
   [k: string]: unknown;
 }
 
 export interface MomentaryControl extends BaseControl {
   type: 'momentary';
-  value: number; // valeur impulsion
+  value: number; // pulse value
 }
 
 export type AnyControl =

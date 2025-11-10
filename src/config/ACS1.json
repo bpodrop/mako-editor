@@ -1,0 +1,76 @@
+{
+  "device": "Mako ACS1 MK1",
+  "backgroundColor": "#C4933A",
+  "secondaryBgColor": "#D9B46A",
+  "textColor":"#1C1C1C",
+  "schemaVersion": 1,
+  "midi": {
+    "channel": 1,
+    "pc": {
+      "range": [0, 127],
+      "banks": [
+        { "bank": "A", "presets": { "red": 0, "green": 1, "blue": 2 } },
+        { "bank": "MIDI", "presets": { "extended": [3, 127] } }
+      ]
+    }
+  },
+  "controls": [
+    { "id": "bass", "label": "Bass", "cc": 3, "type": "range", "min": 0, "max": 127 },
+    { "id": "mid", "label": "Mid", "cc": 14, "type": "range", "min": 0, "max": 127 },
+    { "id": "treble", "label": "Treble", "cc": 15, "type": "range", "min": 0, "max": 127 },
+    { "id": "volume", "label": "Volume", "cc": 20, "type": "range", "min": 0, "max": 127 },
+    { "id": "gain", "label": "Gain", "cc": 21, "type": "range", "min": 0, "max": 127 },
+    { "id": "room", "label": "Room", "cc": 22, "type": "range", "min": 0, "max": 127 },
+
+    {
+      "id": "cabSwitch",
+      "label": "Cab Switch",
+      "cc": 27,
+      "type": "zoneEnum",
+      "zones": [
+        { "name": "Front A (Deluxe / SM57)", "min": 0, "max": 20 },
+        { "name": "Front B (Bluesbreaker / SM57)", "min": 22, "max": 42 },
+        { "name": "Front C (AC30 / SM57)", "min": 44, "max": 64 },
+        { "name": "Back A (Deluxe / R121)", "min": 66, "max": 86 },
+        { "name": "Back B (Bluesbreaker / R121)", "min": 88, "max": 108 },
+        { "name": "Back C (AC30 / R121)", "min": 110, "max": 127 }
+      ]
+    },
+
+    {
+      "id": "lrSwitch",
+      "label": "L + R Switch",
+      "cc": 28,
+      "type": "zoneEnum",
+      "zones": [
+        { "name": "Left", "min": 0, "max": 42 },
+        { "name": "Both (L+R)", "min": 43, "max": 85 },
+        { "name": "Right", "min": 86, "max": 127 }
+      ]
+    },
+
+    {
+      "id": "ampSwitch",
+      "label": "Amp Select",
+      "cc": 29,
+      "type": "zoneEnum",
+      "zones": [
+        { "name": "Fullerton (Fender Deluxe)", "min": 0, "max": 42 },
+        { "name": "London (Marshall Bluesbreaker)", "min": 43, "max": 85 },
+        { "name": "Dartford (Vox AC30)", "min": 86, "max": 127 }
+      ]
+    },
+
+    { "id": "bypass", "label": "Bypass", "cc": 30, "type": "toggle", "off": 0, "on": 127 },
+    { "id": "boost", "label": "Boost", "cc": 31, "type": "toggle", "off": 0, "on": 127 }
+  ],
+  "notes": [
+    "Amp models: Fullerton (Fender Deluxe Reverb), London (Marshall Bluesbreaker), Dartford (Vox AC30).",
+    "6 cabinet IRs — 3 front (SM57) + 3 back (Royer 121).",
+    "L+R switch (CC28): configure independent left/right amp setups.",
+    "Boost adds up to +4dB with stored per-preset gain/volume settings.",
+    "128 presets accessible via Program Change 0–127. Red/Green/Blue = onboard; 3–127 via MIDI.",
+    "Global HPF/LPF adjustable via Bass/Treble while holding Bypass.",
+    "IR block can be disabled via Bypass hold + Mid knob (below noon = off)."
+  ]
+}

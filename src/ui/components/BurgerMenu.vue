@@ -58,6 +58,10 @@
         </section>
 
         <section class="drawer-section">
+          <PcSender :pedal-name="selectedDevice" />
+        </section>
+
+        <section class="drawer-section">
           <div class="row">
             <button class="btn" type="button" @click="$emit('export-config')" title="Sauvegarder la configuration courante en fichier JSON">
               Sauvegarder (fichier)
@@ -95,6 +99,7 @@ Autorisez l'accès lorsque votre navigateur le demande.</li>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import DeviceSelect from './DeviceSelect.vue';
 import ChannelPicker from './ChannelPicker.vue';
+import PcSender from './PcSender.vue';
 
 type Option = { label: string; value: string };
 
