@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label class="label" for="midi-channel">MIDI Channel</label>
+    <label class="label" for="midi-channel">{{ t('channel.label') }}</label>
     <select
       id="midi-channel"
       class="select"
@@ -14,11 +14,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMidi } from '../../ui/composables/useMidiStore';
 
 const midi = useMidi();
 const channels = Array.from({ length: 16 }, (_, i) => i + 1);
 const channel = computed(() => midi.channel.value);
+const { t } = useI18n();
 
 function onChange(e: Event) {
   const value = Number((e.target as HTMLSelectElement).value);

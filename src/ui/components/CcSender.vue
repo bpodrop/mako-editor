@@ -1,9 +1,9 @@
 <template>
   <div class="panel">
-    <h2>Control Change</h2>
+    <h2>{{ t('ccSender.title') }}</h2>
     <div class="grid">
       <div>
-        <label class="label" for="cc-controller">Controller (0-127)</label>
+        <label class="label" for="cc-controller">{{ t('ccSender.controller') }}</label>
         <input
           id="cc-controller"
           class="input"
@@ -15,7 +15,7 @@
         />
       </div>
       <div>
-        <label class="label" for="cc-value">Value (0-127)</label>
+        <label class="label" for="cc-value">{{ t('ccSender.value') }}</label>
         <div class="row">
           <input
             id="cc-value"
@@ -37,13 +37,14 @@
       </div>
     </div>
     <div class="actions">
-      <button class="btn" type="button" :disabled="disabled" @click="send">Send CC</button>
+      <button class="btn" type="button" :disabled="disabled" @click="send">{{ t('ccSender.send') }}</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMidi } from '../../ui/composables/useMidiStore';
 import { useMidiControls } from '../../application/use-midi-controls';
 
@@ -52,6 +53,7 @@ const { sendControlChange } = useMidiControls();
 const controller = ref<number>(0);
 const value = ref<number>(0);
 const disabled = computed(() => !isOutputReady.value);
+const { t } = useI18n();
 
 function send() { sendControlChange(controller.value, value.value); }
 </script>

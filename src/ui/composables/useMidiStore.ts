@@ -2,6 +2,7 @@ import { computed, ref, inject, type InjectionKey } from 'vue';
 import { MidiService } from '../../core/services/midi-service';
 import { asMidiChannel, type MidiChannel } from '../../core/entities/midi';
 import type { MidiGateway } from '../../core/ports/midi-gateway';
+import { i18n } from '../../app/i18n';
 
 export function createMidiStore(gateway: MidiGateway) {
   const service = new MidiService(gateway);
@@ -49,7 +50,7 @@ export function createMidiStore(gateway: MidiGateway) {
 
   function sendProgramChange(program: number): Error | null {
     if (!selectedOutput.value) {
-      const err = new Error('No MIDI output selected.');
+      const err = new Error(i18n.global.t('midi.noOutputSelected'));
       errorMessage.value = err.message;
       return err;
     }
@@ -65,7 +66,7 @@ export function createMidiStore(gateway: MidiGateway) {
 
   function sendControlChange(controller: number, value: number): Error | null {
     if (!selectedOutput.value) {
-      const err = new Error('No MIDI output selected.');
+      const err = new Error(i18n.global.t('midi.noOutputSelected'));
       errorMessage.value = err.message;
       return err;
     }

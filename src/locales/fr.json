@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Mako MIDI Editor",
+    "subtitle": "Éditeur MIDI simple pour la série Walrus Audio Mako",
+    "version": "V{version}"
+  },
+  "menu": {
+    "title": "Menu",
+    "open": "Ouvrir le menu",
+    "close": "Fermer le menu",
+    "pedal": "Pédale",
+    "export": "Sauvegarder (fichier)",
+    "import": "Charger (fichier)",
+    "legal": "Mentions légales",
+    "infoTitle": "Infos 💡",
+    "tipMidi": "Cette application a besoin d'un accès au Web MIDI pour communiquer avec vos appareils. Autorisez l'accès lorsque votre navigateur le demande.",
+    "tipPwa": "Application installable (PWA) - ajoutez-la à votre écran d'accueil pour l'utiliser aussi en mode hors ligne."
+  },
+  "controls": {
+    "heading": "Contrôles",
+    "sendAll": "Envoyer tout",
+    "selectConfig": "Sélectionnez une configuration pour afficher les contrôles.",
+    "noOutput": "Aucune sortie MIDI disponible — les contrôles sont désactivés.",
+    "noOutputAlert": "Aucune sortie MIDI sélectionnée.",
+    "noPedal": "Aucune pédale sélectionnée.",
+    "unknownPedal": "Pédale inconnue dans les options : {device}",
+    "invalidConfig": "Format de configuration non reconnu.",
+    "loadFailed": "Échec du chargement : {message}"
+  },
+  "device": {
+    "label": "Sortie MIDI",
+    "empty": "Aucune sortie disponible",
+    "unnamed": "Sortie sans nom",
+    "refresh": "Rafraîchir"
+  },
+  "channel": {
+    "label": "Canal MIDI"
+  },
+  "pcSender": {
+    "title": "Preset",
+    "label": "Preset",
+    "select": "Sélectionner",
+    "range": "0–127"
+  },
+  "ccSender": {
+    "title": "Control Change",
+    "controller": "Contrôleur (0-127)",
+    "value": "Valeur (0-127)",
+    "send": "Envoyer CC"
+  },
+  "footer": {
+    "legal": "Mentions légales",
+    "github": "Voir le projet sur GitHub"
+  },
+  "locale": {
+    "label": "Langue",
+    "english": "English",
+    "french": "Français"
+  },
+  "legal": {
+    "back": "← Retour à l'éditeur",
+    "title": "Légal",
+    "lead": "Mentions légales, clause de non-responsabilité et information sur la propriété intellectuelle.",
+    "disclaimerTitle": "Clause de non-responsabilité et respect de la propriété intellectuelle",
+    "disclaimer1": "Cette application est un projet indépendant développé sans aucun lien commercial, technique ou juridique avec Walrus Audio.",
+    "disclaimer2": "Toutes les marques, noms, visuels et produits mentionnés (y compris les pédales de la série Walrus Audio MAKO) sont la propriété exclusive de Walrus Audio. Ils sont cités uniquement à des fins d'identification et d'interopérabilité.",
+    "disclaimer3": "Le développeur de cette application ne revendique aucun droit sur ces éléments et ne représente pas Walrus Audio. Walrus Audio n'est pas responsable du contenu, du fonctionnement ou des conséquences de l'utilisation de cette application.",
+    "liabilityTitle": "Absence de garantie et limitation de responsabilité",
+    "liability1": "L'application est fournie « telle quelle », sans garantie expresse ou implicite, y compris toute garantie de bon fonctionnement, d'exactitude, de disponibilité, d'absence de défauts ou d'adéquation à un usage particulier.",
+    "liability2": "Vous utilisez l'application à vos propres risques. En aucune circonstance le développeur ne pourra être tenu responsable de pertes ou dommages de quelque nature que ce soit, directs ou indirects, résultant de l'utilisation ou de l'impossibilité d'utiliser l'application."
+  },
+  "midi": {
+    "noOutputSelected": "Aucune sortie MIDI sélectionnée."
+  }
+}

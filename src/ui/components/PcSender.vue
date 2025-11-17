@@ -1,12 +1,12 @@
 <template>
   <div class="pc">
     <div class="pc-header">
-      <h2 class="pc-title">Preset</h2>
+      <h2 class="pc-title">{{ t('pcSender.title') }}</h2>
       <span v-if="pedalName" class="pc-hint">{{ pedalName }}</span>
     </div>
 
     <div class="pc-row">
-      <label class="label" for="pc-program">Preset</label>
+      <label class="label" for="pc-program">{{ t('pcSender.label') }}</label>
       <input
         id="pc-program"
         class="pc-input"
@@ -17,14 +17,15 @@
         v-model.number="program"
         aria-describedby="pc-help"
       />
-      <button class="btn" type="button" :disabled="disabled" @click="send">Selectionner</button>
+      <button class="btn" type="button" :disabled="disabled" @click="send">{{ t('pcSender.select') }}</button>
     </div>
-    <small id="pc-help" class="pc-help">0–127</small>
+    <small id="pc-help" class="pc-help">{{ t('pcSender.range') }}</small>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMidi } from '../../ui/composables/useMidiStore';
 import { useMidiControls } from '../../application/use-midi-controls';
 
@@ -33,6 +34,7 @@ const { isOutputReady } = useMidi();
 const { sendProgramChange } = useMidiControls();
 const program = ref<number>(0);
 const disabled = computed(() => !isOutputReady.value);
+const { t } = useI18n();
 
 function send() { sendProgramChange(program.value); }
 </script>

@@ -2,8 +2,8 @@
   <div class="container">
     <header class="header" role="banner">
       <div>
-        <h1>Mako MIDI Editor</h1>
-        <p class="subtitle">simple MIDI editor for Walrus Audio Mako series</p>
+        <h1>{{ t('app.title') }}</h1>
+        <p class="subtitle">{{ t('app.subtitle') }}</p>
       </div>
       <BurgerMenu
         :pedal-options="pedalOptions"
@@ -19,12 +19,14 @@
 
       <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
         <div class="controls-header">
-          <h2 id="controls-heading">Controls</h2>
-          <button class="btn" type="button" :disabled="!isOutputReady" @click="sendAll">Envoyer tout</button>
+          <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
+          <button class="btn" type="button" :disabled="!isOutputReady" @click="sendAll">
+            {{ t('controls.sendAll') }}
+          </button>
         </div>
-        <p id="status" v-if="!selectedConfig">Sélectionnez une configuration pour afficher les contrôles.</p>
+        <p id="status" v-if="!selectedConfig">{{ t('controls.selectConfig') }}</p>
         <template v-else>
-          <p v-if="!isOutputReady" aria-live="polite">Aucune sortie MIDI disponible — les contrôles sont désactivés.</p>
+          <p v-if="!isOutputReady" aria-live="polite">{{ t('controls.noOutput') }}</p>
           <div class="controls-grid">
             <ControlRenderer
               v-for="c in visibleControls"
@@ -47,14 +49,14 @@
       </small>
       <div class="footer-actions">
         <button class="link-btn legal-link" type="button" @click="navigateLegal">
-          Mentions légales
+          {{ t('footer.legal') }}
         </button>
         <a
           class="github-link"
           href="https://github.com/bpodrop/mako-editor"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Voir le projet sur GitHub"
+          :aria-label="t('footer.github')"
         >
           <svg class="github-icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
             <path
@@ -70,6 +72,7 @@
 <script setup lang="ts">
 import { onMounted, computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useMidi } from '../composables/useMidiStore';
 import { useMidiControls } from '../../application/use-midi-controls';
 import BurgerMenu from '../components/BurgerMenu.vue';
@@ -82,12 +85,13 @@ import type { AnyControl } from '../../core/entities/controls';
 import pkg from '../../../package.json';
 
 const router = useRouter();
+const { t } = useI18n();
 const { init, errorMessage, isOutputReady, setChannel, channel } = useMidi();
 const { sendControlChange } = useMidiControls();
 
 // Footer info
 const currentYear = new Date().getFullYear();
-const appVersion = `V${pkg?.version ?? '0.0.0'}`;
+const appVersion = computed(() => t('app.version', { version: pkg?.version ?? '0.0.0' }));
 
 // Config selection from pedalConfig.ts
 const pedalOptions = listPedals();
@@ -153,7 +157,7 @@ function onValue(ctrl: AnyControl, v: number) {
 // Send all visible controls with their current values
 async function sendAll() {
   if (!isOutputReady.value) {
-    window.alert('Aucune sortie MIDI sélectionnée.');
+    window.alert(t('controls.noOutputAlert'));
     return;
   }
   const controls = visibleControls.value ?? [];
@@ -177,7 +181,7 @@ function snapshotValues(): Record<string, number> {
 function exportConfig(): void {
   const device = selectedDevice.value;
   if (!device) {
-    window.alert('Aucune pédale sélectionnée.');
+    window.alert(t('controls.noPedal'));
     return;
   }
   const payload = {
@@ -206,18 +210,18 @@ async function onImportFile(ev: Event) {
     if (!file) return;
     const text = await file.text();
     const data = JSON.parse(text) as unknown;
-    if (!isRecord(data)) throw new Error('Fichier JSON invalide.');
+    if (!isRecord(data)) throw new Error(t('controls.invalidConfig'));
     const device = typeof data.device === 'string' ? data.device : '';
     const vals = (isRecord(data.values) ? data.values : null) as Record<string, unknown> | null;
     const importedChannel = typeof (data as any).channel === 'number' ? (data as any).channel : undefined;
-    if (!device || !vals) throw new Error('Format de configuration non reconnu.');
+    if (!device || !vals) throw new Error(t('controls.invalidConfig'));
 
     // If the pedal exists in the list, select it
     const exists = pedalOptions.some(p => p.value === device);
     if (exists) selectedDevice.value = device;
     else {
       // Allow the import anyway but warn
-      console.warn('Pédale inconnue dans les options:', device);
+      console.warn(t('controls.unknownPedal', { device }));
     }
 
     if (importedChannel != null) setChannel(importedChannel);
@@ -232,7 +236,7 @@ async function onImportFile(ev: Event) {
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    window.alert(`Échec du chargement: ${msg}`);
+    window.alert(t('controls.loadFailed', { message: msg }));
   } finally {
     // Reset input to allow re-selecting the same file
     if (input) input.value = '';

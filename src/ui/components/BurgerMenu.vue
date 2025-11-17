@@ -6,8 +6,8 @@
       type="button"
       :aria-expanded="open ? 'true' : 'false'"
       aria-controls="app-drawer"
-      :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'"
-      :title="open ? 'Fermer le menu' : 'Ouvrir le menu'"
+      :aria-label="open ? t('menu.close') : t('menu.open')"
+      :title="open ? t('menu.close') : t('menu.open')"
       @click="toggle"
     >
       <span class="icon-stack" aria-hidden="true">
@@ -38,10 +38,14 @@
       aria-labelledby="drawer-title"
     >
       <header class="drawer-header">
-        <h2 id="drawer-title" class="drawer-title">Menu</h2>
+        <h2 id="drawer-title" class="drawer-title">{{ t('menu.title') }}</h2>
       </header>
 
       <div class="drawer-content">
+        <section class="drawer-section">
+          <LocaleSwitcher />
+        </section>
+
         <section class="drawer-section">
           <DeviceSelect />
         </section>
@@ -51,7 +55,7 @@
         </section>
 
         <section class="drawer-section">
-          <label class="label" for="pedal-config">Pédale</label>
+          <label class="label" for="pedal-config">{{ t('menu.pedal') }}</label>
           <select id="pedal-config" :value="selectedDevice" @change="onChangeDevice">
             <option v-for="p in pedalOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
           </select>
@@ -63,11 +67,11 @@
 
         <section class="drawer-section">
           <div class="row">
-            <button class="btn" type="button" @click="$emit('export-config')" title="Sauvegarder la configuration courante en fichier JSON">
-              Sauvegarder (fichier)
+            <button class="btn" type="button" @click="$emit('export-config')" :title="t('menu.export')">
+              {{ t('menu.export') }}
             </button>
-            <button type="button" @click="() => fileInput?.click()" title="Charger une configuration depuis un fichier JSON">
-              Charger (fichier)
+            <button type="button" @click="() => fileInput?.click()" :title="t('menu.import')">
+              {{ t('menu.import') }}
             </button>
             <input
               ref="fileInputEl"
@@ -79,21 +83,19 @@
           </div>
         </section>
 
-        <section class="drawer-section drawer-meta" role="note" aria-label="Infos pratiques">
+        <section class="drawer-section drawer-meta" role="note" :aria-label="t('menu.infoTitle')">
           <div class="info-box">
-            <strong class="info-title">Infos 💡</strong>
+            <strong class="info-title">{{ t('menu.infoTitle') }}</strong>
             <ul class="info-list">
-              <li>Cette application a besoin d'un accès au Web MIDI pour communiquer avec vos appareils.
-Autorisez l'accès lorsque votre navigateur le demande.</li>
-              <li>Application installable (PWA) - ajoutez-la à votre écran d'accueil pour l'utiliser aussi en mode hors ligne.
-</li>
+              <li>{{ t('menu.tipMidi') }}</li>
+              <li>{{ t('menu.tipPwa') }}</li>
             </ul>
           </div>
         </section>
 
         <section class="drawer-section">
           <button class="link-btn" type="button" @click="openLegal">
-            Mentions légales
+            {{ t('menu.legal') }}
           </button>
         </section>
       </div>
@@ -103,9 +105,11 @@ Autorisez l'accès lorsque votre navigateur le demande.</li>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useI18n } from 'vue-i18n';
 import DeviceSelect from './DeviceSelect.vue';
 import ChannelPicker from './ChannelPicker.vue';
 import PcSender from './PcSender.vue';
+import LocaleSwitcher from './LocaleSwitcher.vue';
 
 type Option = { label: string; value: string };
 
@@ -124,6 +128,7 @@ const emit = defineEmits<{
 const open = ref(false);
 const fileInputEl = ref<HTMLInputElement | null>(null);
 const fileInput = computed(() => fileInputEl.value as HTMLInputElement | null);
+const { t } = useI18n();
 
 function toggle() { open.value = !open.value; }
 function close() { open.value = false; }

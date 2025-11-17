@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ZoneEnumControl as ZoneEnumCtrl, ZoneDef } from '../../../core/entities/controls';
 
 const props = defineProps<{
@@ -27,8 +28,9 @@ const props = defineProps<{
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
 
 const id = computed(() => `ctrl-${props.control.id}`);
-const collator = new Intl.Collator('fr', { sensitivity: 'base' });
-const zones = computed<ZoneDef[]>(() => [...props.control.zones].sort((a, b) => collator.compare(a.name, b.name)));
+const { locale } = useI18n();
+const collator = computed(() => new Intl.Collator(locale.value, { sensitivity: 'base' }));
+const zones = computed<ZoneDef[]>(() => [...props.control.zones].sort((a, b) => collator.value.compare(a.name, b.name)));
 
 function nameFromValue(val?: number): string | '' {
   if (typeof val !== 'number') return '';
