@@ -1,95 +1,202 @@
-# use_cases.md
-Application Web MIDI – Walrus Audio Mako Series
-Version 1.0
+## 1. Gestion du MIDI
 
-## 1. Objectif
-Définir l’ensemble des use cases pour une application web permettant de configurer les pédales **Walrus Audio Mako series** (R1, M1, D1, ACS1) via **Web MIDI**, dans une V1 simple, fiable et intuitive.
+### UC-M1 — Sélectionner la sortie MIDI Web
 
-## 2. Acteurs
-- **Utilisateur** : guitariste souhaitant ajuster sa pédale via MIDI.
-- **Application Web MIDI** : interface Vue 3 / TypeScript.
-- **Pédale Mako** : R1, M1, D1 ou ACS1.
+**But** : choisir l’interface MIDI physique à utiliser.
+**Scénario** :
 
-## 3. Use Cases – V1 (Must Have)
+1. L’app interroge les sorties MIDI disponibles via Web MIDI.
+2. L’utilisateur choisit une sortie dans une liste déroulante.
+3. L’app mémorise cette sortie pour les messages suivants (CC/PC).
 
-### UC01 – Sélectionner la pédale
-1. L’app affiche une sélection : R1 / M1 / D1 / ACS1.
-2. L’utilisateur choisit une pédale.
-3. L’app charge la configuration JSON (paramètres CC, programmes, banques).
-4. L’UI s’adapte selon la pédale sélectionnée.
+---
 
-### UC02 – Choisir la sortie MIDI Web + test rapide
-1. L’app liste les sorties MIDI disponibles.
-2. L’utilisateur sélectionne la sortie.
-3. Envoi d’un **Program Change #0** pour test.
-4. L’app affiche un message de confirmation.
+### UC-M2 — Sélectionner le canal MIDI pour la pédale
 
-### UC03 – Changer de preset (PC)
-1. L’app affiche “Preset 0–127”.
-2. L’utilisateur clique sur un preset.
-3. L’app envoie le PC correspondant.
+**But** : s’assurer que les messages sont envoyés sur le bon canal pour la pédale sélectionnée.
+**Scénario** :
 
-### UC04 – Ajuster les paramètres principaux (CC)
-1. L’app génère automatiquement les sliders/listes selon le JSON.
-2. L’utilisateur modifie un paramètre.
-3. L’app envoie le CC correspondant.
+1. Après avoir choisi la pédale (cf. UC-P1/P2), l’app affiche un sélecteur de canal MIDI (1–16).
+2. L’utilisateur choisit le canal correspondant à la configuration de sa pédale.
+3. L’app enregistre ce canal comme **canal actif** pour cette pédale.
+4. Tous les messages (CC/PC) sont ensuite envoyés sur ce canal.
 
-### UC05 – Afficher les contrôles de façon structurée
-Mode simple / Mode avancé.
-Groupes : Reverb/Delay/Mod/Amp, EQ, Lo-Fi, Special, etc.
+---
 
-### UC09 – Changer de Programme
-Sélection d’un programme d’effet → envoi du CC correspondant.
+### UC-M3 — Tester la connexion MIDI
 
-### UC10 – Changer de Bank A/B/C (R1/M1/D1)
-Sélecteur simple → envoi du CC dédié.
+**But** : vérifier rapidement que la pédale réagit.
+**Scénario** :
 
-## 4. Use Cases – Should Have
+1. L’utilisateur clique sur “Tester la connexion”.
+2. L’app envoie un **PC#0** (ou un message de test équivalent) sur la sortie et le canal sélectionnés.
+3. L’app affiche : “Message de test envoyé sur canal X – vérifiez la pédale”.
 
-### UC06 – Snapshot local
-Sauvegarde des CC dans localStorage.
+---
 
-### UC07 – Charger un snapshot
-Envoi des CC pour restaurer un réglage.
+## 2. Gestion des pédales
 
-### UC08 – Multi-pédales
-Snapshots et configuration séparés par modèle.
+### UC-P1 — Lister les pédales disponibles
 
-### UC11 – Fonctions spéciales
-M1 : Lo-Fi, Skip, Brake, etc.
-R1 : Sustain.
-ACS1 : Boost, IR Block, HPF/LPF.
-Affichés uniquement si CC disponibles.
+**But** : baser la liste de pédales sur les configurations connues.
+**Scénario** :
 
-## 5. Use Cases – Could Have
+1. Au lancement, l’app lit la liste des fichiers de config connus (ex. `R1.json`, `M1.json`, `D1.json`, `ACS1.json`).
+2. L’app génère automatiquement la liste des pédales disponibles à partir de ces configs.
+3. L’utilisateur voit une liste (R1, M1, D1, ACS1) correspondant aux configs chargées.
 
-### UC13 – IR Block + Global HPF/LPF (ACS1)
-Accès CC → option V1+.
+---
 
-### Export / Import snapshots
-Fichier JSON simple.
+### UC-P2 — Sélectionner une pédale et charger sa configuration
 
-### Journal MIDI
-Historique des messages envoyés.
+**But** : adapter toute l’UI au modèle choisi.
+**Scénario** :
 
-### Mode Live
-Interface minimale pour scène.
+1. L’utilisateur sélectionne une pédale dans la liste.
+2. L’app charge le JSON de configuration correspondant (CC, types de contrôles, regroupements…).
+3. L’app reconstruit l’UI (groupes, sliders, switches…) en fonction de cette config.
+4. L’app peut pré-remplir le canal MIDI avec la dernière valeur utilisée pour cette pédale (si mémorisée).
 
-## 6. Règles UI/UX
-- UI générée dynamiquement depuis les JSON.
-- Mode simple par défaut.
-- Mode avancé optionnel.
-- Pas d’exposition des fonctions non accessibles en CC.
-- Retour visuel immédiat sur chaque action.
+---
 
-## 7. Limites V1
-Fonctions non accessibles via CC :
-- R1 Stereo Width
-- D1 Haas/Panning
-- ACS1 IR Upload
+## 3. Gestion des modes d’interaction (Live vs Preset)
 
-## 8. Fichiers attendus
-- src/config/R1.json
-- src/config/M1.json
-- src/config/D1.json
-- src/config/ACS1.json
+### UC-MODE1 — Choisir le mode Live ou Preset
+
+**But** : laisser l’utilisateur décider du style d’interaction.
+**Scénario** :
+
+1. L’app propose un sélecteur global de mode : **Live** / **Preset**.
+2. L’utilisateur choisit un mode.
+3. L’UI indique clairement le mode actif (ex. badge ou switch visible en permanence).
+
+---
+
+### UC-MODE2 — Afficher le mode actif et le comportement associé
+
+**But** : éviter toute ambiguïté sur le comportement des contrôles.
+**Scénario** :
+
+1. En mode **Live** : une note ou un tooltip indique “Les modifications sont envoyées immédiatement à la pédale (CC live)”.
+2. En mode **Preset** : note “Les modifications ne sont envoyées qu’à la validation. Vous pouvez annuler pour revenir aux dernières valeurs appliquées”.
+
+---
+
+## 4. Gestion des contrôles (Live / Preset)
+
+### UC-C1 — Modifier un contrôle en mode Live
+
+**But** : interaction immédiate pour le réglage “à l’oreille”.
+**Scénario** :
+
+1. Le mode **Live** est actif.
+2. L’utilisateur modifie un contrôle (slider, toggle, select…).
+3. Dès l’événement de changement de valeur (ex. `input`/`change`), l’app envoie le **CC correspondant** sur le canal actif.
+4. L’UI met à jour la valeur “committed” (dernière valeur envoyée) pour ce contrôle.
+
+---
+
+### UC-C2 — Modifier des contrôles en mode Preset (édition sans envoi)
+
+**But** : préparer un ensemble de changements avant de les envoyer.
+**Scénario** :
+
+1. Le mode **Preset** est actif.
+2. L’utilisateur modifie un ou plusieurs contrôles.
+3. L’app met à jour les valeurs affichées, mais **n’envoie aucun CC**.
+4. L’app marque en interne quels contrôles ont été modifiés (ex. flag “dirty”).
+5. Option : l’UI peut signaler les contrôles modifiés (par une petite pastille, contour, etc.).
+
+---
+
+### UC-C3 — Valider les changements en mode Preset (envoi groupé)
+
+**But** : envoyer les modifications en un bloc cohérent.
+**Scénario** :
+
+1. En mode **Preset**, l’utilisateur clique sur “Appliquer” / “Valider”.
+2. L’app collecte tous les contrôles modifiés depuis la dernière validation.
+3. L’app envoie les CC correspondants **en séquence** sur le canal actif.
+4. Les valeurs ainsi envoyées deviennent la nouvelle **référence** (dernier état validé) pour la fonction Annuler.
+5. Les flags “dirty” sont remis à zéro.
+
+---
+
+### UC-C4 — Annuler les modifications en mode Preset (retour à la dernière valeur appliquée)
+
+**But** : permettre de tester sans risque et revenir au dernier état validé.
+**Scénario** :
+
+1. En mode **Preset**, tant que des contrôles ont été modifiés sans validation, l’option “Annuler” est disponible.
+2. L’utilisateur clique sur “Annuler”.
+3. L’app restaure dans l’UI les **dernières valeurs validées** (celles associées au dernier envoi de CC, Live ou Preset).
+4. Aucun CC n’est envoyé lors de l’annulation (on revient juste aux valeurs connues côté UI).
+
+   * Variante si tu le souhaites : possibilité d’avoir une option pour “forcer la resynchronisation” avec la pédale, mais ce n’est pas obligatoire en V1.
+5. Les flags “dirty” sont remis à zéro.
+
+---
+
+## 5. Gestion des presets (de la pédale elle-même)
+
+### UC-PR1 — Rappeler un preset de la pédale (Program Change)
+
+**But** : changer de preset interne de la pédale.
+**Scénario** :
+
+1. L’utilisateur choisit un numéro de preset (0–127).
+2. L’app envoie un **PC** immédiatement, quel que soit le mode Live/Preset (PC = action “discrète”, pas une édition de paramètres).
+3. L’UI met à jour l’indication de preset actif (numéro, bank, couleur si dispo).
+4. Optionnel : l’app peut proposer d’aligner les valeurs UI sur un snapshot connu lié à ce preset (mais ce n’est pas obligatoire pour V1).
+
+---
+
+### UC-PR2 — Changer de bank A/B/C (R1, M1, D1)
+
+**But** : aligner l’app sur la notion de bank interne de la pédale.
+**Scénario** :
+
+1. L’utilisateur choisit Bank A/B/C.
+2. L’app envoie le CC de banque (si pédale concernée).
+3. Les presets 0–2 / 3–5 / 6–8 sont affichés clairement pour la bank sélectionnée.
+
+---
+
+## 6. Snapshots & options avancées (optionnel V1, mais compatibles avec ta vision)
+
+### UC-S1 — Sauvegarder un snapshot (état validé)
+
+**But** : mémoriser un état “référence” des paramètres.
+**Scénario** :
+
+1. L’utilisateur clique sur “Sauvegarder snapshot” à partir de l’état actuel.
+2. L’app stocke toutes les **dernières valeurs validées** (Live ou Preset) dans un objet JSON par pédale.
+3. Sauvegarde en localStorage.
+
+---
+
+### UC-S2 — Charger un snapshot (envoi groupé comme en mode Preset)
+
+**But** : restaurer un réglage complet.
+**Scénario** :
+
+1. L’utilisateur choisit un snapshot.
+2. L’app applique les valeurs dans l’UI, les marque comme modifiées, et :
+
+   * soit les envoie immédiatement (comportement “preset appliqué”),
+   * soit propose “Appliquer maintenant” pour déclencher l’envoi groupé (même logique que UC-C3).
+
+---
+
+## 7. Catégories finales avec prise en compte des modes
+
+* **Gestion du MIDI** : sélection sortie, canal, test.
+* **Gestion des pédales** : liste dynamique à partir des configs, chargement d’une pédale.
+* **Gestion des modes d’interaction** : Live vs Preset.
+* **Gestion des contrôles** :
+
+  * Live : envoi immédiat.
+  * Preset : édition → validation groupée → annulation.
+* **Gestion des presets de la pédale** : PC + banks.
+* **Snapshots / état utilisateur** (optionnel mais aligné avec ta logique de “preset mode”).
+

@@ -8,9 +8,14 @@
       <BurgerMenu
         :pedal-options="pedalOptions"
         v-model:selectedDevice="selectedDevice"
+        :selected-config="selectedConfig"
+        :snapshots="snapshots"
         @export-config="exportConfig"
         @import-file="onImportFile"
         @open-legal="navigateLegal"
+        @save-snapshot="handleSaveSnapshot"
+        @apply-snapshot="handleApplySnapshot"
+        @delete-snapshot="handleDeleteSnapshot"
       />
     </header>
 
@@ -19,11 +24,28 @@
 
       <section class="card" :style="controlsCardStyle" aria-labelledby="controls-heading">
         <div class="controls-header">
-          <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
-          <button class="btn" type="button" :disabled="!isOutputReady" @click="sendAll">
-            {{ t('controls.sendAll') }}
-          </button>
+          <div class="controls-heading">
+            <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
+            <ModeToggle v-model="interactionMode" />
+          </div>
+          <div class="controls-actions">
+            <button class="btn" type="button" :disabled="!isOutputReady" @click="sendAll">
+              {{ t('controls.sendAll') }}
+            </button>
+            <template v-if="interactionMode === 'preset'">
+              <button class="btn" type="button" :disabled="!canApply" @click="applyPresetChanges">
+                {{ t('controls.applyPreset') }}
+              </button>
+              <button class="btn ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
+                {{ t('controls.cancelPreset') }}
+              </button>
+            </template>
+          </div>
         </div>
+        <p class="mode-info">{{ modeDescription }}</p>
+        <p v-if="interactionMode === 'preset' && dirtyCount > 0" class="dirty-indicator">
+          {{ t('controls.dirtyHint', { count: dirtyCount }) }}
+        </p>
         <p id="status" v-if="!selectedConfig">{{ t('controls.selectConfig') }}</p>
         <template v-else>
           <p v-if="!isOutputReady" aria-live="polite">{{ t('controls.noOutput') }}</p>
@@ -32,7 +54,8 @@
               v-for="c in visibleControls"
               :key="c.id"
               :control="c as any"
-              :value="values[c.id]"
+              :value="draftValues[c.id]"
+              :dirty="isControlDirty(c.id)"
               :disabled="!isOutputReady"
               @update:value="(v: number) => onValue(c as AnyControl, v)"
             />
@@ -40,6 +63,7 @@
         </template>
       </section>
 
+      <p v-if="statusMessage" class="status" role="status" aria-live="polite">{{ statusMessage }}</p>
       <p v-if="errorMessage" class="error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
     </main>
 
@@ -76,11 +100,14 @@ import { useI18n } from 'vue-i18n';
 import { useMidi } from '../composables/useMidiStore';
 import { useMidiControls } from '../../application/use-midi-controls';
 import BurgerMenu from '../components/BurgerMenu.vue';
+import ModeToggle from '../components/ModeToggle.vue';
 import { listPedals, getPedalByDevice } from '../../config/pedalConfig';
 import type { PedalConfig } from '../../config/types';
 import { ControlRenderer } from '../../features/pedal-controls';
 import { getVisibleControls } from '../../config/visibility';
 import { useControlValues } from '../../composables/useControlValues';
+import { useSnapshots } from '../../composables/useSnapshots';
+import { usePedalChannelSync } from '../../composables/usePedalChannel';
 import type { AnyControl } from '../../core/entities/controls';
 import pkg from '../../../package.json';
 
@@ -104,6 +131,13 @@ const selectedConfig = computed<PedalConfig | undefined>(() =>
 );
 
 const visibleControls = computed(() => getVisibleControls(selectedConfig.value));
+const controlMap = computed(() => {
+  const map = new Map<string, AnyControl>();
+  for (const ctrl of selectedConfig.value?.controls ?? []) {
+    map.set(ctrl.id, ctrl as AnyControl);
+  }
+  return map;
+});
 
 function parseHexColor(hex: string): { r: number; g: number; b: number } | undefined {
   const m = hex.trim().match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
@@ -137,21 +171,62 @@ const controlsCardStyle = computed(() => {
   return style;
 });
 
-// Apply the config default channel to the store
-watch(selectedConfig, (cfg) => {
-  if (cfg?.midi?.channel) setChannel(cfg.midi.channel);
-}, { immediate: true });
-
 // Persist the selected pedal
 watch(selectedDevice, (dev) => {
   try { localStorage.setItem('pedal-selected', dev ?? ''); } catch {}
 });
 
+usePedalChannelSync(selectedDevice, selectedConfig, setChannel, channel);
+
 // Control values (persisted per device)
-const { values, setValue } = useControlValues(selectedDevice);
+const {
+  draftValues,
+  setDraftValue,
+  commitValue,
+  resetDraft,
+  applyDraft,
+  snapshotCommitted,
+  getDirtyIds,
+} = useControlValues(selectedDevice);
+const { snapshots, createSnapshot, removeSnapshot } = useSnapshots(selectedDevice);
+
+const interactionMode = ref<'live' | 'preset'>(localStorage.getItem('midi-mode') === 'preset' ? 'preset' : 'live');
+const statusMessage = ref('');
+
+watch(interactionMode, (mode, previous) => {
+  try { localStorage.setItem('midi-mode', mode); } catch {}
+  if (mode === 'live' && previous === 'preset') {
+    resetDraft();
+  }
+});
+
+const modeDescription = computed(() =>
+  interactionMode.value === 'live' ? t('modes.descriptionLive') : t('modes.descriptionPreset')
+);
+
+const dirtyIdList = computed(() => getDirtyIds());
+const dirtySet = computed(() => new Set(dirtyIdList.value));
+const dirtyCount = computed(() => dirtyIdList.value.length);
+const canApply = computed(() => interactionMode.value === 'preset' && dirtyCount.value > 0 && isOutputReady.value);
+const canCancel = computed(() => interactionMode.value === 'preset' && dirtyCount.value > 0);
+
+watch(dirtyIdList, () => {
+  statusMessage.value = '';
+});
+
+function isControlDirty(id: string) {
+  return dirtySet.value.has(id);
+}
+
 function onValue(ctrl: AnyControl, v: number) {
-  setValue(ctrl.id, v);
-  sendControlChange(ctrl.cc, v);
+  setDraftValue(ctrl.id, v);
+  if (interactionMode.value === 'live') {
+    const err = sendControlChange(ctrl.cc, v);
+    if (!err) {
+      commitValue(ctrl.id, v);
+      statusMessage.value = t('controls.liveSent', { control: ctrl.label });
+    }
+  }
 }
 
 // Send all visible controls with their current values
@@ -162,20 +237,61 @@ async function sendAll() {
   }
   const controls = visibleControls.value ?? [];
   for (const c of controls) {
-    const raw = (values as any)[c.id];
+    const raw = (draftValues as any)[c.id];
     const v = typeof raw === 'number' ? raw : Number(raw);
     if (!Number.isNaN(v)) {
-      sendControlChange(c.cc, v);
+      const err = sendControlChange(c.cc, v);
+      if (!err) commitValue(c.id, v);
       await new Promise((r) => setTimeout(r, 5));
     }
   }
+  statusMessage.value = t('controls.sendAllDone', { count: controls.length });
+}
+
+async function applyPresetChanges() {
+  if (!canApply.value) return;
+  const ids = dirtyIdList.value;
+  for (const id of ids) {
+    const ctrl = controlMap.value.get(id);
+    if (!ctrl) continue;
+    const raw = (draftValues as any)[id];
+    const value = typeof raw === 'number' ? raw : Number(raw);
+    if (Number.isNaN(value)) continue;
+    const err = sendControlChange(ctrl.cc, value);
+    if (!err) commitValue(id, value);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  statusMessage.value = t('controls.applySuccess', { count: ids.length });
+}
+
+function cancelPresetChanges() {
+  if (!canCancel.value) return;
+  resetDraft();
+  statusMessage.value = t('controls.cancelled');
 }
 
 // --- Export / Import configuration (JSON file) ---
 function snapshotValues(): Record<string, number> {
-  const snap: Record<string, number> = {};
-  for (const [k, val] of Object.entries(values)) snap[k] = val as number;
-  return snap;
+  return snapshotCommitted();
+}
+
+function handleSaveSnapshot(name: string) {
+  createSnapshot(name, snapshotCommitted());
+  statusMessage.value = t('snapshots.saved', { name });
+}
+
+function handleApplySnapshot(id: string) {
+  const snap = snapshots.value.find(s => s.id === id);
+  if (!snap) return;
+  applyDraft(snap.values);
+  interactionMode.value = 'preset';
+  statusMessage.value = t('snapshots.applied', { name: snap.name });
+}
+
+function handleDeleteSnapshot(id: string) {
+  const snap = snapshots.value.find(s => s.id === id);
+  removeSnapshot(id);
+  statusMessage.value = t('snapshots.deleted', { name: snap?.name ?? '' });
 }
 
 function exportConfig(): void {
@@ -231,7 +347,7 @@ async function onImportFile(ev: Event) {
     for (const [k, v] of Object.entries(vals)) {
       if (!allowedIds.size || allowedIds.has(k)) {
         const num = typeof v === 'number' ? v : Number(v);
-        if (!Number.isNaN(num)) setValue(k, num);
+        if (!Number.isNaN(num)) commitValue(k, num);
       }
     }
   } catch (e) {
@@ -261,6 +377,34 @@ onMounted(async () => { void init(); });
   margin: 0.25rem 0 0;
 }
 .controls-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.controls-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.controls-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+.mode-info {
+  margin: 0.5rem 0;
+  color: var(--muted);
+}
+.dirty-indicator {
+  margin: 0;
+  font-weight: 600;
+  color: var(--warning, #8a6d3b);
+}
+.btn.ghost {
+  background: transparent;
+  border: 1px dashed var(--border);
+}
+.status {
+  margin-top: 0.75rem;
+  color: var(--muted);
+}
 .form-row {
   margin-bottom: 0.75rem;
 }

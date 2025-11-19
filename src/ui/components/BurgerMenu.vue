@@ -62,7 +62,11 @@
         </section>
 
         <section class="drawer-section">
-          <PcSender :pedal-name="selectedDevice" />
+          <MidiTestButton />
+        </section>
+
+        <section class="drawer-section">
+          <PcSender :pedal-name="selectedDevice" :pc-config="selectedConfig?.midi?.pc" :config="selectedConfig" />
         </section>
 
         <section class="drawer-section">
@@ -81,6 +85,15 @@
               @change="(e: Event) => { $emit('import-file', e); resetFileInput(); }"
             />
           </div>
+        </section>
+
+        <section class="drawer-section">
+          <SnapshotManager
+            :snapshots="snapshots"
+            @save="(name: string) => emit('save-snapshot', name)"
+            @apply="(id: string) => emit('apply-snapshot', id)"
+            @delete="(id: string) => emit('delete-snapshot', id)"
+          />
         </section>
 
         <section class="drawer-section drawer-meta" role="note" :aria-label="t('menu.infoTitle')">
@@ -110,12 +123,18 @@ import DeviceSelect from './DeviceSelect.vue';
 import ChannelPicker from './ChannelPicker.vue';
 import PcSender from './PcSender.vue';
 import LocaleSwitcher from './LocaleSwitcher.vue';
+import MidiTestButton from './MidiTestButton.vue';
+import SnapshotManager from './SnapshotManager.vue';
+import type { PedalConfig } from '../../config/types';
+import type { PedalSnapshot } from '../../composables/useSnapshots';
 
 type Option = { label: string; value: string };
 
 const props = defineProps<{
   pedalOptions: Option[];
   selectedDevice: string;
+  selectedConfig?: PedalConfig;
+  snapshots: PedalSnapshot[];
 }>();
 
 const emit = defineEmits<{
@@ -123,6 +142,9 @@ const emit = defineEmits<{
   (e: 'export-config'): void;
   (e: 'import-file', ev: Event): void;
   (e: 'open-legal'): void;
+  (e: 'save-snapshot', name: string): void;
+  (e: 'apply-snapshot', id: string): void;
+  (e: 'delete-snapshot', id: string): void;
 }>();
 
 const open = ref(false);

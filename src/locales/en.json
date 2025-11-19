@@ -19,13 +19,20 @@
   "controls": {
     "heading": "Controls",
     "sendAll": "Send all",
+    "applyPreset": "Apply",
+    "cancelPreset": "Cancel",
     "selectConfig": "Select a configuration to display the controls.",
     "noOutput": "No MIDI output available — controls are disabled.",
     "noOutputAlert": "No MIDI output selected.",
     "noPedal": "No pedal selected.",
     "unknownPedal": "Unknown pedal in the list: {device}",
     "invalidConfig": "Configuration format not recognized.",
-    "loadFailed": "Failed to load: {message}"
+    "loadFailed": "Failed to load: {message}",
+    "dirtyHint": "Pending changes: {count}",
+    "liveSent": "Control \"{control}\" sent.",
+    "applySuccess": "{count} control(s) applied.",
+    "cancelled": "Changes discarded.",
+    "sendAllDone": "{count} control(s) resent."
   },
   "device": {
     "label": "MIDI Output",
@@ -40,7 +47,10 @@
     "title": "Preset",
     "label": "Preset",
     "select": "Select",
-    "range": "0–127"
+    "range": "{min}–{max}",
+    "bank": "Bank",
+    "bankLabel": "Bank {bank}",
+    "active": "Active preset: {preset} (PC #{number})"
   },
   "ccSender": {
     "title": "Control Change",
@@ -70,6 +80,26 @@
     "liability2": "You use the app at your own risk. The developer cannot be held liable for any loss or damage of any kind, direct or indirect, resulting from use of or inability to use the app."
   },
   "midi": {
-    "noOutputSelected": "No MIDI output selected."
+    "noOutputSelected": "No MIDI output selected.",
+    "testButton": "Test connection",
+    "testSent": "Test message sent on channel {channel}."
+  },
+  "modes": {
+    "label": "Mode",
+    "live": "Live",
+    "preset": "Preset",
+    "descriptionLive": "Changes are sent immediately to the pedal (live CC).",
+    "descriptionPreset": "Changes are stored until you apply them. Use Apply to send or Cancel to revert to the last committed values."
+  },
+  "snapshots": {
+    "title": "Local snapshots",
+    "placeholder": "Snapshot name",
+    "save": "Save",
+    "empty": "No snapshot saved for this pedal.",
+    "apply": "Load",
+    "delete": "Delete",
+    "saved": "Snapshot \"{name}\" saved.",
+    "applied": "Snapshot \"{name}\" loaded (Preset mode).",
+    "deleted": "Snapshot \"{name}\" removed."
   }
 }

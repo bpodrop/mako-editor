@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="control-wrapper" :class="{ dirty }">
     <RangeControl
       v-if="control.type === 'range'"
       :control="control"
@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { AnyControl } from '../../../core/entities/controls';
 import RangeControl from './RangeControl.vue';
 import EnumControl from './EnumControl.vue';
@@ -49,14 +50,25 @@ const props = defineProps<{
   control: AnyControl;
   value?: number;
   disabled?: boolean;
+  dirty?: boolean;
 }>();
 
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
+
+const dirty = computed(() => props.dirty ?? false);
 
 function forward(v: number) { emit('update:value', v); }
 </script>
 
 <style scoped>
-div { display: flex; flex-direction: column; gap: .5rem; }
+.control-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  border-left: 3px solid transparent;
+  padding-left: .5rem;
+}
+.control-wrapper.dirty {
+  border-left-color: var(--primary);
+}
 </style>
-

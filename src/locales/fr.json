@@ -19,13 +19,20 @@
   "controls": {
     "heading": "Contrôles",
     "sendAll": "Envoyer tout",
+    "applyPreset": "Appliquer",
+    "cancelPreset": "Annuler",
     "selectConfig": "Sélectionnez une configuration pour afficher les contrôles.",
     "noOutput": "Aucune sortie MIDI disponible — les contrôles sont désactivés.",
     "noOutputAlert": "Aucune sortie MIDI sélectionnée.",
     "noPedal": "Aucune pédale sélectionnée.",
     "unknownPedal": "Pédale inconnue dans les options : {device}",
     "invalidConfig": "Format de configuration non reconnu.",
-    "loadFailed": "Échec du chargement : {message}"
+    "loadFailed": "Échec du chargement : {message}",
+    "dirtyHint": "Modifications en attente : {count}",
+    "liveSent": "Contrôle « {control} » envoyé.",
+    "applySuccess": "{count} contrôle(s) appliqué(s).",
+    "cancelled": "Modifications annulées.",
+    "sendAllDone": "{count} contrôle(s) renvoyé(s)."
   },
   "device": {
     "label": "Sortie MIDI",
@@ -40,7 +47,10 @@
     "title": "Preset",
     "label": "Preset",
     "select": "Sélectionner",
-    "range": "0–127"
+    "range": "{min}–{max}",
+    "bank": "Banque",
+    "bankLabel": "Banque {bank}",
+    "active": "Preset actif : {preset} (PC #{number})"
   },
   "ccSender": {
     "title": "Control Change",
@@ -70,6 +80,26 @@
     "liability2": "Vous utilisez l'application à vos propres risques. En aucune circonstance le développeur ne pourra être tenu responsable de pertes ou dommages de quelque nature que ce soit, directs ou indirects, résultant de l'utilisation ou de l'impossibilité d'utiliser l'application."
   },
   "midi": {
-    "noOutputSelected": "Aucune sortie MIDI sélectionnée."
+    "noOutputSelected": "Aucune sortie MIDI sélectionnée.",
+    "testButton": "Tester la connexion",
+    "testSent": "Message de test envoyé sur le canal {channel}."
+  },
+  "modes": {
+    "label": "Mode",
+    "live": "Live",
+    "preset": "Preset",
+    "descriptionLive": "Les modifications sont envoyées immédiatement à la pédale (CC live).",
+    "descriptionPreset": "Les modifications sont stockées jusqu'à validation. Utilisez Appliquer pour envoyer ou Annuler pour revenir à l'état validé."
+  },
+  "snapshots": {
+    "title": "Snapshots locaux",
+    "placeholder": "Nom du snapshot",
+    "save": "Sauvegarder",
+    "empty": "Aucun snapshot enregistré pour cette pédale.",
+    "apply": "Charger",
+    "delete": "Supprimer",
+    "saved": "Snapshot « {name} » sauvegardé.",
+    "applied": "Snapshot « {name} » chargé (mode Preset).",
+    "deleted": "Snapshot « {name} » supprimé."
   }
 }
