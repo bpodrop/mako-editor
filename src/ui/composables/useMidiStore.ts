@@ -1,6 +1,6 @@
 import { computed, ref, inject, type InjectionKey } from 'vue';
 import { MidiService } from '../../core/services/midi-service';
-import { asMidiChannel, type MidiChannel } from '../../core/entities/midi';
+import { asMidiChannel, isMidiChannel, type MidiChannel } from '../../core/entities/midi';
 import type { MidiGateway } from '../../core/ports/midi-gateway';
 import { i18n } from '../../app/i18n';
 
@@ -48,14 +48,21 @@ export function createMidiStore(gateway: MidiGateway) {
     }
   }
 
-  function sendProgramChange(program: number): Error | null {
+  function resolveChannel(target?: number): MidiChannel {
+    if (typeof target === 'number' && isMidiChannel(target)) {
+      return target;
+    }
+    return channel.value;
+  }
+
+  function sendProgramChange(program: number, options?: { channel?: number }): Error | null {
     if (!selectedOutput.value) {
       const err = new Error(i18n.global.t('midi.noOutputSelected'));
       errorMessage.value = err.message;
       return err;
     }
     try {
-      service.sendProgramChange(selectedOutput.value, channel.value, program);
+      service.sendProgramChange(selectedOutput.value, resolveChannel(options?.channel ?? undefined), program);
       return null;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
@@ -64,14 +71,14 @@ export function createMidiStore(gateway: MidiGateway) {
     }
   }
 
-  function sendControlChange(controller: number, value: number): Error | null {
+  function sendControlChange(controller: number, value: number, options?: { channel?: number }): Error | null {
     if (!selectedOutput.value) {
       const err = new Error(i18n.global.t('midi.noOutputSelected'));
       errorMessage.value = err.message;
       return err;
     }
     try {
-      service.sendControlChange(selectedOutput.value, channel.value, controller, value);
+      service.sendControlChange(selectedOutput.value, resolveChannel(options?.channel ?? undefined), controller, value);
       return null;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));

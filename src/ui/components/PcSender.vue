@@ -68,6 +68,7 @@ const props = defineProps<{
   pedalName?: string;
   pcConfig?: PcConfig;
   config?: PedalConfig;
+  channel?: number;
 }>();
 
 const { isOutputReady } = useMidi();
@@ -130,7 +131,7 @@ function sendBankIfNeeded(name?: string) {
   if (!ctrl) return;
   const value = bankValueFor(name);
   if (value == null) return;
-  sendControlChange(ctrl.cc, value);
+  sendControlChange(ctrl.cc, value, { channel: props.channel });
 }
 
 function onBankChange(event: Event) {
@@ -146,7 +147,7 @@ function recordActive(number: number, bank?: string, presetName?: string) {
 function applyPreset(preset: BankPreset) {
   if (preset.value != null) {
     sendBankIfNeeded(selectedBank.value);
-    const err = sendProgramChange(preset.value);
+    const err = sendProgramChange(preset.value, { channel: props.channel });
     if (!err) recordActive(preset.value, selectedBank.value, preset.name);
   } else if (preset.range) {
     program.value = preset.range[0];
@@ -155,7 +156,7 @@ function applyPreset(preset: BankPreset) {
 
 function sendManual() {
   sendBankIfNeeded(selectedBank.value);
-  const err = sendProgramChange(program.value);
+  const err = sendProgramChange(program.value, { channel: props.channel });
   if (!err) recordActive(program.value, selectedBank.value);
 }
 </script>

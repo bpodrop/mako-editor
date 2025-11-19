@@ -58,6 +58,19 @@
     "value": "Valeur (0-127)",
     "send": "Envoyer CC"
   },
+  "board": {
+    "addPedal": "Ajouter une pédale",
+    "cardTitle": "Pédale",
+    "channelLabel": "Canal {channel}",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "duplicate": "Dupliquer",
+    "remove": "Supprimer",
+    "pedalSelect": "Modèle",
+    "channelSelect": "Canal MIDI",
+    "import": "Importer",
+    "export": "Exporter"
+  },
   "footer": {
     "legal": "Mentions légales",
     "github": "Voir le projet sur GitHub"

@@ -200,3 +200,50 @@
 * **Gestion des presets de la pédale** : PC + banks.
 * **Snapshots / état utilisateur** (optionnel mais aligné avec ta logique de “preset mode”).
 
+## 8. Gestion multi-pédales (board virtuel)
+
+### UC-B1 — Initialiser le board avec une seule pédale
+
+**But** : conserver la simplicité au premier lancement.
+**Scénario** :
+
+1. Au premier démarrage (aucun board enregistré en localStorage), l’app crée automatiquement un board contenant un seul “slot”.
+2. Ce slot sélectionne par défaut le premier modèle disponible (UC-P1) et applique son canal MIDI suggéré (UC-M2).
+3. L’utilisateur visualise immédiatement l’UI de cette pédale, comme aujourd’hui.
+
+### UC-B2 — Ajouter des pédales supplémentaires
+
+**But** : permettre de créer un board composé de plusieurs pédales.
+**Scénario** :
+
+1. L’utilisateur clique sur “Ajouter une pédale” depuis le board.
+2. L’app ajoute un nouveau slot vierge avec un sélecteur de modèle et un champ de canal.
+3. Une fois un modèle choisi, l’app charge la config (UC-P2) et synchronise son canal dédié.
+
+### UC-B3 — Associer configuration et canal à chaque pédale
+
+**But** : faire cohabiter plusieurs instances indépendantes.
+**Scénario** :
+
+1. Pour chaque slot, l’utilisateur choisit un modèle parmi la liste dynamique (UC-P1).
+2. Le slot mémorise son canal MIDI (UC-M2) et ses valeurs de contrôles dans localStorage via une clé propre à l’instance.
+3. Les actions MIDI (CC/PC) envoyées depuis ce slot utilisent le canal associé sans impacter les autres pédales du board.
+
+### UC-B4 — Dupliquer un modèle sur plusieurs canaux
+
+**But** : autoriser plusieurs exemplaires du même modèle avec des canaux distincts.
+**Scénario** :
+
+1. Depuis un slot existant, l’utilisateur choisit “Dupliquer”.
+2. L’app crée un nouveau slot reprenant le même modèle, la même config et (optionnel) les valeurs UI courantes.
+3. Le canal MIDI est incrémenté ou demandé explicitement pour éviter les collisions.
+4. Les deux slots restent indépendants : modification de l’un n’alterne pas l’autre.
+
+### UC-B5 — Réordonner ou supprimer une pédale du board
+
+**But** : gérer l’organisation du board dans le temps.
+**Scénario** :
+
+1. Chaque slot propose une action “Supprimer”.
+2. L’utilisateur peut également réordonner les slots (glisser-déposer ou boutons monter/descendre) afin de refléter son board physique.
+3. L’état du board (ordre, modèles, canaux, valeurs, snapshots) est persisté en localStorage.

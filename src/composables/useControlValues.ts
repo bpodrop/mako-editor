@@ -1,6 +1,17 @@
 import { reactive, watch, type Ref } from 'vue';
+import { valuesStorageKey } from './storageKeys';
 
 type ValueMap = Record<string, number>;
+
+export interface ValuesInstanceRef {
+  id: string;
+  device?: string | null;
+}
+
+export interface StoredControlValues {
+  device?: string | null;
+  values: ValueMap;
+}
 
 function assign(target: ValueMap, source: ValueMap) {
   for (const key of Object.keys(target)) delete target[key];
@@ -9,30 +20,44 @@ function assign(target: ValueMap, source: ValueMap) {
   }
 }
 
-export function useControlValues(selectedDevice: Ref<string>) {
+export function useControlValues(instanceRef: Ref<ValuesInstanceRef | null>) {
   const committedValues = reactive<ValueMap>({});
   const draftValues = reactive<ValueMap>({});
 
   function persist() {
-    const device = selectedDevice.value;
-    if (!device) return;
+    const ctx = instanceRef.value;
+    if (!ctx?.id) return;
+    const payload: StoredControlValues = {
+      device: ctx.device ?? null,
+      values: snapshotCommitted(),
+    };
     try {
-      localStorage.setItem(`pedal-values:${device}`, JSON.stringify(committedValues));
+      localStorage.setItem(valuesStorageKey(ctx.id), JSON.stringify(payload));
     } catch {
       // ignore storage errors
     }
   }
 
-  function load(device: string) {
+  function load(ctx: ValuesInstanceRef | null) {
     assign(committedValues, {});
     assign(draftValues, {});
-    if (!device) return;
+    const id = ctx?.id;
+    if (!id) return;
     try {
-      const raw = localStorage.getItem(`pedal-values:${device}`);
+      const raw = localStorage.getItem(valuesStorageKey(id));
       if (!raw) return;
-      const parsed = JSON.parse(raw) as ValueMap;
-      assign(committedValues, parsed);
-      assign(draftValues, parsed);
+      const parsed = JSON.parse(raw) as StoredControlValues | ValueMap;
+      if (parsed && 'values' in parsed) {
+        if (ctx?.device && parsed.device && parsed.device !== ctx.device) {
+          return;
+        }
+        const values = parsed.values ?? {};
+        assign(committedValues, values);
+        assign(draftValues, values);
+      } else if (parsed && typeof parsed === 'object') {
+        assign(committedValues, parsed as ValueMap);
+        assign(draftValues, parsed as ValueMap);
+      }
     } catch {
       // ignore storage errors
     }
@@ -78,9 +103,13 @@ export function useControlValues(selectedDevice: Ref<string>) {
     return Array.from(keys).filter((key) => committedValues[key] !== draftValues[key]);
   }
 
-  watch(selectedDevice, (device) => {
-    load(device);
-  }, { immediate: true });
+  watch(() => [instanceRef.value?.id ?? null, instanceRef.value?.device ?? null] as const,
+    ([id, device]) => {
+      if (id) load({ id, device });
+      else load(null);
+    },
+    { immediate: true }
+  );
 
   return {
     draftValues,
