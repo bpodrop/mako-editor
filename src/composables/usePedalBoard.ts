@@ -219,8 +219,9 @@ export function usePedalBoard() {
     );
   }
 
-  function addInstance(device?: string | null) {
-    const instance = createInstance(device ?? null, nextChannel());
+  function addInstance(device?: string | null, channelOverride?: number | null) {
+    const override = typeof channelOverride === 'number' ? channelOverride : undefined;
+    const instance = createInstance(device ?? null, override ?? nextChannel());
     setInstances([...instances.value, instance]);
     return instance;
   }

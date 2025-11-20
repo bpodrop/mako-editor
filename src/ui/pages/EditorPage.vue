@@ -19,10 +19,9 @@
           <PedalNavigator
             :instances="instances"
             :selected-ids="selectedIds"
-            :selection-mode="selectionMode"
             :dirty-map="dirtyMap"
             @update:selected-ids="onNavigatorSelection"
-            @update:selection-mode="onNavigatorModeChange"
+            @add-pedal="openAddPedalDialog"
           />
         </div>
 
@@ -43,9 +42,6 @@
                 aria-controls="pedal-navigator-panel"
               >
                 {{ isNavigatorVisible ? t('board.hideNavigator') : t('board.showNavigator') }}
-              </button>
-              <button class="btn" type="button" @click="addPedal">
-                {{ t('board.addPedal') }}
               </button>
             </div>
           </section>
@@ -83,6 +79,15 @@
       </div>
     </main>
 
+    <AddPedalDialog
+      :open="isAddPedalDialogOpen"
+      :options="pedalOptions"
+      :initial-device="pendingAddDevice"
+      :initial-channel="pendingAddChannel"
+      @confirm="onAddPedalConfirm"
+      @cancel="closeAddPedalDialog"
+    />
+
     <footer class="footer">
       <small class="copyright">
         © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
@@ -115,6 +120,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BurgerMenu from '../components/BurgerMenu.vue';
 import ModeToggle from '../components/ModeToggle.vue';
+import AddPedalDialog from '../components/AddPedalDialog.vue';
 import PedalBoardCard from '../components/PedalBoardCard.vue';
 import PedalNavigator from '../components/PedalNavigator.vue';
 import { listPedals } from '../../config/pedalConfig';
@@ -134,9 +140,6 @@ const appVersion = computed(() => t('app.version', { version: pkg?.version ?? '0
 
 const initialMode = typeof window !== 'undefined' ? localStorage.getItem('midi-mode') : null;
 const interactionMode = ref<'live' | 'preset'>(initialMode === 'preset' ? 'preset' : 'live');
-const selectionModeKey = 'board-selection-mode';
-const initialSelectionMode = typeof window !== 'undefined' ? localStorage.getItem(selectionModeKey) : null;
-const selectionMode = ref<'single' | 'multi'>(initialSelectionMode === 'multi' ? 'multi' : 'single');
 const selectedIds = ref<string[]>([]);
 const dirtyMap = ref<Record<string, boolean>>({});
 const isCompactLayout = ref(false);
@@ -144,21 +147,13 @@ const isNavigatorOpen = ref(true);
 const MOBILE_QUERY = '(max-width: 720px)';
 const collapsedStorageKey = 'board-collapsed:v1';
 const collapsedMap = ref<Record<string, boolean>>({});
+const isAddPedalDialogOpen = ref(false);
+const pendingAddDevice = ref('');
+const pendingAddChannel = ref(1);
 let mediaQuery: MediaQueryList | null = null;
 
 watch(interactionMode, (mode) => {
   try { localStorage.setItem('midi-mode', mode); } catch {}
-});
-
-watch(selectionMode, (mode, previous) => {
-  if (mode !== previous) {
-    syncSelectedIds(selectedIds.value);
-  }
-  try {
-    localStorage.setItem(selectionModeKey, mode);
-  } catch {
-    // ignore persistence errors
-  }
 });
 
 const modeDescription = computed(() =>
@@ -167,20 +162,14 @@ const modeDescription = computed(() =>
 
 const visibleInstances = computed(() => {
   if (!instances.value.length) return [];
-  if (selectionMode.value === 'single') {
-    const id = selectedIds.value[0];
-    if (!id) return [];
-    return instances.value.filter((inst) => inst.id === id);
-  }
-  if (!selectedIds.value.length) return [];
-  const selectedSet = new Set(selectedIds.value);
-  return instances.value.filter((inst) => selectedSet.has(inst.id));
+  const id = selectedIds.value[0];
+  if (!id) return [];
+  const match = instances.value.find((inst) => inst.id === id);
+  return match ? [match] : [];
 });
 
 const visibleIdSet = computed(() => new Set(visibleInstances.value.map((inst) => inst.id)));
-const emptySelectionMessage = computed(() =>
-  selectionMode.value === 'multi' ? t('board.noSelectionMulti') : t('board.noSelectionSingle')
-);
+const emptySelectionMessage = computed(() => t('board.noSelectionSingle'));
 const selectionStatusMessage = computed(() => {
   const count = visibleInstances.value.length;
   if (!count) return emptySelectionMessage.value;
@@ -195,13 +184,33 @@ function isCardCollapsed(id: string): boolean {
   return Boolean(collapsedMap.value[id]);
 }
 
-function addPedal() {
-  const instance = addInstance();
-  if (selectionMode.value === 'multi') {
-    syncSelectedIds([...selectedIds.value, instance.id]);
-  } else {
-    syncSelectedIds([instance.id]);
+function suggestChannel(): number {
+  const used = new Set(instances.value.map((inst) => inst.channel));
+  for (let c = 1; c <= 16; c += 1) {
+    if (!used.has(c)) return c;
   }
+  return instances.value[instances.value.length - 1]?.channel ?? 1;
+}
+
+function addPedal(device?: string | null, channel?: number | null) {
+  const instance = addInstance(device ?? null, channel ?? null);
+  syncSelectedIds([instance.id]);
+}
+
+function openAddPedalDialog() {
+  if (!pedalOptions.length) return;
+  pendingAddDevice.value = pedalOptions[0]?.value ?? '';
+  pendingAddChannel.value = suggestChannel();
+  isAddPedalDialogOpen.value = true;
+}
+
+function closeAddPedalDialog() {
+  isAddPedalDialogOpen.value = false;
+}
+
+function onAddPedalConfirm(payload: { device: string; channel: number }) {
+  addPedal(payload.device, payload.channel);
+  closeAddPedalDialog();
 }
 
 function onUpdateDevice(payload: { id: string; device: string | null }) {
@@ -261,7 +270,6 @@ watch(instances, (next) => {
 }, { immediate: true });
 
 watch(selectedIds, (current, previous) => {
-  if (selectionMode.value !== 'single') return;
   const currentId = current[0];
   const previousId = previous?.[0];
   if (!currentId || currentId === previousId) return;
@@ -279,19 +287,11 @@ function arraysEqual(a: string[], b: string[]): boolean {
 
 function sanitizeIds(source: string[]): string[] {
   const allowed = new Set(instances.value.map((inst) => inst.id));
-  const unique: string[] = [];
   for (const id of source) {
-    if (!allowed.has(id)) continue;
-    if (unique.includes(id)) continue;
-    unique.push(id);
-    if (selectionMode.value === 'single') break;
+    if (allowed.has(id)) return [id];
   }
-  if (selectionMode.value === 'single') {
-    if (unique.length) return [unique[0]];
-    const fallback = instances.value[0]?.id;
-    return fallback ? [fallback] : [];
-  }
-  return unique;
+  const fallback = instances.value[0]?.id;
+  return fallback ? [fallback] : [];
 }
 
 function syncSelectedIds(next: string[]) {
@@ -303,11 +303,6 @@ function syncSelectedIds(next: string[]) {
 
 function onNavigatorSelection(ids: string[]) {
   syncSelectedIds(ids);
-}
-
-function onNavigatorModeChange(mode: 'single' | 'multi') {
-  if (selectionMode.value === mode) return;
-  selectionMode.value = mode;
 }
 
 function onDirtyState(payload: { id: string; dirty: boolean }) {

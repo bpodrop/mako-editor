@@ -11,11 +11,12 @@
       @click="toggle"
     >
       <span class="icon-stack" aria-hidden="true">
-        <!-- Menu icon -->
-        <svg class="icon icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 6h18"/>
-          <path d="M3 12h18"/>
-          <path d="M3 18h18"/>
+        <!-- Settings icon -->
+        <svg class="icon icon-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"
+          />
         </svg>
         <!-- Close icon -->
         <svg class="icon icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -50,14 +51,6 @@
           <DeviceSelect />
         </section>
 
-        <section class="drawer-section">
-          <ChannelPicker />
-        </section>
-
-        <section class="drawer-section">
-          <MidiTestButton />
-        </section>
-
         <section class="drawer-section drawer-meta" role="note" :aria-label="t('menu.infoTitle')">
           <div class="info-box">
             <strong class="info-title">{{ t('menu.infoTitle') }}</strong>
@@ -82,9 +75,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import DeviceSelect from './DeviceSelect.vue';
-import ChannelPicker from './ChannelPicker.vue';
 import LocaleSwitcher from './LocaleSwitcher.vue';
-import MidiTestButton from './MidiTestButton.vue';
 
 const emit = defineEmits<{
   (e: 'open-legal'): void;
@@ -137,9 +128,9 @@ onBeforeUnmount(() => {
 
 .icon-stack { position: relative; width: 22px; height: 22px; display: inline-block; }
 .icon { position: absolute; inset: 0; width: 22px; height: 22px; transition: opacity .2s ease, transform .2s ease; }
-.icon-menu { opacity: 1; }
+.icon-gear { opacity: 1; }
 .icon-close { opacity: 0; transform: rotate(-90deg) scale(.9); }
-.burger-btn.open .icon-menu { opacity: 0; transform: rotate(90deg) scale(.9); }
+.burger-btn.open .icon-gear { opacity: 0; transform: rotate(90deg) scale(.9); }
 .burger-btn.open .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
 
 .overlay {

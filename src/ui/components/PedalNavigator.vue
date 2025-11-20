@@ -2,40 +2,17 @@
   <aside class="pedal-navigator card" aria-labelledby="board-nav-title">
     <div class="navigator-header">
       <h2 id="board-nav-title">{{ t('board.navigatorTitle') }}</h2>
-      <p class="navigator-help" id="board-nav-help">
-        {{ t('board.navigatorHelp') }}
-      </p>
-      <div class="selection-toggle" role="group" :aria-label="t('board.selectionModeLabel')">
-        <label>
-          <input
-            type="radio"
-            name="selection-mode"
-            value="single"
-            :checked="props.selectionMode === 'single'"
-            @change="() => emit('update:selection-mode', 'single')"
-          />
-          {{ t('board.selectionSingle') }}
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="selection-mode"
-            value="multi"
-            :checked="props.selectionMode === 'multi'"
-            @change="() => emit('update:selection-mode', 'multi')"
-          />
-          {{ t('board.selectionMulti') }}
-        </label>
-      </div>
+      <button class="btn small add-btn" type="button" @click="emit('add-pedal')">
+        {{ t('board.addPedal') }}
+      </button>
     </div>
 
     <div
       ref="listRef"
       class="navigator-list"
       role="listbox"
-      :aria-multiselectable="props.selectionMode === 'multi' ? 'true' : 'false'"
       aria-labelledby="board-nav-title"
-      aria-describedby="board-nav-help"
+      aria-multiselectable="false"
     >
       <button
         v-for="entry in entries"
@@ -77,13 +54,12 @@ import type { PedalInstance } from '../../composables/usePedalBoard';
 const props = defineProps<{
   instances: PedalInstance[];
   selectedIds: string[];
-  selectionMode: 'single' | 'multi';
   dirtyMap: Record<string, boolean>;
 }>();
 
 const emit = defineEmits<{
   (e: 'update:selected-ids', ids: string[]): void;
-  (e: 'update:selection-mode', mode: 'single' | 'multi'): void;
+  (e: 'add-pedal'): void;
 }>();
 
 const { t } = useI18n();
@@ -104,17 +80,7 @@ function isSelected(id: string): boolean {
 }
 
 function handleSelect(id: string) {
-  if (props.selectionMode === 'single') {
-    emit('update:selected-ids', [id]);
-    return;
-  }
-  const set = new Set(props.selectedIds);
-  if (set.has(id)) {
-    set.delete(id);
-  } else {
-    set.add(id);
-  }
-  emit('update:selected-ids', Array.from(set));
+  emit('update:selected-ids', [id]);
 }
 
 function queryItems(): HTMLButtonElement[] {
@@ -153,27 +119,12 @@ function focusEdge(position: 'start' | 'end') {
 }
 .navigator-header {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-.navigator-help {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-.selection-toggle {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  font-size: 0.95rem;
-}
-.selection-toggle label {
-  display: flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
-.selection-toggle input[type='radio'] {
-  margin: 0;
+.add-btn {
+  flex-shrink: 0;
 }
 .navigator-list {
   display: flex;
