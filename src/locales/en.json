@@ -115,7 +115,8 @@
     "live": "Live",
     "preset": "Preset",
     "descriptionLive": "Changes are sent immediately to the pedal (live CC).",
-    "descriptionPreset": "Changes are stored until you apply them. Use Apply to send or Cancel to revert to the last committed values."
+    "descriptionPreset": "Changes are stored until you apply them. Use Apply to send or Cancel to revert to the last committed values.",
+    "infoLabel": "Show mode details"
   },
   "snapshots": {
     "title": "Local snapshots",

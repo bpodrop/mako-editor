@@ -115,7 +115,8 @@
     "live": "Live",
     "preset": "Preset",
     "descriptionLive": "Les modifications sont envoyées immédiatement à la pédale (CC live).",
-    "descriptionPreset": "Les modifications sont stockées jusqu'à validation. Utilisez Appliquer pour envoyer ou Annuler pour revenir à l'état validé."
+    "descriptionPreset": "Les modifications sont stockées jusqu'à validation. Utilisez Appliquer pour envoyer ou Annuler pour revenir à l'état validé.",
+    "infoLabel": "Afficher l'aide sur le fonctionnement des modes"
   },
   "snapshots": {
     "title": "Snapshots locaux",

@@ -29,8 +29,7 @@
           <section class="board-toolbar" aria-labelledby="controls-heading">
             <div class="controls-heading">
               <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
-              <ModeToggle v-model="interactionMode" />
-              <p class="mode-info">{{ modeDescription }}</p>
+              <ModeToggle v-model="interactionMode" :descriptions="modeDescriptions" />
             </div>
             <div class="board-actions">
               <button
@@ -156,9 +155,12 @@ watch(interactionMode, (mode) => {
   try { localStorage.setItem('midi-mode', mode); } catch {}
 });
 
-const modeDescription = computed(() =>
-  interactionMode.value === 'live' ? t('modes.descriptionLive') : t('modes.descriptionPreset')
-);
+const modeDescriptions = computed(() => ({
+  live: t('modes.descriptionLive'),
+  preset: t('modes.descriptionPreset'),
+}));
+
+const modeDescription = computed(() => modeDescriptions.value[interactionMode.value]);
 
 const visibleInstances = computed(() => {
   if (!instances.value.length) return [];
