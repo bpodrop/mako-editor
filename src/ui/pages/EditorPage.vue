@@ -42,7 +42,7 @@
           <section class="board-toolbar" aria-labelledby="controls-heading">
             <div class="controls-heading">
               <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
-              <ModeToggle v-model="interactionMode" :descriptions="modeDescriptions" />
+              <ModeToggle v-model="interactionMode" />
             </div>
             <div class="board-actions">
               <button
@@ -67,7 +67,7 @@
               v-show="isInstanceVisible(instance.id)"
               :instance="instance"
               :interaction-mode="interactionMode"
-              :mode-description="modeDescription"
+              
               :is-output-ready="isOutputReady"
               @update-device="onUpdateDevice"
               @update-channel="onUpdateChannel"
@@ -162,13 +162,6 @@ let mediaQuery: MediaQueryList | null = null;
 watch(interactionMode, (mode) => {
   try { localStorage.setItem('midi-mode', mode); } catch {}
 });
-
-const modeDescriptions = computed(() => ({
-  live: t('modes.descriptionLive'),
-  preset: t('modes.descriptionPreset'),
-}));
-
-const modeDescription = computed(() => modeDescriptions.value[interactionMode.value]);
 
 const visibleInstances = computed(() => {
   if (!instances.value.length) return [];

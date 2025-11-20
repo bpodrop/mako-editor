@@ -64,7 +64,6 @@
 
       <div class="controls-header">
         <div>
-          <p class="mode-info">{{ modeDescription }}</p>
           <p v-if="props.interactionMode === 'preset' && dirtyCount > 0" class="dirty-indicator">
             {{ t('controls.dirtyHint', { count: dirtyCount }) }}
           </p>
@@ -119,7 +118,6 @@ import PcSender from './PcSender.vue';
 const props = defineProps<{
   instance: PedalInstance;
   interactionMode: 'live' | 'preset';
-  modeDescription: string;
   isOutputReady: boolean;
 }>();
 
@@ -145,7 +143,6 @@ const controlMap = computed(() => {
   }
   return map;
 });
-const modeDescription = computed(() => props.modeDescription);
 
 const instanceRef = computed(() => ({
   id: props.instance.id,

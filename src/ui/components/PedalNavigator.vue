@@ -2,9 +2,17 @@
   <aside class="pedal-navigator card" aria-labelledby="board-nav-title">
     <div class="navigator-header">
       <h2 id="board-nav-title">{{ t('board.navigatorTitle') }}</h2>
-      <button class="btn small add-btn" type="button" @click="emit('add-pedal')">
-        {{ t('board.addPedal') }}
-      </button>
+      <div class="navigator-fab">
+        <button
+          type="button"
+          class="fab-btn"
+          :title="t('board.addPedal')"
+          :aria-label="t('board.addPedal')"
+          @click="emit('add-pedal')"
+        >
+          <span aria-hidden="true">+</span>
+        </button>
+      </div>
     </div>
 
     <div
@@ -57,17 +65,7 @@
       </div>
     </div>
 
-    <div class="navigator-fab">
-      <button
-        type="button"
-        class="fab-btn"
-        :title="t('board.addPedal')"
-        :aria-label="t('board.addPedal')"
-        @click="emit('add-pedal')"
-      >
-        <span aria-hidden="true">+</span>
-      </button>
-    </div>
+    
   </aside>
 </template>
 
