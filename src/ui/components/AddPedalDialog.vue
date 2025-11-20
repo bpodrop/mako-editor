@@ -13,8 +13,8 @@
         @keydown.esc.prevent.stop="handleCancel"
       >
         <header class="dialog-header">
-          <h2 :id="titleId">{{ t('board.addPedalTitle') }}</h2>
-          <p :id="descriptionId" class="dialog-description">{{ t('board.addPedalDescription') }}</p>
+          <h2 :id="titleId">{{ dialogTitle }}</h2>
+          <p :id="descriptionId" class="dialog-description">{{ dialogDescription }}</p>
         </header>
 
         <form class="dialog-body" @submit.prevent="handleConfirm">
@@ -45,7 +45,7 @@
               {{ t('board.addPedalCancel') }}
             </button>
             <button type="submit" class="btn" :disabled="!selectedDevice">
-              {{ t('board.addPedalConfirm') }}
+              {{ confirmLabel }}
             </button>
           </div>
         </form>
@@ -63,11 +63,14 @@ interface Option {
   label: string;
 }
 
+type DialogMode = 'add' | 'edit';
+
 const props = defineProps<{
   open: boolean;
   options: Option[];
   initialDevice?: string | null;
   initialChannel?: number | null;
+  mode?: DialogMode;
 }>();
 
 const emit = defineEmits<{
@@ -86,6 +89,16 @@ const deviceId = `add-pedal-device-${baseId}`;
 const channelId = `add-pedal-channel-${baseId}`;
 
 const midiChannels = computed(() => Array.from({ length: 16 }, (_, index) => index + 1));
+const dialogMode = computed<DialogMode>(() => props.mode ?? 'add');
+const dialogTitle = computed(() =>
+  dialogMode.value === 'edit' ? t('board.editPedalTitle') : t('board.addPedalTitle')
+);
+const dialogDescription = computed(() =>
+  dialogMode.value === 'edit' ? t('board.editPedalDescription') : t('board.addPedalDescription')
+);
+const confirmLabel = computed(() =>
+  dialogMode.value === 'edit' ? t('board.editPedalConfirm') : t('board.addPedalConfirm')
+);
 
 function sanitizeChannel(value?: number | null) {
   if (typeof value === 'number' && value >= 1 && value <= 16) return value;

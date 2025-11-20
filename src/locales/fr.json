@@ -80,6 +80,10 @@
     "addPedalDescription": "Sélectionnez un modèle et associez un canal MIDI.",
     "addPedalConfirm": "Ajouter à l'éditeur",
     "addPedalCancel": "Annuler",
+    "editPedal": "Modifier le modèle et le canal",
+    "editPedalTitle": "Modifier la pédale",
+    "editPedalDescription": "Sélectionnez le modèle et le canal MIDI pour cette pédale.",
+    "editPedalConfirm": "Appliquer",
     "channelSelect": "Canal MIDI",
     "import": "Importer",
     "export": "Exporter"

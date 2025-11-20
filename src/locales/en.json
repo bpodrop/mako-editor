@@ -80,6 +80,10 @@
     "addPedalDescription": "Choose a pedal model and assign its MIDI channel.",
     "addPedalConfirm": "Add to board",
     "addPedalCancel": "Cancel",
+    "editPedal": "Edit model & channel",
+    "editPedalTitle": "Edit pedal settings",
+    "editPedalDescription": "Update the pedal model and assign its MIDI channel.",
+    "editPedalConfirm": "Apply changes",
     "channelSelect": "MIDI channel",
     "import": "Import",
     "export": "Export"

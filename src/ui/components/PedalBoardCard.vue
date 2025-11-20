@@ -20,6 +20,15 @@
         <button
           type="button"
           class="icon-btn"
+          :title="t('board.editPedal')"
+          :aria-label="t('board.editPedal')"
+          @click="emit('edit', props.instance.id)"
+        >
+          ✎
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
           :title="collapsed ? t('board.expand') : t('board.collapse')"
           :aria-expanded="collapsed ? 'false' : 'true'"
           :aria-controls="bodyId"
@@ -43,33 +52,21 @@
     </header>
 
     <div class="card-body" :id="bodyId" :aria-hidden="collapsed ? 'true' : 'false'" v-show="!collapsed">
-      <div class="selectors">
-        <label>
-          <span>{{ t('board.pedalSelect') }}</span>
-          <select :value="props.instance.device ?? ''" @change="onDeviceChange">
-            <option v-for="opt in pedalOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-          </select>
-        </label>
-      <label>
-        <span>{{ t('board.channelSelect') }}</span>
-        <select :value="channel" @change="onChannelChange">
-          <option v-for="c in channels" :key="c" :value="c">{{ c }}</option>
-        </select>
-      </label>
-      <button class="btn ghost" type="button" @click="() => fileInput?.click()">
-        {{ t('board.import') }}
-      </button>
-      <button class="btn" type="button" @click="exportConfig">
-        {{ t('board.export') }}
-      </button>
-      <input
-        ref="fileInputEl"
-        type="file"
-        accept="application/json,.json"
-        style="display:none"
-        @change="onImportFile"
-      />
-    </div>
+      <div class="card-tools">
+        <button class="btn ghost" type="button" @click="() => fileInput?.click()">
+          {{ t('board.import') }}
+        </button>
+        <button class="btn" type="button" @click="exportConfig">
+          {{ t('board.export') }}
+        </button>
+        <input
+          ref="fileInputEl"
+          type="file"
+          accept="application/json,.json"
+          style="display:none"
+          @change="onImportFile"
+        />
+      </div>
 
       <div class="controls-header">
         <div>
@@ -77,11 +74,11 @@
           <p v-if="props.interactionMode === 'preset' && dirtyCount > 0" class="dirty-indicator">
             {{ t('controls.dirtyHint', { count: dirtyCount }) }}
           </p>
-      </div>
-      <div class="controls-actions">
-        <button class="btn" type="button" :disabled="!props.isOutputReady" @click="sendAll">
-          {{ t('controls.sendAll') }}
-        </button>
+        </div>
+        <div class="controls-actions">
+          <button class="btn" type="button" :disabled="!props.isOutputReady" @click="sendAll">
+            {{ t('controls.sendAll') }}
+          </button>
         <template v-if="props.interactionMode === 'preset'">
           <button class="btn" type="button" :disabled="!canApply" @click="applyPresetChanges">
             {{ t('controls.applyPreset') }}
@@ -90,8 +87,8 @@
             {{ t('controls.cancelPreset') }}
           </button>
         </template>
+        </div>
       </div>
-    </div>
 
       <p v-if="!selectedConfig" class="empty">{{ t('controls.selectConfig') }}</p>
       <template v-else>
@@ -144,11 +141,8 @@ import type { AnyControl } from '../../core/entities/controls';
 import SnapshotManager from './SnapshotManager.vue';
 import PcSender from './PcSender.vue';
 
-type Option = { label: string; value: string };
-
 const props = defineProps<{
   instance: PedalInstance;
-  pedalOptions: Option[];
   interactionMode: 'live' | 'preset';
   modeDescription: string;
   isOutputReady: boolean;
@@ -164,13 +158,12 @@ const emit = defineEmits<{
   (e: 'move-down', id: string): void;
   (e: 'dirty-state', payload: { id: string; dirty: boolean }): void;
   (e: 'toggle-collapse', id: string): void;
+  (e: 'edit', id: string): void;
 }>();
 
 const { t } = useI18n();
 const { sendControlChange } = useMidiControls();
-const channels = Array.from({ length: 16 }, (_, i) => i + 1);
 const channel = computed(() => props.instance.channel);
-const pedalOptions = computed(() => props.pedalOptions);
 const collapsed = computed(() => Boolean(props.collapsed));
 const bodyId = computed(() => `pedal-body-${props.instance.id}`);
 
@@ -230,16 +223,6 @@ watch(dirtyCount, (count) => {
 
 function isControlDirty(id: string) {
   return dirtySet.value.has(id);
-}
-
-function onDeviceChange(event: Event) {
-  const value = (event.target as HTMLSelectElement).value || null;
-  emit('update-device', { id: props.instance.id, device: value });
-}
-
-function onChannelChange(event: Event) {
-  const value = Number((event.target as HTMLSelectElement).value);
-  emit('update-channel', { id: props.instance.id, channel: value });
 }
 
 function onValue(ctrl: AnyControl, v: number) {
@@ -360,15 +343,15 @@ async function onImportFile(ev: Event) {
     const importedChannel = typeof (data as any).channel === 'number' ? (data as any).channel : undefined;
     if (!device || !vals) throw new Error(t('controls.invalidConfig'));
 
-    const exists = pedalOptions.value.some(p => p.value === device);
-    if (exists) emit('update-device', { id: props.instance.id, device });
+    const config = getPedalByDevice(device);
+    if (config) emit('update-device', { id: props.instance.id, device });
     else {
       console.warn(t('controls.unknownPedal', { device }));
     }
 
     if (importedChannel != null) emit('update-channel', { id: props.instance.id, channel: importedChannel });
 
-    const targetConfig = exists ? getPedalByDevice(device) : selectedConfig.value;
+    const targetConfig = config ?? selectedConfig.value;
     const allowedIds = new Set((targetConfig?.controls ?? []).map(c => c.id));
     for (const [k, v] of Object.entries(vals)) {
       if (!allowedIds.size || allowedIds.has(k)) {
@@ -454,18 +437,11 @@ const controlsCardStyle = computed(() => {
   color: var(--danger, #c00);
   border-color: currentColor;
 }
-.selectors {
+.card-tools {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: flex-end;
-}
-.selectors label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 160px;
-  flex: 1;
+  align-items: center;
 }
 .controls-header {
   display: flex;

@@ -53,7 +53,6 @@
               :key="instance.id"
               v-show="isInstanceVisible(instance.id)"
               :instance="instance"
-              :pedal-options="pedalOptions"
               :interaction-mode="interactionMode"
               :mode-description="modeDescription"
               :is-output-ready="isOutputReady"
@@ -66,6 +65,7 @@
               @move-down="(id: string) => moveInstance(id, 'down')"
               @dirty-state="onDirtyState"
               @toggle-collapse="onToggleCollapse"
+              @edit="openEditPedalDialog"
             />
           </div>
 
@@ -83,6 +83,7 @@
       :options="pedalOptions"
       :initial-device="pendingAddDevice"
       :initial-channel="pendingAddChannel"
+      :mode="pedalDialogMode"
       @confirm="onAddPedalConfirm"
       @cancel="closeAddPedalDialog"
     />
@@ -149,6 +150,8 @@ const collapsedMap = ref<Record<string, boolean>>({});
 const isAddPedalDialogOpen = ref(false);
 const pendingAddDevice = ref('');
 const pendingAddChannel = ref(1);
+const pedalDialogMode = ref<'add' | 'edit'>('add');
+const editingInstanceId = ref<string | null>(null);
 let mediaQuery: MediaQueryList | null = null;
 
 watch(interactionMode, (mode) => {
@@ -203,15 +206,34 @@ function openAddPedalDialog() {
   if (!pedalOptions.length) return;
   pendingAddDevice.value = pedalOptions[0]?.value ?? '';
   pendingAddChannel.value = suggestChannel();
+  pedalDialogMode.value = 'add';
+  editingInstanceId.value = null;
+  isAddPedalDialogOpen.value = true;
+}
+
+function openEditPedalDialog(id: string) {
+  const instance = instances.value.find((inst) => inst.id === id);
+  if (!instance) return;
+  pendingAddDevice.value = instance.device ?? pedalOptions[0]?.value ?? '';
+  pendingAddChannel.value = instance.channel ?? 1;
+  pedalDialogMode.value = 'edit';
+  editingInstanceId.value = id;
   isAddPedalDialogOpen.value = true;
 }
 
 function closeAddPedalDialog() {
   isAddPedalDialogOpen.value = false;
+  editingInstanceId.value = null;
+  pedalDialogMode.value = 'add';
 }
 
 function onAddPedalConfirm(payload: { device: string; channel: number }) {
-  addPedal(payload.device, payload.channel);
+  const editingId = editingInstanceId.value;
+  if (editingId) {
+    updateInstance(editingId, { device: payload.device, channel: payload.channel });
+  } else {
+    addPedal(payload.device, payload.channel);
+  }
   closeAddPedalDialog();
 }
 
