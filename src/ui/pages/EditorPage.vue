@@ -276,7 +276,7 @@ watch(selectedIds, (current, previous) => {
   if (typeof window === 'undefined') return;
   void nextTick(() => {
     const target = document.getElementById(`pedal-card-${currentId}`);
-    target?.focus();
+    target?.focus({ preventScroll: true });
   });
 });
 
