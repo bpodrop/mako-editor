@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { EnumControl as EnumCtrl } from '../../../core/entities/controls';
 
 const props = defineProps<{
@@ -27,8 +28,9 @@ const props = defineProps<{
 const emit = defineEmits<{ (e: 'update:value', value: number): void }>();
 
 const id = computed(() => `ctrl-${props.control.id}`);
-const collator = new Intl.Collator('fr', { sensitivity: 'base' });
-const keys = computed(() => Object.keys(props.control.map).sort(collator.compare));
+const { locale } = useI18n();
+const collator = computed(() => new Intl.Collator(locale.value, { sensitivity: 'base' }));
+const keys = computed(() => Object.keys(props.control.map).sort(collator.value.compare));
 
 function keyFromValue(val?: number): string | '' {
   if (typeof val !== 'number') return '';

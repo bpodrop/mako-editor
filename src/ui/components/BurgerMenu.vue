@@ -6,16 +6,17 @@
       type="button"
       :aria-expanded="open ? 'true' : 'false'"
       aria-controls="app-drawer"
-      :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'"
-      :title="open ? 'Fermer le menu' : 'Ouvrir le menu'"
+      :aria-label="open ? t('menu.close') : t('menu.open')"
+      :title="open ? t('menu.close') : t('menu.open')"
       @click="toggle"
     >
       <span class="icon-stack" aria-hidden="true">
-        <!-- Menu icon -->
-        <svg class="icon icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 6h18"/>
-          <path d="M3 12h18"/>
-          <path d="M3 18h18"/>
+        <!-- Settings icon -->
+        <svg class="icon icon-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"
+          />
         </svg>
         <!-- Close icon -->
         <svg class="icon icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -38,62 +39,31 @@
       aria-labelledby="drawer-title"
     >
       <header class="drawer-header">
-        <h2 id="drawer-title" class="drawer-title">Menu</h2>
+        <h2 id="drawer-title" class="drawer-title">{{ t('menu.title') }}</h2>
       </header>
 
       <div class="drawer-content">
         <section class="drawer-section">
+          <LocaleSwitcher />
+        </section>
+
+        <section class="drawer-section">
           <DeviceSelect />
         </section>
 
-        <section class="drawer-section">
-          <ChannelPicker />
-        </section>
-
-        <section class="drawer-section">
-          <label class="label" for="pedal-config">Pédale</label>
-          <select id="pedal-config" :value="selectedDevice" @change="onChangeDevice">
-            <option v-for="p in pedalOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
-          </select>
-        </section>
-
-        <section class="drawer-section">
-          <PcSender :pedal-name="selectedDevice" />
-        </section>
-
-        <section class="drawer-section">
-          <div class="row">
-            <button class="btn" type="button" @click="$emit('export-config')" title="Sauvegarder la configuration courante en fichier JSON">
-              Sauvegarder (fichier)
-            </button>
-            <button type="button" @click="() => fileInput?.click()" title="Charger une configuration depuis un fichier JSON">
-              Charger (fichier)
-            </button>
-            <input
-              ref="fileInputEl"
-              type="file"
-              accept="application/json,.json"
-              style="display:none"
-              @change="(e: Event) => { $emit('import-file', e); resetFileInput(); }"
-            />
-          </div>
-        </section>
-
-        <section class="drawer-section drawer-meta" role="note" aria-label="Infos pratiques">
+        <section class="drawer-section drawer-meta" role="note" :aria-label="t('menu.infoTitle')">
           <div class="info-box">
-            <strong class="info-title">Infos 💡</strong>
+            <strong class="info-title">{{ t('menu.infoTitle') }}</strong>
             <ul class="info-list">
-              <li>Cette application a besoin d'un accès au Web MIDI pour communiquer avec vos appareils.
-Autorisez l'accès lorsque votre navigateur le demande.</li>
-              <li>Application installable (PWA) - ajoutez-la à votre écran d'accueil pour l'utiliser aussi en mode hors ligne.
-</li>
+              <li>{{ t('menu.tipMidi') }}</li>
+              <li>{{ t('menu.tipPwa') }}</li>
             </ul>
           </div>
         </section>
 
         <section class="drawer-section">
           <button class="link-btn" type="button" @click="openLegal">
-            Mentions légales
+            {{ t('menu.legal') }}
           </button>
         </section>
       </div>
@@ -102,28 +72,17 @@ Autorisez l'accès lorsque votre navigateur le demande.</li>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useI18n } from 'vue-i18n';
 import DeviceSelect from './DeviceSelect.vue';
-import ChannelPicker from './ChannelPicker.vue';
-import PcSender from './PcSender.vue';
-
-type Option = { label: string; value: string };
-
-const props = defineProps<{
-  pedalOptions: Option[];
-  selectedDevice: string;
-}>();
+import LocaleSwitcher from './LocaleSwitcher.vue';
 
 const emit = defineEmits<{
-  (e: 'update:selectedDevice', value: string): void;
-  (e: 'export-config'): void;
-  (e: 'import-file', ev: Event): void;
   (e: 'open-legal'): void;
 }>();
 
 const open = ref(false);
-const fileInputEl = ref<HTMLInputElement | null>(null);
-const fileInput = computed(() => fileInputEl.value as HTMLInputElement | null);
+const { t } = useI18n();
 
 function toggle() { open.value = !open.value; }
 function close() { open.value = false; }
@@ -133,18 +92,6 @@ function onKeydown(e: KeyboardEvent) {
     e.preventDefault();
     close();
   }
-}
-
-function onChangeDevice(e: Event) {
-  const value = (e.target as HTMLSelectElement).value;
-  emit('update:selectedDevice', value);
-  // Auto-close the menu when a pedal is selected
-  close();
-}
-
-function resetFileInput() {
-  const el = fileInput.value;
-  if (el) el.value = '';
 }
 
 function openLegal() {
@@ -181,9 +128,9 @@ onBeforeUnmount(() => {
 
 .icon-stack { position: relative; width: 22px; height: 22px; display: inline-block; }
 .icon { position: absolute; inset: 0; width: 22px; height: 22px; transition: opacity .2s ease, transform .2s ease; }
-.icon-menu { opacity: 1; }
+.icon-gear { opacity: 1; }
 .icon-close { opacity: 0; transform: rotate(-90deg) scale(.9); }
-.burger-btn.open .icon-menu { opacity: 0; transform: rotate(90deg) scale(.9); }
+.burger-btn.open .icon-gear { opacity: 0; transform: rotate(90deg) scale(.9); }
 .burger-btn.open .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
 
 .overlay {

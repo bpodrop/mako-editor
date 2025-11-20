@@ -1,50 +1,126 @@
 import { reactive, watch, type Ref } from 'vue';
+import { valuesStorageKey } from './storageKeys';
 
-export function useControlValues(selectedDevice: Ref<string>) {
-  const values = reactive<Record<string, number>>({});
+type ValueMap = Record<string, number>;
 
-  function reset() {
-    for (const k of Object.keys(values)) delete (values as any)[k];
+export interface ValuesInstanceRef {
+  id: string;
+  device?: string | null;
+}
+
+export interface StoredControlValues {
+  device?: string | null;
+  values: ValueMap;
+}
+
+function assign(target: ValueMap, source: ValueMap) {
+  for (const key of Object.keys(target)) delete target[key];
+  for (const [key, value] of Object.entries(source)) {
+    target[key] = value as number;
   }
+}
 
-  function load(device: string) {
-    reset();
-    if (!device) return;
-    try {
-      const raw = localStorage.getItem(`pedal-values:${device}`);
-      if (!raw) return;
-      const obj = JSON.parse(raw) as Record<string, number>;
-      for (const [k, v] of Object.entries(obj)) values[k] = v;
-    } catch {
-      // ignore storage errors
-    }
-  }
+export function useControlValues(instanceRef: Ref<ValuesInstanceRef | null>) {
+  const committedValues = reactive<ValueMap>({});
+  const draftValues = reactive<ValueMap>({});
 
   function persist() {
-    const device = selectedDevice.value;
-    if (!device) return;
+    const ctx = instanceRef.value;
+    if (!ctx?.id) return;
+    const payload: StoredControlValues = {
+      device: ctx.device ?? null,
+      values: snapshotCommitted(),
+    };
     try {
-      const snapshot: Record<string, number> = {};
-      for (const [k, val] of Object.entries(values)) snapshot[k] = val as number;
-      localStorage.setItem(`pedal-values:${device}`, JSON.stringify(snapshot));
+      localStorage.setItem(valuesStorageKey(ctx.id), JSON.stringify(payload));
     } catch {
       // ignore storage errors
     }
   }
 
-  function setValue(id: string, value: number) {
-    values[id] = value;
+  function load(ctx: ValuesInstanceRef | null) {
+    assign(committedValues, {});
+    assign(draftValues, {});
+    const id = ctx?.id;
+    if (!id) return;
+    try {
+      const raw = localStorage.getItem(valuesStorageKey(id));
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as StoredControlValues | ValueMap;
+      if (parsed && 'values' in parsed) {
+        if (ctx?.device && parsed.device && parsed.device !== ctx.device) {
+          return;
+        }
+        const values = parsed.values ?? {};
+        assign(committedValues, values);
+        assign(draftValues, values);
+      } else if (parsed && typeof parsed === 'object') {
+        assign(committedValues, parsed as ValueMap);
+        assign(draftValues, parsed as ValueMap);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }
+
+  function setDraftValue(id: string, value: number) {
+    draftValues[id] = value;
+  }
+
+  function commitValue(id: string, value: number) {
+    committedValues[id] = value;
+    draftValues[id] = value;
     persist();
   }
 
-  watch(selectedDevice, (d) => {
-    try { localStorage.setItem('pedal-selected', d); } catch {}
-    load(d);
-  }, { immediate: true });
+  function commitMany(values: ValueMap) {
+    assign(committedValues, values);
+    assign(draftValues, values);
+    persist();
+  }
+
+  function resetDraft() {
+    assign(draftValues, committedValues);
+  }
+
+  function applyDraft(values: ValueMap) {
+    resetDraft();
+    for (const [key, value] of Object.entries(values)) {
+      draftValues[key] = value as number;
+    }
+  }
+
+  function snapshotCommitted(): ValueMap {
+    const out: ValueMap = {};
+    for (const [key, value] of Object.entries(committedValues)) {
+      out[key] = value as number;
+    }
+    return out;
+  }
+
+  function getDirtyIds(): string[] {
+    const keys = new Set([...Object.keys(committedValues), ...Object.keys(draftValues)]);
+    return Array.from(keys).filter((key) => committedValues[key] !== draftValues[key]);
+  }
+
+  watch(() => [instanceRef.value?.id ?? null, instanceRef.value?.device ?? null] as const,
+    ([id, device]) => {
+      if (id) load({ id, device });
+      else load(null);
+    },
+    { immediate: true }
+  );
 
   return {
-    values,
-    setValue,
+    draftValues,
+    committedValues,
+    setDraftValue,
+    commitValue,
+    commitMany,
+    resetDraft,
+    applyDraft,
+    snapshotCommitted,
+    getDirtyIds,
   } as const;
 }
 

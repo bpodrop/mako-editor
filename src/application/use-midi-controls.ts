@@ -7,12 +7,12 @@ import { useMidi } from '../ui/composables/useMidiStore';
 export function useMidiControls() {
   const midi = useMidi();
 
-  function sendControlChange(controller: number, value: number) {
-    return midi.sendControlChange(controller, value);
+  function sendControlChange(controller: number, value: number, options?: { channel?: number }) {
+    return midi.sendControlChange(controller, value, options);
   }
 
-  function sendProgramChange(program: number) {
-    return midi.sendProgramChange(program);
+  function sendProgramChange(program: number, options?: { channel?: number }) {
+    return midi.sendProgramChange(program, options);
   }
 
   return {

@@ -1,0 +1,124 @@
+{
+  "app": {
+    "title": "Mako MIDI Editor",
+    "subtitle": "Simple MIDI editor for Walrus Audio Mako series",
+    "version": "V{version}"
+  },
+  "menu": {
+    "title": "Menu",
+    "open": "Open menu",
+    "close": "Close menu",
+    "pedal": "Pedal",
+    "export": "Save (file)",
+    "import": "Load (file)",
+    "legal": "Legal notice",
+    "infoTitle": "Tips 💡",
+    "tipMidi": "This app needs Web MIDI access to communicate with your gear. Allow access when the browser asks.",
+    "tipPwa": "Installable (PWA) — add it to your home screen to use it offline too."
+  },
+  "controls": {
+    "heading": "Controls",
+    "applyPreset": "Apply",
+    "cancelPreset": "Cancel",
+    "selectConfig": "Select a configuration to display the controls.",
+    "noOutput": "No MIDI output available — controls are disabled.",
+    "noOutputAlert": "No MIDI output selected.",
+    "noPedal": "No pedal selected.",
+    "unknownPedal": "Unknown pedal in the list: {device}",
+    "invalidConfig": "Configuration format not recognized.",
+    "loadFailed": "Failed to load: {message}",
+    "dirtyHint": "Pending changes: {count}",
+    "liveSent": "Control \"{control}\" sent.",
+    "applySuccess": "{count} control(s) applied.",
+    "cancelled": "Changes discarded."
+  },
+  "device": {
+    "label": "MIDI Output",
+    "empty": "No output available",
+    "unnamed": "Unnamed output",
+    "refresh": "Refresh"
+  },
+  "channel": {
+    "label": "MIDI Channel"
+  },
+  "pcSender": {
+    "title": "Preset",
+    "label": "Preset",
+    "select": "Select",
+    "range": "{min}–{max}",
+    "bank": "Bank",
+    "bankLabel": "Bank {bank}",
+    "active": "Active preset: {preset} (PC #{number})"
+  },
+  "ccSender": {
+    "title": "Control Change",
+    "controller": "Controller (0-127)",
+    "value": "Value (0-127)",
+    "send": "Send CC"
+  },
+  "board": {
+    "addPedal": "Add pedal",
+    "cardTitle": "Pedal",
+    "channelLabel": "Channel {channel}",
+    "navigatorTitle": "Pedals",
+    "showNavigator": "Show pedal list",
+    "hideNavigator": "Hide pedal list",
+    "collapse": "Collapse card",
+    "expand": "Expand card",
+    "noSelectionSingle": "Select a pedal to display its controls.",
+    "visibleCount": "{count} pedal(s) displayed.",
+    "dirtyLabel": "Pending changes",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "duplicate": "Duplicate",
+    "remove": "Remove",
+    "removeConfirm": "Remove this pedal? This action cannot be undone.",
+    "pedalSelect": "Model",
+    "selectPedalPlaceholder": "Choose a model",
+    "addPedalTitle": "Add a pedal",
+    "addPedalDescription": "Choose a pedal model and assign its MIDI channel.",
+    "addPedalConfirm": "Add to board",
+    "addPedalCancel": "Cancel",
+    "editPedal": "Edit model & channel",
+    "editPedalTitle": "Edit pedal settings",
+    "editPedalDescription": "Update the pedal model and assign its MIDI channel.",
+    "editPedalConfirm": "Apply changes",
+    "channelSelect": "MIDI channel",
+    "import": "Import",
+    "export": "Export"
+  },
+  "footer": {
+    "legal": "Legal notice",
+    "github": "View the project on GitHub"
+  },
+  "locale": {
+    "label": "Language",
+    "english": "English",
+    "french": "Français"
+  },
+  "legal": {
+    "back": "← Back to the editor",
+    "title": "Legal",
+    "lead": "Legal notice, disclaimer, and intellectual property information.",
+    "disclaimerTitle": "Disclaimer and respect for intellectual property",
+    "disclaimer1": "This app is an independent project with no commercial, technical, or legal connection to Walrus Audio.",
+    "disclaimer2": "All brands, names, visuals, and products mentioned (including Walrus Audio MAKO pedals) are the exclusive property of Walrus Audio. They are cited solely for identification and interoperability purposes.",
+    "disclaimer3": "The developer claims no rights over these elements and does not represent Walrus Audio. Walrus Audio is not responsible for the content, operation, or consequences of using this app.",
+    "liabilityTitle": "No warranty and limitation of liability",
+    "liability1": "The app is provided “as is,” without express or implied warranties, including any warranty of proper operation, accuracy, availability, absence of defects, or fitness for a particular purpose.",
+    "liability2": "You use the app at your own risk. The developer cannot be held liable for any loss or damage of any kind, direct or indirect, resulting from use of or inability to use the app."
+  },
+  "midi": {
+    "noOutputSelected": "No MIDI output selected.",
+    "testButton": "Test connection",
+    "testSent": "Test message sent on channel {channel}."
+  },
+  "modes": {
+    "label": "Mode",
+    "live": "Live",
+    "preset": "Preset",
+    "descriptionLive": "Changes are sent immediately to the pedal (live CC).",
+    "descriptionPreset": "Changes are stored until you apply them. Use Apply to send or Cancel to revert to the last committed values.",
+    "infoLabel": "Show mode details"
+  }
+}
