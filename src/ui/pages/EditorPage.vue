@@ -11,9 +11,6 @@
             <p class="hero-lede">{{ t('app.subtitle') }}</p>
           </div>
           <div class="hero-actions">
-            <button class="btn hero-cta" type="button" @click="openAddPedalDialog">
-              {{ t('board.addPedal') }}
-            </button>
             <BurgerMenu @open-legal="navigateLegal" />
           </div>
         </div>
@@ -403,15 +400,6 @@ function toggleNavigator() {
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
-}
-.hero-cta {
-  background: var(--primary-contrast);
-  color: var(--primary);
-  border-color: transparent;
-  box-shadow: var(--shadow-1);
-}
-.hero-cta:hover:not(:disabled) {
-  filter: brightness(0.98);
 }
 .hero-actions :deep(.burger-btn) {
   border-color: rgba(255, 255, 255, 0.4);
