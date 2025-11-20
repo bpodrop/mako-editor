@@ -1,11 +1,23 @@
 <template>
   <div class="container">
     <header class="header" role="banner">
-      <div>
-        <h1>{{ t('app.title') }}</h1>
-        <p class="subtitle">{{ t('app.subtitle') }}</p>
+      <div class="hero">
+        <div class="hero-meta">
+          <span class="hero-badge">{{ appVersion }}</span>
+        </div>
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1>{{ t('app.title') }}</h1>
+            <p class="hero-lede">{{ t('app.subtitle') }}</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn hero-cta" type="button" @click="openAddPedalDialog">
+              {{ t('board.addPedal') }}
+            </button>
+            <BurgerMenu @open-legal="navigateLegal" />
+          </div>
+        </div>
       </div>
-      <BurgerMenu @open-legal="navigateLegal" />
     </header>
 
     <main id="main" role="main">
@@ -341,13 +353,82 @@ function toggleNavigator() {
 
 <style scoped>
 .header {
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
-.subtitle {
-  margin: 0.25rem 0 0;
+.hero {
+  background: linear-gradient(120deg,
+    color-mix(in srgb, var(--primary) 65%, transparent) 0%,
+    color-mix(in srgb, var(--primary) 25%, var(--surface)) 60%);
+  border-radius: calc(var(--radius) * 1.5);
+  padding: 2.25rem clamp(1rem, 4vw, 2.75rem);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  color: var(--primary-contrast);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.hero-meta {
+  display: flex;
+  justify-content: flex-end;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+}
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.hero-text {
+  flex: 1;
+  min-width: 220px;
+}
+.hero-text h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  line-height: 1.1;
+}
+.hero-lede {
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.hero-cta {
+  background: var(--primary-contrast);
+  color: var(--primary);
+  border-color: transparent;
+  box-shadow: var(--shadow-1);
+}
+.hero-cta:hover:not(:disabled) {
+  filter: brightness(0.98);
+}
+.hero-actions :deep(.burger-btn) {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--primary-contrast);
+}
+.hero-actions :deep(.burger-btn.open) {
+  background: var(--primary-contrast);
+  color: var(--primary);
+  border-color: transparent;
 }
 .controls-heading {
   display: flex;
@@ -365,13 +446,25 @@ function toggleNavigator() {
 }
 .navigator-panel {
   min-width: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease;
+  will-change: opacity, transform;
 }
 .board-layout.is-compact .navigator-panel {
   position: relative;
   width: 100%;
+  max-height: 999px;
+  overflow: hidden;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
 }
-.board-layout.is-compact .navigator-panel[data-open='false'] {
-  display: none;
+.board-layout.is-compact .navigator-panel[data-open='false'],
+.board-layout.is-compact .navigator-panel[aria-hidden='true'] {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  pointer-events: none;
+  visibility: hidden;
 }
 .board-content {
   display: flex;
@@ -395,10 +488,25 @@ function toggleNavigator() {
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+.board-actions .btn,
+.controls-actions .btn,
+.navigator-toggle {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  will-change: transform;
+}
+.board-actions .btn:hover:not(:disabled),
+.board-actions .btn:focus-visible,
+.controls-actions .btn:hover:not(:disabled),
+.controls-actions .btn:focus-visible,
+.navigator-toggle:hover:not(:disabled),
+.navigator-toggle:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: var(--focus-ring);
+}
 .board-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
 }
 .empty-selection {
   margin: 0;

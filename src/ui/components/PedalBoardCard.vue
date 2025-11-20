@@ -314,6 +314,17 @@ const controlsCardStyle = computed(() => {
   flex-direction: column;
   gap: 0.75rem;
   background: var(--surface);
+  box-shadow: var(--shadow-1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  will-change: transform, box-shadow;
+}
+.pedal-card:hover,
+.pedal-card:focus-within {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow:
+    0 18px 40px color-mix(in srgb, var(--primary) 24%, transparent),
+    var(--shadow-1);
 }
 .card-header {
   display: flex;
@@ -348,11 +359,20 @@ const controlsCardStyle = computed(() => {
   gap: 0.35rem;
 }
 .icon-btn {
-  border: 1px solid var(--border);
+  border: 1px solid var(--pedal-accent, var(--border));
   border-radius: 0.5rem;
   background: transparent;
   padding: 0.15rem 0.5rem;
   cursor: pointer;
+  color: var(--pedal-accent, inherit);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.15s ease, color 0.15s ease;
+  will-change: transform;
+}
+.icon-btn:hover:not(:disabled),
+.icon-btn:focus-visible {
+  background: color-mix(in srgb, var(--pedal-accent, var(--primary)) 12%, transparent);
+  transform: translateY(-1px);
+  box-shadow: var(--focus-ring);
 }
 .controls-header {
   display: flex;
@@ -382,7 +402,7 @@ const controlsCardStyle = computed(() => {
 .controls-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
 }
 .status {
   margin: 0;
@@ -390,6 +410,7 @@ const controlsCardStyle = computed(() => {
 }
 .btn.ghost {
   background: transparent;
-  border: 1px dashed var(--border);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--primary);
 }
 </style>
