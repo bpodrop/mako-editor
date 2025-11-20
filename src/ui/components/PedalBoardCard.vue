@@ -1,7 +1,6 @@
 <template>
   <section
     class="pedal-card"
-    :class="{ collapsed }"
     :style="controlsCardStyle"
     :id="`pedal-card-${props.instance.id}`"
     tabindex="-1"
@@ -26,32 +25,10 @@
         >
           ✎
         </button>
-        <button
-          type="button"
-          class="icon-btn"
-          :title="collapsed ? t('board.expand') : t('board.collapse')"
-          :aria-expanded="collapsed ? 'false' : 'true'"
-          :aria-controls="bodyId"
-          @click="emit('toggle-collapse', props.instance.id)"
-        >
-          <span aria-hidden="true">{{ collapsed ? '+' : '−' }}</span>
-        </button>
-        <button type="button" class="icon-btn" :title="t('board.moveUp')" @click="emit('move-up', props.instance.id)">
-          ↑
-        </button>
-        <button type="button" class="icon-btn" :title="t('board.moveDown')" @click="emit('move-down', props.instance.id)">
-          ↓
-        </button>
-        <button type="button" class="icon-btn" :title="t('board.duplicate')" @click="emit('duplicate', props.instance.id)">
-          ⧉
-        </button>
-        <button type="button" class="icon-btn danger" :title="t('board.remove')" @click="emit('remove', props.instance.id)">
-          ✕
-        </button>
       </div>
     </header>
 
-    <div class="card-body" :id="bodyId" :aria-hidden="collapsed ? 'true' : 'false'" v-show="!collapsed">
+    <div class="card-body">
       <div class="card-tools">
         <button class="btn ghost" type="button" @click="() => fileInput?.click()">
           {{ t('board.import') }}
@@ -76,17 +53,14 @@
           </p>
         </div>
         <div class="controls-actions">
-          <button class="btn" type="button" :disabled="!props.isOutputReady" @click="sendAll">
-            {{ t('controls.sendAll') }}
-          </button>
-        <template v-if="props.interactionMode === 'preset'">
-          <button class="btn" type="button" :disabled="!canApply" @click="applyPresetChanges">
-            {{ t('controls.applyPreset') }}
-          </button>
-          <button class="btn ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
-            {{ t('controls.cancelPreset') }}
-          </button>
-        </template>
+          <template v-if="props.interactionMode === 'preset'">
+            <button class="btn" type="button" :disabled="!canApply" @click="applyPresetChanges">
+              {{ t('controls.applyPreset') }}
+            </button>
+            <button class="btn ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
+              {{ t('controls.cancelPreset') }}
+            </button>
+          </template>
         </div>
       </div>
 
@@ -115,12 +89,6 @@
           :config="selectedConfig"
           :channel="channel"
         />
-        <SnapshotManager
-          :snapshots="snapshots"
-          @save="handleSaveSnapshot"
-          @apply="handleApplySnapshot"
-          @delete="handleDeleteSnapshot"
-        />
       </div>
     </div>
   </section>
@@ -133,12 +101,10 @@ import type { PedalInstance } from '../../composables/usePedalBoard';
 import { ControlRenderer } from '../../features/pedal-controls';
 import { getVisibleControls } from '../../config/visibility';
 import { useControlValues } from '../../composables/useControlValues';
-import { useSnapshots } from '../../composables/useSnapshots';
 import { getPedalByDevice } from '../../config/pedalConfig';
 import { useMidiControls } from '../../application/use-midi-controls';
 import type { PedalConfig } from '../../config/types';
 import type { AnyControl } from '../../core/entities/controls';
-import SnapshotManager from './SnapshotManager.vue';
 import PcSender from './PcSender.vue';
 
 const props = defineProps<{
@@ -146,26 +112,18 @@ const props = defineProps<{
   interactionMode: 'live' | 'preset';
   modeDescription: string;
   isOutputReady: boolean;
-  collapsed?: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: 'update-device', payload: { id: string; device: string | null }): void;
   (e: 'update-channel', payload: { id: string; channel: number }): void;
-  (e: 'duplicate', id: string): void;
-  (e: 'remove', id: string): void;
-  (e: 'move-up', id: string): void;
-  (e: 'move-down', id: string): void;
   (e: 'dirty-state', payload: { id: string; dirty: boolean }): void;
-  (e: 'toggle-collapse', id: string): void;
   (e: 'edit', id: string): void;
 }>();
 
 const { t } = useI18n();
 const { sendControlChange } = useMidiControls();
 const channel = computed(() => props.instance.channel);
-const collapsed = computed(() => Boolean(props.collapsed));
-const bodyId = computed(() => `pedal-body-${props.instance.id}`);
 
 const selectedConfig = computed<PedalConfig | undefined>(() =>
   props.instance.device ? getPedalByDevice(props.instance.device) : undefined
@@ -189,13 +147,10 @@ const {
   draftValues,
   setDraftValue,
   commitValue,
-  commitMany,
   resetDraft,
-  applyDraft,
   snapshotCommitted,
   getDirtyIds,
 } = useControlValues(instanceRef);
-const { snapshots, createSnapshot, removeSnapshot } = useSnapshots(instanceRef);
 
 const statusMessage = ref('');
 const dirtyIdList = computed(() => getDirtyIds());
@@ -236,24 +191,6 @@ function onValue(ctrl: AnyControl, v: number) {
   }
 }
 
-async function sendAll() {
-  if (!props.isOutputReady) {
-    window.alert(t('controls.noOutputAlert'));
-    return;
-  }
-  const controls = visibleControls.value ?? [];
-  for (const c of controls) {
-    const raw = (draftValues as any)[c.id];
-    const v = typeof raw === 'number' ? raw : Number(raw);
-    if (!Number.isNaN(v)) {
-      const err = sendControlChange(c.cc, v, { channel: channel.value });
-      if (!err) commitValue(c.id, v);
-      await new Promise((r) => setTimeout(r, 5));
-    }
-  }
-  statusMessage.value = t('controls.sendAllDone', { count: controls.length });
-}
-
 async function applyPresetChanges() {
   if (!canApply.value) return;
   const ids = dirtyIdList.value;
@@ -276,28 +213,6 @@ function cancelPresetChanges() {
   statusMessage.value = t('controls.cancelled');
 }
 
-function snapshotValues(): Record<string, number> {
-  return snapshotCommitted();
-}
-
-function handleSaveSnapshot(name: string) {
-  createSnapshot(name, snapshotCommitted());
-  statusMessage.value = t('snapshots.saved', { name });
-}
-
-function handleApplySnapshot(id: string) {
-  const snap = snapshots.value.find(s => s.id === id);
-  if (!snap) return;
-  applyDraft(snap.values);
-  statusMessage.value = t('snapshots.applied', { name: snap.name });
-}
-
-function handleDeleteSnapshot(id: string) {
-  const snap = snapshots.value.find(s => s.id === id);
-  removeSnapshot(id);
-  statusMessage.value = t('snapshots.deleted', { name: snap?.name ?? '' });
-}
-
 function exportConfig(): void {
   const device = props.instance.device;
   if (!device) {
@@ -309,7 +224,7 @@ function exportConfig(): void {
     version: 1,
     device,
     channel: channel.value,
-    values: snapshotValues(),
+    values: snapshotCommitted(),
     exportedAt: new Date().toISOString(),
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -391,9 +306,6 @@ const controlsCardStyle = computed(() => {
   gap: 0.75rem;
   background: var(--surface);
 }
-.pedal-card.collapsed {
-  gap: 0.25rem;
-}
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -432,10 +344,6 @@ const controlsCardStyle = computed(() => {
   background: transparent;
   padding: 0.15rem 0.5rem;
   cursor: pointer;
-}
-.icon-btn.danger {
-  color: var(--danger, #c00);
-  border-color: currentColor;
 }
 .card-tools {
   display: flex;

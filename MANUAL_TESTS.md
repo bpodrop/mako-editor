@@ -15,4 +15,4 @@
 ## Persistance après rechargement
 1. Configurer plusieurs blocs (ajouts, duplications, modifications de canal/valeurs).
 2. Recharger la page (⌘R/CTRL+R).
-3. Vérifier que les blocs, leur ordre, les canaux et les valeurs de contrôles/snapshots sont restaurés.
+3. Vérifier que les blocs, leur ordre, les canaux et les valeurs de contrôles sont restaurés.

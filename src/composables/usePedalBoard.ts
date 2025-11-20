@@ -1,9 +1,8 @@
 import { ref, type Ref } from 'vue';
 import { getPedalByDevice, listPedals } from '../config/pedalConfig';
-import { BOARD_STORAGE_KEY, isLegacySnapshotsKey, isLegacyValuesKey, legacyChannelKey, legacyDeviceFromSnapshotsKey, legacyDeviceFromValuesKey, snapshotsStorageKey, valuesStorageKey } from './storageKeys';
+import { BOARD_STORAGE_KEY, isLegacyValuesKey, legacyChannelKey, legacyDeviceFromValuesKey, valuesStorageKey } from './storageKeys';
 import { asMidiChannel, isMidiChannel, type MidiChannel } from '../core/entities/midi';
 import type { StoredControlValues } from './useControlValues';
-import type { StoredSnapshotsPayload } from './useSnapshots';
 
 export interface PedalInstance {
   id: string;
@@ -36,7 +35,7 @@ function sanitizeChannel(value?: number | null): MidiChannel {
   return 1;
 }
 
-function snapshotLegacyDeviceKeys(): string[] {
+function legacyDeviceKeys(): string[] {
   if (!hasStorage()) return [];
   const storage = window.localStorage;
   const devices = new Set<string>();
@@ -47,8 +46,6 @@ function snapshotLegacyDeviceKeys(): string[] {
     if (!key) continue;
     if (isLegacyValuesKey(key)) {
       devices.add(legacyDeviceFromValuesKey(key));
-    } else if (isLegacySnapshotsKey(key)) {
-      devices.add(legacyDeviceFromSnapshotsKey(key));
     } else if (key.startsWith('pedal-channel:')) {
       devices.add(key.slice('pedal-channel:'.length));
     }
@@ -59,7 +56,7 @@ function snapshotLegacyDeviceKeys(): string[] {
 function migrateLegacyBoard(): PedalInstance[] | null {
   if (!hasStorage()) return null;
   const storage = window.localStorage;
-  const candidates = snapshotLegacyDeviceKeys();
+  const candidates = legacyDeviceKeys();
   if (!candidates.length) return null;
   const knownDevices = new Set(listPedals().map((p) => p.value));
   const board: PedalInstance[] = [];
@@ -71,7 +68,6 @@ function migrateLegacyBoard(): PedalInstance[] | null {
     const fallbackChannel = getPedalByDevice(device)?.midi?.channel;
     const channel = sanitizeChannel(isMidiChannel(rawChannel) ? rawChannel : fallbackChannel ?? null);
     copyLegacyValues(storage, device, id);
-    copyLegacySnapshots(storage, device, id);
     board.push({
       id,
       device,
@@ -97,25 +93,10 @@ function copyLegacyValues(storage: Storage, device: string, instanceId: string) 
   }
 }
 
-function copyLegacySnapshots(storage: Storage, device: string, instanceId: string) {
-  const raw = storage.getItem(`pedal-snapshots:${device}`);
-  if (!raw) return;
-  try {
-    const parsed = JSON.parse(raw) as StoredSnapshotsPayload | unknown;
-    const payload: StoredSnapshotsPayload = Array.isArray(parsed)
-      ? { device, snapshots: parsed }
-      : { device, snapshots: (parsed as StoredSnapshotsPayload)?.snapshots ?? [] };
-    storage.setItem(snapshotsStorageKey(instanceId), JSON.stringify(payload));
-  } catch {
-    // ignore invalid legacy payloads
-  }
-}
-
 function cleanupInstanceStorage(id: string) {
   if (!hasStorage()) return;
   try {
     window.localStorage.removeItem(valuesStorageKey(id));
-    window.localStorage.removeItem(snapshotsStorageKey(id));
   } catch {
     // ignore cleanup failures
   }
@@ -255,10 +236,6 @@ export function usePedalBoard() {
       const srcValues = storage.getItem(valuesStorageKey(id));
       if (srcValues) {
         storage.setItem(valuesStorageKey(instance.id), srcValues);
-      }
-      const srcSnapshots = storage.getItem(snapshotsStorageKey(id));
-      if (srcSnapshots) {
-        storage.setItem(snapshotsStorageKey(instance.id), srcSnapshots);
       }
     }
     return instance;

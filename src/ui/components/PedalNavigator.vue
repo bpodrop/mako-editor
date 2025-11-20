@@ -14,16 +14,18 @@
       aria-labelledby="board-nav-title"
       aria-multiselectable="false"
     >
-      <button
+      <div
         v-for="entry in entries"
         :key="entry.id"
-        type="button"
         class="nav-item"
         role="option"
+        tabindex="0"
         :aria-selected="isSelected(entry.id) ? 'true' : 'false'"
         :aria-controls="`pedal-card-${entry.id}`"
         :data-id="entry.id"
         @click="handleSelect(entry.id)"
+        @keydown.enter.prevent="handleSelect(entry.id)"
+        @keydown.space.prevent="handleSelect(entry.id)"
         @keydown.up.prevent="focusSibling(entry.id, 'previous')"
         @keydown.down.prevent="focusSibling(entry.id, 'next')"
         @keydown.home.prevent="focusEdge('start')"
@@ -33,15 +35,26 @@
           <span class="nav-item-name">{{ entry.label }}</span>
           <span class="nav-item-channel">{{ entry.channelLabel }}</span>
         </div>
-        <span
-          v-if="entry.dirty"
-          class="nav-item-dirty"
-          :aria-label="t('board.dirtyLabel')"
-          role="status"
-        >
-          •
-        </span>
-      </button>
+        <div class="nav-item-actions">
+          <span
+            v-if="entry.dirty"
+            class="nav-item-dirty"
+            :aria-label="t('board.dirtyLabel')"
+            role="status"
+          >
+            •
+          </span>
+          <button
+            type="button"
+            class="delete-btn"
+            :aria-label="t('board.remove')"
+            :title="t('board.remove')"
+            @click.stop.prevent="handleRemove(entry.id)"
+          >
+            🗑
+          </button>
+        </div>
+      </div>
     </div>
   </aside>
 </template>
@@ -60,6 +73,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:selected-ids', ids: string[]): void;
   (e: 'add-pedal'): void;
+  (e: 'remove', id: string): void;
 }>();
 
 const { t } = useI18n();
@@ -83,10 +97,10 @@ function handleSelect(id: string) {
   emit('update:selected-ids', [id]);
 }
 
-function queryItems(): HTMLButtonElement[] {
+function queryItems(): HTMLElement[] {
   const container = listRef.value;
   if (!container) return [];
-  return Array.from(container.querySelectorAll<HTMLButtonElement>('button.nav-item'));
+  return Array.from(container.querySelectorAll<HTMLElement>('.nav-item'));
 }
 
 function focusSibling(id: string, direction: 'previous' | 'next') {
@@ -105,6 +119,12 @@ function focusEdge(position: 'start' | 'end') {
   if (!items.length) return;
   const target = position === 'start' ? items[0] : items[items.length - 1];
   target?.focus();
+}
+
+function handleRemove(id: string) {
+  const confirmed = window.confirm(t('board.removeConfirm'));
+  if (!confirmed) return;
+  emit('remove', id);
 }
 </script>
 
@@ -139,6 +159,8 @@ function focusEdge(position: 'start' | 'end') {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   padding: 0.5rem 0.6rem;
@@ -163,6 +185,7 @@ function focusEdge(position: 'start' | 'end') {
 .nav-item-main {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 .nav-item-name {
   font-weight: 600;
@@ -171,11 +194,34 @@ function focusEdge(position: 'start' | 'end') {
   font-size: 0.85rem;
   color: var(--muted);
 }
+.nav-item-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
 .nav-item-dirty {
   font-size: 1.2rem;
   color: var(--primary);
   line-height: 1;
   padding-left: 0.35rem;
+}
+.delete-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+.delete-btn:hover {
+  color: var(--danger, #c00);
+}
+.delete-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 @media (max-width: 720px) {
   .pedal-navigator {

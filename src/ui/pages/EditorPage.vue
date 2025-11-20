@@ -22,6 +22,7 @@
             :dirty-map="dirtyMap"
             @update:selected-ids="onNavigatorSelection"
             @add-pedal="openAddPedalDialog"
+            @remove="removeInstance"
           />
         </div>
 
@@ -56,15 +57,9 @@
               :interaction-mode="interactionMode"
               :mode-description="modeDescription"
               :is-output-ready="isOutputReady"
-              :collapsed="isCardCollapsed(instance.id)"
               @update-device="onUpdateDevice"
               @update-channel="onUpdateChannel"
-              @duplicate="duplicateInstance"
-              @remove="removeInstance"
-              @move-up="(id: string) => moveInstance(id, 'up')"
-              @move-down="(id: string) => moveInstance(id, 'down')"
               @dirty-state="onDirtyState"
-              @toggle-collapse="onToggleCollapse"
               @edit="openEditPedalDialog"
             />
           </div>
@@ -131,7 +126,7 @@ import pkg from '../../../package.json';
 const router = useRouter();
 const { t } = useI18n();
 const { init, errorMessage, isOutputReady } = useMidi();
-const { instances, addInstance, removeInstance, duplicateInstance, moveInstance, updateInstance } = usePedalBoard();
+const { instances, addInstance, removeInstance, updateInstance } = usePedalBoard();
 
 const pedalOptions = listPedals();
 
@@ -145,8 +140,6 @@ const dirtyMap = ref<Record<string, boolean>>({});
 const isCompactLayout = ref(false);
 const isNavigatorOpen = ref(true);
 const MOBILE_QUERY = '(max-width: 720px)';
-const collapsedStorageKey = 'board-collapsed:v1';
-const collapsedMap = ref<Record<string, boolean>>({});
 const isAddPedalDialogOpen = ref(false);
 const pendingAddDevice = ref('');
 const pendingAddChannel = ref(1);
@@ -185,9 +178,6 @@ function isInstanceVisible(id: string): boolean {
   return visibleIdSet.value.has(id);
 }
 const isNavigatorVisible = computed(() => !isCompactLayout.value || isNavigatorOpen.value);
-function isCardCollapsed(id: string): boolean {
-  return Boolean(collapsedMap.value[id]);
-}
 
 function suggestChannel(): number {
   const used = new Set(instances.value.map((inst) => inst.channel));
@@ -266,8 +256,6 @@ function handleMediaChange(event: MediaQueryListEvent | MediaQueryList) {
 
 onMounted(() => {
   void init();
-  collapsedMap.value = loadCollapsedState();
-  pruneCollapsedState(instances.value);
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
   mediaQuery = window.matchMedia(MOBILE_QUERY);
   applyLayoutMode(mediaQuery.matches);
@@ -289,7 +277,6 @@ onBeforeUnmount(() => {
 
 watch(instances, (next) => {
   pruneDirtyState(next);
-  pruneCollapsedState(next);
   syncSelectedIds(selectedIds.value);
 }, { immediate: true });
 
@@ -349,56 +336,6 @@ function pruneDirtyState(nextInstances: typeof instances.value) {
 
 function toggleNavigator() {
   isNavigatorOpen.value = !isNavigatorOpen.value;
-}
-
-function loadCollapsedState(): Record<string, boolean> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = localStorage.getItem(collapsedStorageKey);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    const state: Record<string, boolean> = {};
-    for (const [id, value] of Object.entries(parsed ?? {})) {
-      state[id] = Boolean(value);
-    }
-    return state;
-  } catch {
-    return {};
-  }
-}
-
-function persistCollapsedState(state: Record<string, boolean>) {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(collapsedStorageKey, JSON.stringify(state));
-  } catch {
-    // ignore persistence errors
-  }
-}
-
-watch(collapsedMap, (state) => {
-  persistCollapsedState(state);
-}, { deep: true });
-
-function pruneCollapsedState(nextInstances: typeof instances.value) {
-  const allowed = new Set(nextInstances.map((inst) => inst.id));
-  const entries = Object.entries(collapsedMap.value).filter(([id]) => allowed.has(id));
-  const nextState: Record<string, boolean> = {};
-  for (const [id, value] of entries) {
-    nextState[id] = value;
-  }
-  collapsedMap.value = nextState;
-}
-
-function setCollapsedState(id: string, collapsed: boolean) {
-  collapsedMap.value = {
-    ...collapsedMap.value,
-    [id]: collapsed,
-  };
-}
-
-function onToggleCollapse(id: string) {
-  setCollapsedState(id, !isCardCollapsed(id));
 }
 </script>
 

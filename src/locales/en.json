@@ -18,7 +18,6 @@
   },
   "controls": {
     "heading": "Controls",
-    "sendAll": "Send all",
     "applyPreset": "Apply",
     "cancelPreset": "Cancel",
     "selectConfig": "Select a configuration to display the controls.",
@@ -31,8 +30,7 @@
     "dirtyHint": "Pending changes: {count}",
     "liveSent": "Control \"{control}\" sent.",
     "applySuccess": "{count} control(s) applied.",
-    "cancelled": "Changes discarded.",
-    "sendAllDone": "{count} control(s) resent."
+    "cancelled": "Changes discarded."
   },
   "device": {
     "label": "MIDI Output",
@@ -74,8 +72,9 @@
     "moveDown": "Move down",
     "duplicate": "Duplicate",
     "remove": "Remove",
+    "removeConfirm": "Remove this pedal? This action cannot be undone.",
     "pedalSelect": "Model",
-    "selectPedalPlaceholder": "Choose a model to add",
+    "selectPedalPlaceholder": "Choose a model",
     "addPedalTitle": "Add a pedal",
     "addPedalDescription": "Choose a pedal model and assign its MIDI channel.",
     "addPedalConfirm": "Add to board",
@@ -121,16 +120,5 @@
     "descriptionLive": "Changes are sent immediately to the pedal (live CC).",
     "descriptionPreset": "Changes are stored until you apply them. Use Apply to send or Cancel to revert to the last committed values.",
     "infoLabel": "Show mode details"
-  },
-  "snapshots": {
-    "title": "Local snapshots",
-    "placeholder": "Snapshot name",
-    "save": "Save",
-    "empty": "No snapshot saved for this pedal.",
-    "apply": "Load",
-    "delete": "Delete",
-    "saved": "Snapshot \"{name}\" saved.",
-    "applied": "Snapshot \"{name}\" loaded (Preset mode).",
-    "deleted": "Snapshot \"{name}\" removed."
   }
 }

@@ -147,7 +147,7 @@
 1. L’utilisateur choisit un numéro de preset (0–127).
 2. L’app envoie un **PC** immédiatement, quel que soit le mode Live/Preset (PC = action “discrète”, pas une édition de paramètres).
 3. L’UI met à jour l’indication de preset actif (numéro, bank, couleur si dispo).
-4. Optionnel : l’app peut proposer d’aligner les valeurs UI sur un snapshot connu lié à ce preset (mais ce n’est pas obligatoire pour V1).
+4. Optionnel : l’app peut proposer d’aligner les valeurs UI sur un état de référence lié à ce preset (mais ce n’est pas obligatoire pour V1).
 
 ---
 
@@ -162,33 +162,7 @@
 
 ---
 
-## 6. Snapshots & options avancées (optionnel V1, mais compatibles avec ta vision)
-
-### UC-S1 — Sauvegarder un snapshot (état validé)
-
-**But** : mémoriser un état “référence” des paramètres.
-**Scénario** :
-
-1. L’utilisateur clique sur “Sauvegarder snapshot” à partir de l’état actuel.
-2. L’app stocke toutes les **dernières valeurs validées** (Live ou Preset) dans un objet JSON par pédale.
-3. Sauvegarde en localStorage.
-
----
-
-### UC-S2 — Charger un snapshot (envoi groupé comme en mode Preset)
-
-**But** : restaurer un réglage complet.
-**Scénario** :
-
-1. L’utilisateur choisit un snapshot.
-2. L’app applique les valeurs dans l’UI, les marque comme modifiées, et :
-
-   * soit les envoie immédiatement (comportement “preset appliqué”),
-   * soit propose “Appliquer maintenant” pour déclencher l’envoi groupé (même logique que UC-C3).
-
----
-
-## 7. Catégories finales avec prise en compte des modes
+## 6. Catégories finales avec prise en compte des modes
 
 * **Gestion du MIDI** : sélection sortie, canal, test.
 * **Gestion des pédales** : liste dynamique à partir des configs, chargement d’une pédale.
@@ -198,9 +172,9 @@
   * Live : envoi immédiat.
   * Preset : édition → validation groupée → annulation.
 * **Gestion des presets de la pédale** : PC + banks.
-* **Snapshots / état utilisateur** (optionnel mais aligné avec ta logique de “preset mode”).
+* **État utilisateur** : ordre des pédales, valeurs, modes, canaux.
 
-## 8. Gestion multi-pédales (board virtuel)
+## 7. Gestion multi-pédales (board virtuel)
 
 ### UC-B1 — Initialiser le board avec une seule pédale
 
@@ -246,4 +220,4 @@
 
 1. Chaque slot propose une action “Supprimer”.
 2. L’utilisateur peut également réordonner les slots (glisser-déposer ou boutons monter/descendre) afin de refléter son board physique.
-3. L’état du board (ordre, modèles, canaux, valeurs, snapshots) est persisté en localStorage.
+3. L’état du board (ordre, modèles, canaux, valeurs) est persisté en localStorage.

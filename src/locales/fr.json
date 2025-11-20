@@ -18,7 +18,6 @@
   },
   "controls": {
     "heading": "Contrôles",
-    "sendAll": "Envoyer tout",
     "applyPreset": "Appliquer",
     "cancelPreset": "Annuler",
     "selectConfig": "Sélectionnez une configuration pour afficher les contrôles.",
@@ -31,8 +30,7 @@
     "dirtyHint": "Modifications en attente : {count}",
     "liveSent": "Contrôle « {control} » envoyé.",
     "applySuccess": "{count} contrôle(s) appliqué(s).",
-    "cancelled": "Modifications annulées.",
-    "sendAllDone": "{count} contrôle(s) renvoyé(s)."
+    "cancelled": "Modifications annulées."
   },
   "device": {
     "label": "Sortie MIDI",
@@ -74,8 +72,9 @@
     "moveDown": "Descendre",
     "duplicate": "Dupliquer",
     "remove": "Supprimer",
+    "removeConfirm": "Supprimer cette pédale ? Cette action est irréversible.",
     "pedalSelect": "Modèle",
-    "selectPedalPlaceholder": "Choisissez un modèle à ajouter",
+    "selectPedalPlaceholder": "Choisissez un modèle",
     "addPedalTitle": "Ajouter une pédale",
     "addPedalDescription": "Sélectionnez un modèle et associez un canal MIDI.",
     "addPedalConfirm": "Ajouter à l'éditeur",
@@ -121,16 +120,5 @@
     "descriptionLive": "Les modifications sont envoyées immédiatement à la pédale (CC live).",
     "descriptionPreset": "Les modifications sont stockées jusqu'à validation. Utilisez Appliquer pour envoyer ou Annuler pour revenir à l'état validé.",
     "infoLabel": "Afficher l'aide sur le fonctionnement des modes"
-  },
-  "snapshots": {
-    "title": "Snapshots locaux",
-    "placeholder": "Nom du snapshot",
-    "save": "Sauvegarder",
-    "empty": "Aucun snapshot enregistré pour cette pédale.",
-    "apply": "Charger",
-    "delete": "Supprimer",
-    "saved": "Snapshot « {name} » sauvegardé.",
-    "applied": "Snapshot « {name} » chargé (mode Preset).",
-    "deleted": "Snapshot « {name} » supprimé."
   }
 }
