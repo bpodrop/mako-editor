@@ -9,38 +9,78 @@
     </header>
 
     <main id="main" role="main">
-      <section class="board-toolbar" aria-labelledby="controls-heading">
-        <div class="controls-heading">
-          <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
-          <ModeToggle v-model="interactionMode" />
-          <p class="mode-info">{{ modeDescription }}</p>
+      <div class="board-layout" :class="{ 'is-compact': isCompactLayout }">
+        <div
+          id="pedal-navigator-panel"
+          class="navigator-panel"
+          :data-open="isNavigatorVisible ? 'true' : 'false'"
+          :aria-hidden="isCompactLayout && !isNavigatorOpen ? 'true' : 'false'"
+        >
+          <PedalNavigator
+            :instances="instances"
+            :selected-ids="selectedIds"
+            :selection-mode="selectionMode"
+            :dirty-map="dirtyMap"
+            @update:selected-ids="onNavigatorSelection"
+            @update:selection-mode="onNavigatorModeChange"
+          />
         </div>
-        <div class="board-actions">
-          <button class="btn" type="button" @click="addPedal">
-            {{ t('board.addPedal') }}
-          </button>
-        </div>
-      </section>
 
-      <div class="board-grid">
-        <PedalBoardCard
-          v-for="instance in instances"
-          :key="instance.id"
-          :instance="instance"
-          :pedal-options="pedalOptions"
-          :interaction-mode="interactionMode"
-          :mode-description="modeDescription"
-          :is-output-ready="isOutputReady"
-          @update-device="onUpdateDevice"
-          @update-channel="onUpdateChannel"
-          @duplicate="duplicateInstance"
-          @remove="removeInstance"
-          @move-up="(id: string) => moveInstance(id, 'up')"
-          @move-down="(id: string) => moveInstance(id, 'down')"
-        />
+        <section class="board-content" aria-live="polite">
+          <section class="board-toolbar" aria-labelledby="controls-heading">
+            <div class="controls-heading">
+              <h2 id="controls-heading">{{ t('controls.heading') }}</h2>
+              <ModeToggle v-model="interactionMode" />
+              <p class="mode-info">{{ modeDescription }}</p>
+            </div>
+            <div class="board-actions">
+              <button
+                v-if="isCompactLayout"
+                class="btn ghost navigator-toggle"
+                type="button"
+                @click="toggleNavigator"
+                :aria-expanded="isNavigatorVisible ? 'true' : 'false'"
+                aria-controls="pedal-navigator-panel"
+              >
+                {{ isNavigatorVisible ? t('board.hideNavigator') : t('board.showNavigator') }}
+              </button>
+              <button class="btn" type="button" @click="addPedal">
+                {{ t('board.addPedal') }}
+              </button>
+            </div>
+          </section>
+
+          <p class="sr-only" aria-live="polite">{{ selectionStatusMessage }}</p>
+
+          <div class="board-grid">
+            <PedalBoardCard
+              v-for="instance in instances"
+              :key="instance.id"
+              v-show="isInstanceVisible(instance.id)"
+              :instance="instance"
+              :pedal-options="pedalOptions"
+              :interaction-mode="interactionMode"
+              :mode-description="modeDescription"
+              :is-output-ready="isOutputReady"
+              :collapsed="isCardCollapsed(instance.id)"
+              @update-device="onUpdateDevice"
+              @update-channel="onUpdateChannel"
+              @duplicate="duplicateInstance"
+              @remove="removeInstance"
+              @move-up="(id: string) => moveInstance(id, 'up')"
+              @move-down="(id: string) => moveInstance(id, 'down')"
+              @dirty-state="onDirtyState"
+              @toggle-collapse="onToggleCollapse"
+            />
+          </div>
+
+          <p v-if="!visibleInstances.length" class="empty-selection">
+            {{ emptySelectionMessage }}
+          </p>
+
+          <p v-if="errorMessage" class="error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
+        </section>
       </div>
-
-      <p v-if="errorMessage" class="error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
     </main>
 
     <footer class="footer">
@@ -70,12 +110,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, ref, watch } from 'vue';
+import { onMounted, onBeforeUnmount, computed, ref, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BurgerMenu from '../components/BurgerMenu.vue';
 import ModeToggle from '../components/ModeToggle.vue';
 import PedalBoardCard from '../components/PedalBoardCard.vue';
+import PedalNavigator from '../components/PedalNavigator.vue';
 import { listPedals } from '../../config/pedalConfig';
 import { useMidi } from '../composables/useMidiStore';
 import { usePedalBoard } from '../../composables/usePedalBoard';
@@ -93,17 +134,74 @@ const appVersion = computed(() => t('app.version', { version: pkg?.version ?? '0
 
 const initialMode = typeof window !== 'undefined' ? localStorage.getItem('midi-mode') : null;
 const interactionMode = ref<'live' | 'preset'>(initialMode === 'preset' ? 'preset' : 'live');
+const selectionModeKey = 'board-selection-mode';
+const initialSelectionMode = typeof window !== 'undefined' ? localStorage.getItem(selectionModeKey) : null;
+const selectionMode = ref<'single' | 'multi'>(initialSelectionMode === 'multi' ? 'multi' : 'single');
+const selectedIds = ref<string[]>([]);
+const dirtyMap = ref<Record<string, boolean>>({});
+const isCompactLayout = ref(false);
+const isNavigatorOpen = ref(true);
+const MOBILE_QUERY = '(max-width: 720px)';
+const collapsedStorageKey = 'board-collapsed:v1';
+const collapsedMap = ref<Record<string, boolean>>({});
+let mediaQuery: MediaQueryList | null = null;
 
 watch(interactionMode, (mode) => {
   try { localStorage.setItem('midi-mode', mode); } catch {}
+});
+
+watch(selectionMode, (mode, previous) => {
+  if (mode !== previous) {
+    syncSelectedIds(selectedIds.value);
+  }
+  try {
+    localStorage.setItem(selectionModeKey, mode);
+  } catch {
+    // ignore persistence errors
+  }
 });
 
 const modeDescription = computed(() =>
   interactionMode.value === 'live' ? t('modes.descriptionLive') : t('modes.descriptionPreset')
 );
 
+const visibleInstances = computed(() => {
+  if (!instances.value.length) return [];
+  if (selectionMode.value === 'single') {
+    const id = selectedIds.value[0];
+    if (!id) return [];
+    return instances.value.filter((inst) => inst.id === id);
+  }
+  if (!selectedIds.value.length) return [];
+  const selectedSet = new Set(selectedIds.value);
+  return instances.value.filter((inst) => selectedSet.has(inst.id));
+});
+
+const visibleIdSet = computed(() => new Set(visibleInstances.value.map((inst) => inst.id)));
+const emptySelectionMessage = computed(() =>
+  selectionMode.value === 'multi' ? t('board.noSelectionMulti') : t('board.noSelectionSingle')
+);
+const selectionStatusMessage = computed(() => {
+  const count = visibleInstances.value.length;
+  if (!count) return emptySelectionMessage.value;
+  return t('board.visibleCount', { count });
+});
+
+function isInstanceVisible(id: string): boolean {
+  return visibleIdSet.value.has(id);
+}
+const isNavigatorVisible = computed(() => !isCompactLayout.value || isNavigatorOpen.value);
+function isCardCollapsed(id: string): boolean {
+  return Boolean(collapsedMap.value[id]);
+}
+
 function addPedal() {
-  addInstance();
+  const instance = addInstance();
+  if (selectionMode.value === 'multi') {
+    syncSelectedIds([...selectedIds.value, instance.id]);
+  } else {
+    syncSelectedIds([instance.id]);
+  }
 }
 
 function onUpdateDevice(payload: { id: string; device: string | null }) {
@@ -118,7 +216,171 @@ function navigateLegal() {
   void router.push({ name: 'legal' });
 }
 
-onMounted(async () => { void init(); });
+function applyLayoutMode(matches: boolean, { preserveState = false }: { preserveState?: boolean } = {}) {
+  isCompactLayout.value = matches;
+  if (!matches) {
+    isNavigatorOpen.value = true;
+    return;
+  }
+  if (!preserveState) {
+    isNavigatorOpen.value = false;
+  }
+}
+
+function handleMediaChange(event: MediaQueryListEvent | MediaQueryList) {
+  applyLayoutMode(event.matches, { preserveState: true });
+}
+
+onMounted(() => {
+  void init();
+  collapsedMap.value = loadCollapsedState();
+  pruneCollapsedState(instances.value);
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+  mediaQuery = window.matchMedia(MOBILE_QUERY);
+  applyLayoutMode(mediaQuery.matches);
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', handleMediaChange);
+  } else {
+    mediaQuery.addListener(handleMediaChange);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (!mediaQuery) return;
+  if (typeof mediaQuery.removeEventListener === 'function') {
+    mediaQuery.removeEventListener('change', handleMediaChange);
+  } else {
+    mediaQuery.removeListener(handleMediaChange);
+  }
+});
+
+watch(instances, (next) => {
+  pruneDirtyState(next);
+  pruneCollapsedState(next);
+  syncSelectedIds(selectedIds.value);
+}, { immediate: true });
+
+watch(selectedIds, (current, previous) => {
+  if (selectionMode.value !== 'single') return;
+  const currentId = current[0];
+  const previousId = previous?.[0];
+  if (!currentId || currentId === previousId) return;
+  if (typeof window === 'undefined') return;
+  void nextTick(() => {
+    const target = document.getElementById(`pedal-card-${currentId}`);
+    target?.focus();
+  });
+});
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((value, idx) => value === b[idx]);
+}
+
+function sanitizeIds(source: string[]): string[] {
+  const allowed = new Set(instances.value.map((inst) => inst.id));
+  const unique: string[] = [];
+  for (const id of source) {
+    if (!allowed.has(id)) continue;
+    if (unique.includes(id)) continue;
+    unique.push(id);
+    if (selectionMode.value === 'single') break;
+  }
+  if (selectionMode.value === 'single') {
+    if (unique.length) return [unique[0]];
+    const fallback = instances.value[0]?.id;
+    return fallback ? [fallback] : [];
+  }
+  return unique;
+}
+
+function syncSelectedIds(next: string[]) {
+  const sanitized = sanitizeIds(next);
+  if (!arraysEqual(sanitized, selectedIds.value)) {
+    selectedIds.value = sanitized;
+  }
+}
+
+function onNavigatorSelection(ids: string[]) {
+  syncSelectedIds(ids);
+}
+
+function onNavigatorModeChange(mode: 'single' | 'multi') {
+  if (selectionMode.value === mode) return;
+  selectionMode.value = mode;
+}
+
+function onDirtyState(payload: { id: string; dirty: boolean }) {
+  if (!dirtyMap.value[payload.id] && !payload.dirty) return;
+  dirtyMap.value = {
+    ...dirtyMap.value,
+    [payload.id]: payload.dirty,
+  };
+}
+
+function pruneDirtyState(nextInstances: typeof instances.value) {
+  const allowed = new Set(nextInstances.map((inst) => inst.id));
+  const nextEntries = Object.entries(dirtyMap.value).filter(([id]) => allowed.has(id));
+  const nextMap: Record<string, boolean> = {};
+  for (const [id, value] of nextEntries) {
+    nextMap[id] = value;
+  }
+  dirtyMap.value = nextMap;
+}
+
+function toggleNavigator() {
+  isNavigatorOpen.value = !isNavigatorOpen.value;
+}
+
+function loadCollapsedState(): Record<string, boolean> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(collapsedStorageKey);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const state: Record<string, boolean> = {};
+    for (const [id, value] of Object.entries(parsed ?? {})) {
+      state[id] = Boolean(value);
+    }
+    return state;
+  } catch {
+    return {};
+  }
+}
+
+function persistCollapsedState(state: Record<string, boolean>) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(collapsedStorageKey, JSON.stringify(state));
+  } catch {
+    // ignore persistence errors
+  }
+}
+
+watch(collapsedMap, (state) => {
+  persistCollapsedState(state);
+}, { deep: true });
+
+function pruneCollapsedState(nextInstances: typeof instances.value) {
+  const allowed = new Set(nextInstances.map((inst) => inst.id));
+  const entries = Object.entries(collapsedMap.value).filter(([id]) => allowed.has(id));
+  const nextState: Record<string, boolean> = {};
+  for (const [id, value] of entries) {
+    nextState[id] = value;
+  }
+  collapsedMap.value = nextState;
+}
+
+function setCollapsedState(id: string, collapsed: boolean) {
+  collapsedMap.value = {
+    ...collapsedMap.value,
+    [id]: collapsed,
+  };
+}
+
+function onToggleCollapse(id: string) {
+  setCollapsedState(id, !isCardCollapsed(id));
+}
 </script>
 
 <style scoped>
@@ -136,13 +398,40 @@ onMounted(async () => { void init(); });
   flex-direction: column;
   gap: 0.35rem;
 }
+.board-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: flex-start;
+}
+.board-layout.is-compact {
+  grid-template-columns: 1fr;
+}
+.navigator-panel {
+  min-width: 0;
+}
+.board-layout.is-compact .navigator-panel {
+  position: relative;
+  width: 100%;
+}
+.board-layout.is-compact .navigator-panel[data-open='false'] {
+  display: none;
+}
+.board-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.navigator-toggle {
+  border-color: var(--border);
+  color: inherit;
+}
 .board-toolbar {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
   align-items: flex-start;
-  margin-bottom: 1rem;
 }
 .board-actions {
   display: flex;
@@ -152,12 +441,39 @@ onMounted(async () => { void init(); });
 }
 .board-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
 }
-.mode-info {
+.empty-selection {
   margin: 0;
-  color: var(--muted);
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  background: var(--surface);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+@media (max-width: 900px) {
+  .board-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .board-actions {
+    justify-content: flex-start;
+  }
+  .navigator-toggle {
+    flex: 1 1 auto;
+    text-align: left;
+  }
 }
 .footer {
   margin-top: 2rem;

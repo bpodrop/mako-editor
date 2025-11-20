@@ -1,5 +1,11 @@
 <template>
-  <section class="pedal-card" :style="controlsCardStyle">
+  <section
+    class="pedal-card"
+    :class="{ collapsed }"
+    :style="controlsCardStyle"
+    :id="`pedal-card-${props.instance.id}`"
+    tabindex="-1"
+  >
     <header class="card-header">
       <div>
         <h3 class="card-title">
@@ -11,6 +17,16 @@
         </p>
       </div>
       <div class="card-actions">
+        <button
+          type="button"
+          class="icon-btn"
+          :title="collapsed ? t('board.expand') : t('board.collapse')"
+          :aria-expanded="collapsed ? 'false' : 'true'"
+          :aria-controls="bodyId"
+          @click="emit('toggle-collapse', props.instance.id)"
+        >
+          <span aria-hidden="true">{{ collapsed ? '+' : '−' }}</span>
+        </button>
         <button type="button" class="icon-btn" :title="t('board.moveUp')" @click="emit('move-up', props.instance.id)">
           ↑
         </button>
@@ -26,13 +42,14 @@
       </div>
     </header>
 
-    <div class="selectors">
-      <label>
-        <span>{{ t('board.pedalSelect') }}</span>
-        <select :value="props.instance.device ?? ''" @change="onDeviceChange">
-          <option v-for="opt in pedalOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-        </select>
-      </label>
+    <div class="card-body" :id="bodyId" :aria-hidden="collapsed ? 'true' : 'false'" v-show="!collapsed">
+      <div class="selectors">
+        <label>
+          <span>{{ t('board.pedalSelect') }}</span>
+          <select :value="props.instance.device ?? ''" @change="onDeviceChange">
+            <option v-for="opt in pedalOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+          </select>
+        </label>
       <label>
         <span>{{ t('board.channelSelect') }}</span>
         <select :value="channel" @change="onChannelChange">
@@ -54,12 +71,12 @@
       />
     </div>
 
-    <div class="controls-header">
-      <div>
-        <p class="mode-info">{{ modeDescription }}</p>
-        <p v-if="props.interactionMode === 'preset' && dirtyCount > 0" class="dirty-indicator">
-          {{ t('controls.dirtyHint', { count: dirtyCount }) }}
-        </p>
+      <div class="controls-header">
+        <div>
+          <p class="mode-info">{{ modeDescription }}</p>
+          <p v-if="props.interactionMode === 'preset' && dirtyCount > 0" class="dirty-indicator">
+            {{ t('controls.dirtyHint', { count: dirtyCount }) }}
+          </p>
       </div>
       <div class="controls-actions">
         <button class="btn" type="button" :disabled="!props.isOutputReady" @click="sendAll">
@@ -76,37 +93,38 @@
       </div>
     </div>
 
-    <p v-if="!selectedConfig" class="empty">{{ t('controls.selectConfig') }}</p>
-    <template v-else>
-      <p v-if="!props.isOutputReady" aria-live="polite">{{ t('controls.noOutput') }}</p>
-      <div class="controls-grid">
-        <ControlRenderer
-          v-for="c in visibleControls"
-          :key="c.id"
-          :control="c as any"
-          :value="draftValues[c.id]"
-          :dirty="isControlDirty(c.id)"
-          :disabled="!props.isOutputReady"
-          @update:value="(v: number) => onValue(c as AnyControl, v)"
+      <p v-if="!selectedConfig" class="empty">{{ t('controls.selectConfig') }}</p>
+      <template v-else>
+        <p v-if="!props.isOutputReady" aria-live="polite">{{ t('controls.noOutput') }}</p>
+        <div class="controls-grid">
+          <ControlRenderer
+            v-for="c in visibleControls"
+            :key="c.id"
+            :control="c as any"
+            :value="draftValues[c.id]"
+            :dirty="isControlDirty(c.id)"
+            :disabled="!props.isOutputReady"
+            @update:value="(v: number) => onValue(c as AnyControl, v)"
+          />
+        </div>
+      </template>
+
+      <p v-if="statusMessage" class="status" role="status" aria-live="polite">{{ statusMessage }}</p>
+
+      <div class="card-footer">
+        <PcSender
+          :pedal-name="selectedConfig?.device"
+          :pc-config="selectedConfig?.midi?.pc"
+          :config="selectedConfig"
+          :channel="channel"
+        />
+        <SnapshotManager
+          :snapshots="snapshots"
+          @save="handleSaveSnapshot"
+          @apply="handleApplySnapshot"
+          @delete="handleDeleteSnapshot"
         />
       </div>
-    </template>
-
-    <p v-if="statusMessage" class="status" role="status" aria-live="polite">{{ statusMessage }}</p>
-
-    <div class="card-footer">
-      <PcSender
-        :pedal-name="selectedConfig?.device"
-        :pc-config="selectedConfig?.midi?.pc"
-        :config="selectedConfig"
-        :channel="channel"
-      />
-      <SnapshotManager
-        :snapshots="snapshots"
-        @save="handleSaveSnapshot"
-        @apply="handleApplySnapshot"
-        @delete="handleDeleteSnapshot"
-      />
     </div>
   </section>
 </template>
@@ -134,6 +152,7 @@ const props = defineProps<{
   interactionMode: 'live' | 'preset';
   modeDescription: string;
   isOutputReady: boolean;
+  collapsed?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -143,6 +162,8 @@ const emit = defineEmits<{
   (e: 'remove', id: string): void;
   (e: 'move-up', id: string): void;
   (e: 'move-down', id: string): void;
+  (e: 'dirty-state', payload: { id: string; dirty: boolean }): void;
+  (e: 'toggle-collapse', id: string): void;
 }>();
 
 const { t } = useI18n();
@@ -150,6 +171,8 @@ const { sendControlChange } = useMidiControls();
 const channels = Array.from({ length: 16 }, (_, i) => i + 1);
 const channel = computed(() => props.instance.channel);
 const pedalOptions = computed(() => props.pedalOptions);
+const collapsed = computed(() => Boolean(props.collapsed));
+const bodyId = computed(() => `pedal-body-${props.instance.id}`);
 
 const selectedConfig = computed<PedalConfig | undefined>(() =>
   props.instance.device ? getPedalByDevice(props.instance.device) : undefined
@@ -200,6 +223,10 @@ watch(() => props.interactionMode, (mode, previous) => {
 watch(dirtyIdList, () => {
   statusMessage.value = '';
 });
+
+watch(dirtyCount, (count) => {
+  emit('dirty-state', { id: props.instance.id, dirty: count > 0 });
+}, { immediate: true });
 
 function isControlDirty(id: string) {
   return dirtySet.value.has(id);
@@ -381,11 +408,19 @@ const controlsCardStyle = computed(() => {
   gap: 0.75rem;
   background: var(--surface);
 }
+.pedal-card.collapsed {
+  gap: 0.25rem;
+}
 .card-header {
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
   align-items: flex-start;
+}
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 .card-title {
   margin: 0;
