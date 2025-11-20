@@ -29,6 +29,13 @@
     </header>
 
     <div class="card-body">
+      <PcSender
+        :pedal-name="selectedConfig?.device"
+        :pc-config="selectedConfig?.midi?.pc"
+        :config="selectedConfig"
+        :channel="channel"
+      />
+
       <div class="card-tools">
         <button class="btn ghost" type="button" @click="() => fileInput?.click()">
           {{ t('board.import') }}
@@ -82,14 +89,6 @@
 
       <p v-if="statusMessage" class="status" role="status" aria-live="polite">{{ statusMessage }}</p>
 
-      <div class="card-footer">
-        <PcSender
-          :pedal-name="selectedConfig?.device"
-          :pc-config="selectedConfig?.midi?.pc"
-          :config="selectedConfig"
-          :channel="channel"
-        />
-      </div>
     </div>
   </section>
 </template>
@@ -384,12 +383,6 @@ const controlsCardStyle = computed(() => {
 .status {
   margin: 0;
   color: var(--muted);
-}
-.card-footer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  align-items: flex-start;
 }
 .btn.ghost {
   background: transparent;
