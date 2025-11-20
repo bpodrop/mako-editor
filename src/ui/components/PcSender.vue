@@ -5,26 +5,28 @@
       <span v-if="pedalName" class="pc-hint">{{ pedalName }}</span>
     </div>
 
-    <div v-if="banks.length" class="pc-row bank-row">
-      <label class="label" for="pc-bank">{{ t('pcSender.bank') }}</label>
-      <select id="pc-bank" class="select" :value="selectedBank" @change="onBankChange">
-        <option v-for="bank in banks" :key="bank.name" :value="bank.name">{{ bank.name }}</option>
-      </select>
-    </div>
+    <div v-if="banks.length || displayPresets.length" class="bank-presets">
+      <div v-if="banks.length" class="pc-row bank-row">
+        <label class="label" for="pc-bank">{{ t('pcSender.bank') }}</label>
+        <select id="pc-bank" class="select" :value="selectedBank" @change="onBankChange">
+          <option v-for="bank in banks" :key="bank.name" :value="bank.name">{{ bank.name }}</option>
+        </select>
+      </div>
 
-    <div v-if="displayPresets.length" class="preset-grid">
-      <button
-        v-for="preset in displayPresets"
-        :key="preset.id"
-        class="preset-btn"
-        type="button"
-        :disabled="disabled"
-        @click="applyPreset(preset)"
-      >
-        <span class="preset-name">{{ preset.name }}</span>
-        <small v-if="preset.value != null">PC #{{ preset.value }}</small>
-        <small v-else-if="preset.range">{{ preset.range[0] }}–{{ preset.range[1] }}</small>
-      </button>
+      <div v-if="displayPresets.length" class="preset-grid">
+        <button
+          v-for="preset in displayPresets"
+          :key="preset.id"
+          class="preset-btn"
+          type="button"
+          :disabled="disabled"
+          @click="applyPreset(preset)"
+        >
+          <span class="preset-name">{{ preset.name }}</span>
+          <small v-if="preset.value != null">PC #{{ preset.value }}</small>
+          <small v-else-if="preset.range">{{ preset.range[0] }}–{{ preset.range[1] }}</small>
+        </button>
+      </div>
     </div>
 
     <div class="pc-row">
@@ -170,23 +172,38 @@ function sendManual() {
 .pc-input { flex: 1; min-width: 0; }
 .pc-help { color: var(--muted); }
 .bank-row .select { flex: 1; }
+.bank-presets {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.bank-presets .bank-row {
+  flex: 0 0 180px;
+  min-width: 180px;
+}
+.bank-presets .preset-grid {
+  flex: 1 1 180px;
+}
 .preset-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 0.35rem;
 }
 .preset-btn {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.4rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.1rem;
+  gap: 0.05rem;
   background: var(--secondary-surface, var(--surface));
+  font-size: 0.85rem;
 }
 .preset-btn small {
   color: var(--muted);
+  font-size: 0.7rem;
 }
 .pc-active {
   margin: 0;
