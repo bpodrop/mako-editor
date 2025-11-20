@@ -25,32 +25,42 @@
         >
           ✎
         </button>
+        <button
+          type="button"
+          class="icon-btn"
+          :title="t('board.import')"
+          :aria-label="t('board.import')"
+          @click="() => fileInput?.click()"
+        >
+          ⇩
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
+          :title="t('board.export')"
+          :aria-label="t('board.export')"
+          @click="exportConfig"
+        >
+          ⇧
+        </button>
       </div>
     </header>
 
     <div class="card-body">
+      <input
+        ref="fileInputEl"
+        type="file"
+        accept="application/json,.json"
+        style="display:none"
+        @change="onImportFile"
+      />
+
       <PcSender
         :pedal-name="selectedConfig?.device"
         :pc-config="selectedConfig?.midi?.pc"
         :config="selectedConfig"
         :channel="channel"
       />
-
-      <div class="card-tools">
-        <button class="btn ghost" type="button" @click="() => fileInput?.click()">
-          {{ t('board.import') }}
-        </button>
-        <button class="btn" type="button" @click="exportConfig">
-          {{ t('board.export') }}
-        </button>
-        <input
-          ref="fileInputEl"
-          type="file"
-          accept="application/json,.json"
-          style="display:none"
-          @change="onImportFile"
-        />
-      </div>
 
       <div class="controls-header">
         <div>
@@ -343,12 +353,6 @@ const controlsCardStyle = computed(() => {
   background: transparent;
   padding: 0.15rem 0.5rem;
   cursor: pointer;
-}
-.card-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
 }
 .controls-header {
   display: flex;
