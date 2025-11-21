@@ -73,7 +73,7 @@
             <button class="btn" type="button" :disabled="!canApply" @click="applyPresetChanges">
               {{ t('controls.applyPreset') }}
             </button>
-            <button class="btn ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
+            <button class="btn btn--ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
               {{ t('controls.cancelPreset') }}
             </button>
           </template>
@@ -433,10 +433,5 @@ const controlsCardStyle = computed(() => {
 .status {
   margin: 0;
   color: var(--muted);
-}
-.btn.ghost {
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
-  color: var(--primary);
 }
 </style>

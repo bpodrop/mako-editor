@@ -99,14 +99,44 @@ input, select, button {
 input:disabled, select:disabled, button:disabled { opacity: .6; cursor: not-allowed; }
 
 /* Buttons */
-button.btn {
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: var(--weight-semibold);
+  border: 1px solid var(--primary);
   background: var(--primary);
   color: var(--primary-contrast);
-  border: 1px solid var(--primary);
   cursor: pointer;
+  text-decoration: none;
 }
-button.btn:hover:not(:disabled) { filter: brightness(0.97); }
-button.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:hover:not(:disabled) { filter: brightness(0.97); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+
+.btn.btn--secondary {
+  background: var(--secondary-surface, var(--surface));
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+.btn.btn--secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 10%, var(--secondary-surface, var(--surface)));
+}
+.btn.btn--secondary:active:not(:disabled) { transform: translateY(1px); }
+
+.btn.btn--ghost {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+}
+.btn.btn--ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--primary);
+}
+.btn.btn--ghost:active:not(:disabled) { transform: translateY(1px); }
+
 .link-btn {
   background: none;
   border: none;

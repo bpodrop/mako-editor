@@ -52,7 +52,7 @@
           </div>
 
           <div class="dialog-footer">
-            <button type="button" class="btn ghost" @click="handleCancel">
+            <button type="button" class="btn btn--ghost" @click="handleCancel">
               {{ t('board.addPedalCancel') }}
             </button>
             <button type="submit" class="btn" :disabled="!selectedDevice">
@@ -255,9 +255,6 @@ function handleConfirm() {
     color-mix(in srgb, var(--surface) 98%, transparent) 75%
   );
   border-top: 1px solid color-mix(in srgb, var(--primary) 15%, var(--border));
-}
-.dialog-footer .btn.ghost {
-  color: inherit;
 }
 .label {
   display: block;

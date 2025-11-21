@@ -44,7 +44,7 @@
             <div class="board-actions">
               <button
                 v-if="isCompactLayout"
-                class="btn ghost navigator-toggle"
+                class="btn btn--ghost navigator-toggle"
                 type="button"
                 @click="toggleNavigator"
                 :aria-expanded="isNavigatorVisible ? 'true' : 'false'"
