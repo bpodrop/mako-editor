@@ -432,4 +432,9 @@ const controlsCardStyle = computed(() => {
   margin: 0;
   color: var(--muted);
 }
+
+:global(.is-compact) .pedal-card {
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
 </style>

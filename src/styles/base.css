@@ -35,10 +35,12 @@
   --space-7: 2rem;
   --space-8: 2.5rem;
   --space-9: 3.5rem;
+  --space-compact: 0.35rem;
 
   /* Rounding and shadows */
   --radius: 12px;
   --radius-sm: 8px;
+  --radius-compact: 6px;
   --shadow-1: 0 1px 2px rgba(0,0,0,.05), 0 4px 10px rgba(0,0,0,.04);
   --shadow-lifted: 0 10px 30px rgba(15, 23, 42, 0.15);
   --shadow-strong: 0 20px 40px rgba(0, 0, 0, 0.15);
@@ -167,6 +169,41 @@ input:disabled, select:disabled, button:disabled { opacity: .6; cursor: not-allo
 .badge--danger { border-color: color-mix(in srgb, var(--danger) 40%, transparent); background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
 .badge--muted { border-color: color-mix(in srgb, var(--muted) 35%, transparent); background: color-mix(in srgb, var(--muted) 12%, transparent); color: var(--muted); }
 .badge--contrast { border-color: rgba(255, 255, 255, 0.45); background: rgba(255, 255, 255, 0.12); color: var(--primary-contrast); }
+
+.is-compact {
+  --radius: var(--radius-compact);
+  --radius-sm: var(--radius-compact);
+}
+.is-compact input,
+.is-compact select,
+.is-compact button,
+.is-compact .btn {
+  padding: var(--space-compact) var(--space-2);
+  border-radius: var(--radius-compact);
+}
+.is-compact .card,
+.is-compact .pedal-card,
+.is-compact .dialog-panel,
+.is-compact .navigator-list,
+.is-compact .nav-item {
+  padding: var(--space-3);
+  border-radius: calc(var(--radius-compact) * 1.2);
+}
+.is-compact .grid,
+.is-compact .controls-grid,
+.is-compact .row {
+  gap: var(--space-2);
+}
+.is-compact .controls-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.is-compact .hero-actions,
+.is-compact .controls-actions {
+  gap: var(--space-2);
+}
+.is-compact .nav-item {
+  gap: var(--space-1);
+}
 
 .link-btn {
   background: none;

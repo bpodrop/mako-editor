@@ -263,6 +263,13 @@ function handleRemove(id: string) {
   outline-offset: 2px;
   box-shadow: var(--focus-ring);
 }
+
+:global(.is-compact) .navigator-list {
+  padding: var(--space-1);
+}
+:global(.is-compact) .nav-item {
+  padding: var(--space-compact) var(--space-2);
+}
 .delete-btn:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
