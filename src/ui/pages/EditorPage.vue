@@ -3,7 +3,7 @@
     <header class="header" role="banner">
       <div class="hero">
         <div class="hero-meta">
-          <span class="hero-badge">{{ appVersion }}</span>
+          <span class="hero-badge badge badge--contrast">{{ appVersion }}</span>
         </div>
         <div class="hero-content">
           <div class="hero-text">
@@ -369,7 +369,7 @@ function toggleNavigator() {
     color-mix(in srgb, var(--primary) 25%, var(--surface)) 60%);
   border-radius: calc(var(--radius) * 1.5);
   padding: 2.25rem clamp(1rem, 4vw, 2.75rem);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-hero);
   color: var(--primary-contrast);
   display: flex;
   flex-direction: column;
@@ -380,16 +380,7 @@ function toggleNavigator() {
   justify-content: flex-end;
 }
 .hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--font-xs);
   letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: var(--space-1) var(--space-3);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.12);
 }
 .hero-content {
   display: flex;

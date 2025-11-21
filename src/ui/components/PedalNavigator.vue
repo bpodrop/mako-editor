@@ -41,7 +41,7 @@
       >
         <div class="nav-item-main">
           <span class="nav-item-name">{{ entry.label }}</span>
-          <span class="nav-item-channel">{{ entry.channelLabel }}</span>
+          <span class="nav-item-channel badge badge--primary">{{ entry.channelLabel }}</span>
         </div>
         <div class="nav-item-actions">
           <span
@@ -165,8 +165,8 @@ function handleRemove(id: string) {
   overflow-y: auto;
   padding: var(--space-2);
   border-radius: var(--radius);
-  background: rgba(var(--primary-rgb, 47, 111, 235), 0.05);
-  box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb, 47, 111, 235), 0.08);
+  background: var(--surface-inset);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
 }
 .nav-item {
   display: flex;
@@ -176,28 +176,23 @@ function handleRemove(id: string) {
   min-width: 0;
   box-sizing: border-box;
   border-radius: calc(var(--radius-sm) * 1.2);
-  border: 1px solid rgba(var(--primary-rgb, 47, 111, 235), 0.1);
+  border: 1px solid var(--border-subtle);
   padding: var(--space-2) var(--space-3);
-  background: rgba(var(--primary-rgb, 47, 111, 235), 0.06);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-lifted);
   color: inherit;
   cursor: pointer;
   text-align: left;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .nav-item[aria-selected='true'] {
-  border-color: rgba(var(--primary-rgb, 47, 111, 235), 0.4);
-  background: rgba(var(--primary-rgb, 47, 111, 235), 0.12);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+  border-color: var(--border-strong);
+  background: var(--surface-strong-alt);
+  box-shadow: var(--shadow-lifted);
 }
 .nav-item:hover {
-  background: rgba(var(--primary-rgb, 47, 111, 235), 0.1);
+  background: var(--surface-strong-alt);
   transform: translateY(-1px);
-}
-@media (prefers-color-scheme: dark) {
-  .nav-item:hover {
-    background: rgba(var(--primary-rgb, 47, 111, 235), 0.18);
-  }
 }
 .nav-item-main {
   display: flex;
@@ -208,17 +203,7 @@ function handleRemove(id: string) {
   font-weight: var(--weight-semibold);
 }
 .nav-item-channel {
-  font-size: var(--font-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--primary);
-  background: rgba(var(--primary-rgb, 47, 111, 235), 0.18);
-  border-radius: 999px;
-  padding: var(--space-1) var(--space-2);
-  display: inline-flex;
-  align-items: center;
   margin-top: var(--space-1);
-  font-weight: var(--weight-semibold);
 }
 .nav-item-actions {
   display: inline-flex;

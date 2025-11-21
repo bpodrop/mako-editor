@@ -347,10 +347,8 @@ const controlsCardStyle = computed(() => {
 .pedal-card:hover,
 .pedal-card:focus-within {
   transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
-  box-shadow:
-    0 18px 40px color-mix(in srgb, var(--primary) 24%, transparent),
-    var(--shadow-1);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-strong);
 }
 .card-header {
   display: flex;

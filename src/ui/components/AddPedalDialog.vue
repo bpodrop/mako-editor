@@ -14,7 +14,13 @@
       >
         <header class="dialog-header">
           <div class="dialog-header-bar">
-            <span class="dialog-mode-tag" :data-mode="dialogMode">{{ dialogModeLabel }}</span>
+            <span
+              class="dialog-mode-tag badge"
+              :class="dialogMode === 'edit' ? 'badge--warning' : 'badge--primary'"
+              :data-mode="dialogMode"
+            >
+              {{ dialogModeLabel }}
+            </span>
           </div>
           <div class="dialog-header-copy">
             <h2 :id="titleId">{{ dialogTitle }}</h2>
@@ -168,7 +174,7 @@ function handleConfirm() {
 .dialog-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6, 11, 25, 0.65);
+  background: var(--surface-overlay);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -178,10 +184,10 @@ function handleConfirm() {
   width: min(520px, calc(100vw - 1.5rem));
   max-width: 520px;
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  background: var(--surface-strong);
   border-radius: calc(var(--radius) * 1.5);
-  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-hero);
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
@@ -200,19 +206,10 @@ function handleConfirm() {
   justify-content: flex-end;
 }
 .dialog-mode-tag {
-  font-size: var(--font-xs);
-  text-transform: uppercase;
   letter-spacing: 0.1em;
-  padding: var(--space-1) var(--space-3);
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
-  color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 .dialog-mode-tag[data-mode='edit'] {
-  color: var(--warning);
-  border-color: color-mix(in srgb, var(--warning) 60%, transparent);
-  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  letter-spacing: 0.1em;
 }
 .dialog-header h2 {
   margin: 0 0 var(--space-1);
@@ -254,7 +251,7 @@ function handleConfirm() {
     color-mix(in srgb, var(--surface) 75%, transparent) 0%,
     color-mix(in srgb, var(--surface) 98%, transparent) 75%
   );
-  border-top: 1px solid color-mix(in srgb, var(--primary) 15%, var(--border));
+  border-top: 1px solid var(--border-subtle);
 }
 .label {
   display: block;
