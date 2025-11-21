@@ -85,6 +85,7 @@ const pcStyle = computed(() => {
   const cfg = props.config;
   if (cfg?.secondaryBgColor) style['--pc-secondary'] = cfg.secondaryBgColor;
   if (cfg?.textColor) style['--pc-text'] = cfg.textColor;
+  if (cfg?.secondaryTextColor) style['--pedal-muted'] = cfg.secondaryTextColor;
   return style;
 });
 
@@ -173,7 +174,7 @@ function sendManual() {
 .pc { display: flex; flex-direction: column; gap: var(--space-3); color: var(--pc-text, inherit); }
 .pc-header { display: flex; align-items: baseline; justify-content: space-between; }
 .pc-title { margin: 0; }
-.pc-hint { color: var(--muted); font-weight: var(--weight-semibold); font-size: var(--font-sm); }
+.pc-hint { color: var(--pedal-muted, var(--muted)); font-weight: var(--weight-semibold); font-size: var(--font-sm); }
 .pc-row { display: flex; gap: var(--space-2); align-items: center; }
 .pc-input {
   flex: 1;
@@ -182,7 +183,7 @@ function sendManual() {
   color: var(--pc-text, inherit);
   border-color: color-mix(in srgb, var(--pc-text, var(--primary)) 32%, var(--border));
 }
-.pc-help { color: var(--muted); }
+.pc-help { color: var(--pedal-muted, var(--muted)); }
 .bank-row .select { flex: 1; }
 .bank-presets { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: flex-start; }
 .bank-presets .bank-row {
@@ -215,12 +216,12 @@ function sendManual() {
   border-color: color-mix(in srgb, var(--pc-text, var(--primary)) 32%, var(--border));
 }
 .preset-btn small {
-  color: color-mix(in srgb, var(--pc-text, var(--muted)) 70%, var(--muted));
+  color: color-mix(in srgb, var(--pc-text, var(--pedal-muted, var(--muted))) 70%, var(--pedal-muted, var(--muted)));
   font-size: var(--font-xs);
 }
 .pc-active {
   margin: 0;
   font-size: var(--font-sm);
-  color: var(--muted);
+  color: var(--pedal-muted, var(--muted));
 }
 </style>

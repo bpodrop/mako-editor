@@ -324,6 +324,8 @@ const controlsCardStyle = computed(() => {
   if (bg) style.backgroundColor = bg;
   const textColor = cfg?.textColor;
   if (textColor) style.color = textColor;
+  const secondaryText = cfg?.secondaryTextColor;
+  if (secondaryText) style['--pedal-muted'] = secondaryText;
   const secondary = cfg?.secondaryBgColor;
   if (secondary) style['--secondary-surface'] = secondary;
   return style;
@@ -368,7 +370,7 @@ const controlsCardStyle = computed(() => {
 }
 .card-subtitle {
   margin: 0;
-  color: var(--muted);
+  color: var(--pedal-muted, var(--muted));
   font-size: var(--font-sm);
 }
 .color-dot {
@@ -411,7 +413,7 @@ const controlsCardStyle = computed(() => {
 }
 .mode-info {
   margin: 0;
-  color: var(--muted);
+  color: var(--pedal-muted, var(--muted));
 }
 .dirty-indicator {
   margin: 0;
@@ -420,7 +422,7 @@ const controlsCardStyle = computed(() => {
 }
 .empty {
   margin: 0;
-  color: var(--muted);
+  color: var(--pedal-muted, var(--muted));
 }
 .controls-grid {
   display: grid;

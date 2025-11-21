@@ -3,6 +3,7 @@
   "backgroundColor": "#324A6E",
   "secondaryBgColor": "#4A628A",
   "textColor":"#F4F4F4",
+  "secondaryTextColor":"#C3CEE2",
   "schemaVersion": 1,
   "midi": {
     "channel": 1,
