@@ -24,27 +24,31 @@
 
         <form class="dialog-body" @submit.prevent="handleConfirm">
           <div class="dialog-fields">
-            <label class="label" :for="deviceId">{{ t('board.pedalSelect') }}</label>
-            <select
-              :id="deviceId"
-              v-model="selectedDevice"
-              class="select"
-              required
-            >
-              <option disabled value="">{{ t('board.selectPedalPlaceholder') }}</option>
-              <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-            </select>
+            <div class="field">
+              <label class="label" :for="deviceId">{{ t('board.pedalSelect') }}</label>
+              <select
+                :id="deviceId"
+                v-model="selectedDevice"
+                class="select"
+                required
+              >
+                <option disabled value="">{{ t('board.selectPedalPlaceholder') }}</option>
+                <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+              </select>
+            </div>
 
-            <label class="label" :for="channelId">{{ t('board.channelSelect') }}</label>
-            <select
-              :id="channelId"
-              v-model.number="selectedChannel"
-              class="select"
-            >
-              <option v-for="channel in midiChannels" :key="channel" :value="channel">
-                {{ t('board.channelLabel', { channel }) }}
-              </option>
-            </select>
+            <div class="field">
+              <label class="label" :for="channelId">{{ t('board.channelSelect') }}</label>
+              <select
+                :id="channelId"
+                v-model.number="selectedChannel"
+                class="select"
+              >
+                <option v-for="channel in midiChannels" :key="channel" :value="channel">
+                  {{ t('board.channelLabel', { channel }) }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <div class="dialog-footer">
@@ -171,7 +175,9 @@ function handleConfirm() {
 .dialog-panel {
   position: relative;
   margin: 5vh auto;
-  max-width: 460px;
+  width: min(520px, calc(100vw - 1.5rem));
+  max-width: 520px;
+  box-sizing: border-box;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   border-radius: calc(var(--radius) * 1.5);
   border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
@@ -181,7 +187,7 @@ function handleConfirm() {
   flex-direction: column;
   gap: 1.25rem;
   outline: none;
-  max-height: 90vh;
+  max-height: calc(100vh - 2.5rem);
   overflow: hidden;
 }
 .dialog-header {
@@ -223,25 +229,30 @@ function handleConfirm() {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1rem;
 }
 .dialog-fields {
+  display: grid;
+  gap: 0.9rem 1rem;
+}
+.field {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.35rem;
+  min-width: 0;
 }
 .dialog-footer {
-  margin: 0 calc(-1.75rem) -1.75rem;
-  padding: 1rem 1.75rem;
+  margin: 0;
+  padding: 1rem 0 0;
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   position: sticky;
-  bottom: -1.75rem;
+  bottom: 0;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--surface) 70%, transparent) 0%,
-    color-mix(in srgb, var(--surface) 96%, transparent) 70%
+    color-mix(in srgb, var(--surface) 75%, transparent) 0%,
+    color-mix(in srgb, var(--surface) 98%, transparent) 75%
   );
   border-top: 1px solid color-mix(in srgb, var(--primary) 15%, var(--border));
 }
@@ -255,16 +266,25 @@ function handleConfirm() {
 .select {
   width: 100%;
 }
-@media (max-width: 480px) {
+@media (min-width: 560px) {
+  .dialog-fields {
+    grid-template-columns: 2fr 1fr;
+    align-items: end;
+  }
+}
+@media (max-width: 720px) {
   .dialog-panel {
     margin: 0;
-    min-height: 100%;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    min-height: 100vh;
     border-radius: 0;
-    padding: 1.5rem 1.5rem 0;
+    padding: 1.25rem 1.25rem 0;
   }
   .dialog-footer {
-    margin: 0 -1.5rem -1.5rem;
-    padding: 0.85rem 1.5rem max(env(safe-area-inset-bottom), 1rem);
+    padding: 1rem 0 max(env(safe-area-inset-bottom), 1rem);
   }
 }
 </style>

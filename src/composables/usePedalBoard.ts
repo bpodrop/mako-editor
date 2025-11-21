@@ -165,21 +165,22 @@ export function usePedalBoard() {
   }
 
   function ensureDefault() {
-    if (instances.value.length) return;
-    const migrated = migrateLegacyBoard();
-    if (migrated?.length) {
-      setInstances(migrated);
+    if (instances.value.length) {
       ready.value = true;
       return;
     }
-    const inst = createInstance();
-    setInstances([inst]);
+    const migrated = migrateLegacyBoard();
+    if (migrated?.length) {
+      setInstances(migrated);
+    } else {
+      setInstances([]);
+    }
     ready.value = true;
   }
 
   function init() {
     const restored = load();
-    if (restored && restored.length) {
+    if (Array.isArray(restored)) {
       setInstances(restored);
       ready.value = true;
       return;
@@ -208,15 +209,6 @@ export function usePedalBoard() {
   }
 
   function removeInstance(id: string) {
-    if (instances.value.length <= 1) {
-      const [current] = instances.value;
-      if (current && current.id === id) {
-        cleanupInstanceStorage(current.id);
-        const replacement = createInstance();
-        setInstances([replacement]);
-        return;
-      }
-    }
     cleanupInstanceStorage(id);
     setInstances(instances.value.filter((inst) => inst.id !== id));
   }

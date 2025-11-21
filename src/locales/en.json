@@ -66,6 +66,8 @@
     "collapse": "Collapse card",
     "expand": "Expand card",
     "noSelectionSingle": "Select a pedal to display its controls.",
+    "emptyStateTitle": "No pedals yet.",
+    "emptyStateAction": "Add a pedal to get started.",
     "visibleCount": "{count} pedal(s) displayed.",
     "dirtyLabel": "Pending changes",
     "moveUp": "Move up",

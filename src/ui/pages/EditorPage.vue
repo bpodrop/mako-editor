@@ -57,7 +57,22 @@
 
           <p class="sr-only" aria-live="polite">{{ selectionStatusMessage }}</p>
 
-          <div class="board-grid">
+          <div
+            v-if="isBoardEmpty"
+            class="empty-selection empty-state"
+            role="status"
+            aria-live="polite"
+          >
+            <h3>{{ t('board.emptyStateTitle') }}</h3>
+            <p>{{ t('board.emptyStateAction') }}</p>
+            <div class="empty-actions">
+              <button class="btn" type="button" @click="openAddPedalDialog">
+                {{ t('board.addPedal') }}
+              </button>
+            </div>
+          </div>
+
+          <div v-else class="board-grid">
             <PedalBoardCard
               v-for="instance in instances"
               :key="instance.id"
@@ -73,7 +88,7 @@
             />
           </div>
 
-          <p v-if="!visibleInstances.length" class="empty-selection">
+          <p v-if="!isBoardEmpty && !visibleInstances.length" class="empty-selection">
             {{ emptySelectionMessage }}
           </p>
 
@@ -168,8 +183,11 @@ const visibleInstances = computed(() => {
   return match ? [match] : [];
 });
 
+const isBoardEmpty = computed(() => instances.value.length === 0);
 const visibleIdSet = computed(() => new Set(visibleInstances.value.map((inst) => inst.id)));
-const emptySelectionMessage = computed(() => t('board.noSelectionSingle'));
+const emptySelectionMessage = computed(() => (isBoardEmpty.value
+  ? t('board.emptyStateAction')
+  : t('board.noSelectionSingle')));
 const selectionStatusMessage = computed(() => {
   const count = visibleInstances.value.length;
   if (!count) return emptySelectionMessage.value;
@@ -495,6 +513,23 @@ function toggleNavigator() {
   border-radius: var(--radius);
   border: 1px dashed var(--border);
   background: var(--surface);
+}
+.empty-state {
+  text-align: center;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+}
+.empty-state h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.empty-state p {
+  margin: 0;
+  color: var(--muted);
+}
+.empty-actions {
+  margin-top: 0.25rem;
 }
 .sr-only {
   position: absolute;
