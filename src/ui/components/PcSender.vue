@@ -1,5 +1,5 @@
 <template>
-  <div class="pc">
+  <div class="pc" :style="pcStyle">
     <div class="pc-header">
       <h2 class="pc-title">{{ t('pcSender.title') }}</h2>
       <span v-if="pedalName" class="pc-hint">{{ pedalName }}</span>
@@ -81,6 +81,14 @@ const { t } = useI18n();
 const activePreset = ref<{ number: number; bank?: string; name?: string } | null>(null);
 
 const manualRange = computed<[number, number]>(() => props.pcConfig?.range ?? [0, 127]);
+
+const pcStyle = computed(() => {
+  const style: Record<string, string> = {};
+  const cfg = props.config;
+  if (cfg?.secondaryBgColor) style['--pc-secondary'] = cfg.secondaryBgColor;
+  if (cfg?.textColor) style['--pc-text'] = cfg.textColor;
+  return style;
+});
 
 const banks = computed<BankView[]>(() => {
   const list = props.pcConfig?.banks ?? [];
@@ -164,12 +172,18 @@ function sendManual() {
 </script>
 
 <style scoped>
-.pc { display: flex; flex-direction: column; gap: .75rem; }
+.pc { display: flex; flex-direction: column; gap: .75rem; color: var(--pc-text, inherit); }
 .pc-header { display: flex; align-items: baseline; justify-content: space-between; }
 .pc-title { margin: 0; }
 .pc-hint { color: var(--muted); font-weight: 600; }
 .pc-row { display: flex; gap: .5rem; align-items: center; }
-.pc-input { flex: 1; min-width: 0; }
+.pc-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
+  color: var(--pc-text, inherit);
+  border-color: color-mix(in srgb, var(--pc-text, var(--primary)) 32%, var(--border));
+}
 .pc-help { color: var(--muted); }
 .bank-row .select { flex: 1; }
 .bank-presets {
@@ -198,11 +212,17 @@ function sendManual() {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.05rem;
-  background: var(--secondary-surface, var(--surface));
+  background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
+  color: var(--pc-text, inherit);
   font-size: 0.85rem;
 }
+.bank-row .select {
+  background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
+  color: var(--pc-text, inherit);
+  border-color: color-mix(in srgb, var(--pc-text, var(--primary)) 32%, var(--border));
+}
 .preset-btn small {
-  color: var(--muted);
+  color: color-mix(in srgb, var(--pc-text, var(--muted)) 70%, var(--muted));
   font-size: 0.7rem;
 }
 .pc-active {
