@@ -1,5 +1,5 @@
 {
-  "device": "Mako D1 MK1",
+  "device": "Mako D1 V2 MK1",
   "backgroundColor": "#C9C9C9",
   "secondaryBgColor": "#B0B0B0",
   "textColor":"#2E2E2E",
@@ -43,7 +43,8 @@
         { "name": "Mod",  "min": 0,  "max": 42 },
         { "name": "Tone", "min": 43, "max": 85 },
         { "name": "Age",  "min": 86, "max": 127 }
-      ]
+      ],
+      "hidden":"true"
     },
     {
       "id": "bankSwitch",
@@ -54,7 +55,8 @@
         { "name": "A", "min": 0,  "max": 42 },
         { "name": "B", "min": 43, "max": 85 },
         { "name": "C", "min": 86, "max": 127 }
-      ]
+      ],
+      "hidden":"true"
     },
     {
       "id": "division",
