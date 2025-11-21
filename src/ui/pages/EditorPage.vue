@@ -3,7 +3,7 @@
     <header class="header" role="banner">
       <div class="hero">
         <div class="hero-meta">
-          <span class="hero-badge">{{ appVersion }}</span>
+          <span class="hero-badge badge badge--contrast">{{ appVersion }}</span>
         </div>
         <div class="hero-content">
           <div class="hero-text">
@@ -44,7 +44,7 @@
             <div class="board-actions">
               <button
                 v-if="isCompactLayout"
-                class="btn ghost navigator-toggle"
+                class="btn btn--ghost navigator-toggle"
                 type="button"
                 @click="toggleNavigator"
                 :aria-expanded="isNavigatorVisible ? 'true' : 'false'"
@@ -361,7 +361,7 @@ function toggleNavigator() {
 
 <style scoped>
 .header {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 .hero {
   background: linear-gradient(120deg,
@@ -369,32 +369,23 @@ function toggleNavigator() {
     color-mix(in srgb, var(--primary) 25%, var(--surface)) 60%);
   border-radius: calc(var(--radius) * 1.5);
   padding: 2.25rem clamp(1rem, 4vw, 2.75rem);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-hero);
   color: var(--primary-contrast);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 .hero-meta {
   display: flex;
   justify-content: flex-end;
 }
 .hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.85rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.12);
 }
 .hero-content {
   display: flex;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: var(--space-6);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -404,17 +395,17 @@ function toggleNavigator() {
 }
 .hero-text h1 {
   margin: 0;
-  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-size: var(--font-hero);
   line-height: 1.1;
 }
 .hero-lede {
-  margin: 0.5rem 0 0;
-  font-size: 1.1rem;
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-lg);
   color: rgba(255, 255, 255, 0.85);
 }
 .hero-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -432,12 +423,12 @@ function toggleNavigator() {
 .controls-heading {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .board-layout {
   display: grid;
   grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
-  gap: 1rem;
+  gap: var(--space-4);
   align-items: flex-start;
 }
 .board-layout.is-compact {
@@ -468,7 +459,7 @@ function toggleNavigator() {
 .board-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 .navigator-toggle {
   border-color: var(--border);
@@ -477,13 +468,13 @@ function toggleNavigator() {
 .board-toolbar {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
   flex-wrap: wrap;
   align-items: flex-start;
 }
 .board-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -505,11 +496,11 @@ function toggleNavigator() {
 .board-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 .empty-selection {
   margin: 0;
-  padding: 1rem;
+  padding: var(--space-4);
   border-radius: var(--radius);
   border: 1px dashed var(--border);
   background: var(--surface);
@@ -517,19 +508,19 @@ function toggleNavigator() {
 .empty-state {
   text-align: center;
   display: grid;
-  gap: 0.35rem;
+  gap: var(--space-1);
   justify-items: center;
 }
 .empty-state h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--font-lg);
 }
 .empty-state p {
   margin: 0;
   color: var(--muted);
 }
 .empty-actions {
-  margin-top: 0.25rem;
+  margin-top: var(--space-1);
 }
 .sr-only {
   position: absolute;

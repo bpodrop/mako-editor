@@ -14,7 +14,13 @@
       >
         <header class="dialog-header">
           <div class="dialog-header-bar">
-            <span class="dialog-mode-tag" :data-mode="dialogMode">{{ dialogModeLabel }}</span>
+            <span
+              class="dialog-mode-tag badge"
+              :class="dialogMode === 'edit' ? 'badge--warning' : 'badge--primary'"
+              :data-mode="dialogMode"
+            >
+              {{ dialogModeLabel }}
+            </span>
           </div>
           <div class="dialog-header-copy">
             <h2 :id="titleId">{{ dialogTitle }}</h2>
@@ -52,7 +58,7 @@
           </div>
 
           <div class="dialog-footer">
-            <button type="button" class="btn ghost" @click="handleCancel">
+            <button type="button" class="btn btn--ghost" @click="handleCancel">
               {{ t('board.addPedalCancel') }}
             </button>
             <button type="submit" class="btn" :disabled="!selectedDevice">
@@ -168,7 +174,7 @@ function handleConfirm() {
 .dialog-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6, 11, 25, 0.65);
+  background: var(--surface-overlay);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -178,14 +184,14 @@ function handleConfirm() {
   width: min(520px, calc(100vw - 1.5rem));
   max-width: 520px;
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  background: var(--surface-strong);
   border-radius: calc(var(--radius) * 1.5);
-  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-hero);
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-5);
   outline: none;
   max-height: calc(100vh - 2.5rem);
   overflow: hidden;
@@ -193,30 +199,21 @@ function handleConfirm() {
 .dialog-header {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 .dialog-header-bar {
   display: flex;
   justify-content: flex-end;
 }
 .dialog-mode-tag {
-  font-size: 0.78rem;
-  text-transform: uppercase;
   letter-spacing: 0.1em;
-  padding: 0.2rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
-  color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 .dialog-mode-tag[data-mode='edit'] {
-  color: var(--warning, #a15c25);
-  border-color: color-mix(in srgb, var(--warning, #a15c25) 60%, transparent);
-  background: color-mix(in srgb, var(--warning, #a15c25) 18%, transparent);
+  letter-spacing: 0.1em;
 }
 .dialog-header h2 {
-  margin: 0 0 0.35rem;
-  font-size: 1.25rem;
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-xl);
 }
 .dialog-description {
   margin: 0;
@@ -225,28 +222,28 @@ function handleConfirm() {
 .dialog-body {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-bottom: 1rem;
+  padding-bottom: var(--space-4);
 }
 .dialog-fields {
   display: grid;
-  gap: 0.9rem 1rem;
+  gap: var(--space-4);
 }
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-1);
   min-width: 0;
 }
 .dialog-footer {
   margin: 0;
-  padding: 1rem 0 0;
+  padding: var(--space-4) 0 0;
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--space-2);
   position: sticky;
   bottom: 0;
   background: linear-gradient(
@@ -254,14 +251,11 @@ function handleConfirm() {
     color-mix(in srgb, var(--surface) 75%, transparent) 0%,
     color-mix(in srgb, var(--surface) 98%, transparent) 75%
   );
-  border-top: 1px solid color-mix(in srgb, var(--primary) 15%, var(--border));
-}
-.dialog-footer .btn.ghost {
-  color: inherit;
+  border-top: 1px solid var(--border-subtle);
 }
 .label {
   display: block;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 .select {
   width: 100%;
@@ -281,10 +275,10 @@ function handleConfirm() {
     max-height: 100vh;
     min-height: 100vh;
     border-radius: 0;
-    padding: 1.25rem 1.25rem 0;
+    padding: var(--space-5) var(--space-5) 0;
   }
   .dialog-footer {
-    padding: 1rem 0 max(env(safe-area-inset-bottom), 1rem);
+    padding: var(--space-4) 0 max(env(safe-area-inset-bottom), var(--space-4));
   }
 }
 </style>

@@ -22,6 +22,7 @@ export type PedalConfig = {
   backgroundColor?: string;
   secondaryBgColor?: string;
   textColor?: string;
+  secondaryTextColor?: string;
   schemaVersion: number;
   midi: MidiConfig;
   controls: AnyControl[];

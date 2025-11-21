@@ -1,8 +1,7 @@
 <template>
-  <div class="pc">
+  <div class="pc" :style="pcStyle">
     <div class="pc-header">
       <h2 class="pc-title">{{ t('pcSender.title') }}</h2>
-      <span v-if="pedalName" class="pc-hint">{{ pedalName }}</span>
     </div>
 
     <div v-if="banks.length || displayPresets.length" class="bank-presets">
@@ -67,7 +66,6 @@ type BankPreset = { id: string; name: string; value: number | null; range?: [num
 type BankView = { name: string; presets: BankPreset[] };
 
 const props = defineProps<{
-  pedalName?: string;
   pcConfig?: PcConfig;
   config?: PedalConfig;
   channel?: number;
@@ -81,6 +79,15 @@ const { t } = useI18n();
 const activePreset = ref<{ number: number; bank?: string; name?: string } | null>(null);
 
 const manualRange = computed<[number, number]>(() => props.pcConfig?.range ?? [0, 127]);
+
+const pcStyle = computed(() => {
+  const style: Record<string, string> = {};
+  const cfg = props.config;
+  if (cfg?.secondaryBgColor) style['--pc-secondary'] = cfg.secondaryBgColor;
+  if (cfg?.textColor) style['--pc-text'] = cfg.textColor;
+  if (cfg?.secondaryTextColor) style['--pedal-muted'] = cfg.secondaryTextColor;
+  return style;
+});
 
 const banks = computed<BankView[]>(() => {
   const list = props.pcConfig?.banks ?? [];
@@ -164,20 +171,21 @@ function sendManual() {
 </script>
 
 <style scoped>
-.pc { display: flex; flex-direction: column; gap: .75rem; }
+.pc { display: flex; flex-direction: column; gap: var(--space-3); color: var(--pc-text, inherit); }
 .pc-header { display: flex; align-items: baseline; justify-content: space-between; }
 .pc-title { margin: 0; }
-.pc-hint { color: var(--muted); font-weight: 600; }
-.pc-row { display: flex; gap: .5rem; align-items: center; }
-.pc-input { flex: 1; min-width: 0; }
-.pc-help { color: var(--muted); }
-.bank-row .select { flex: 1; }
-.bank-presets {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  align-items: flex-start;
+.pc-hint { color: var(--pedal-muted, var(--muted)); font-weight: var(--weight-semibold); font-size: var(--font-sm); }
+.pc-row { display: flex; gap: var(--space-2); align-items: center; }
+.pc-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
+  color: var(--pc-text, inherit);
+  border-color: color-mix(in srgb, var(--pc-text, var(--primary)) 32%, var(--border));
 }
+.pc-help { color: var(--pedal-muted, var(--muted)); }
+.bank-row .select { flex: 1; }
+.bank-presets { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: flex-start; }
 .bank-presets .bank-row {
   flex: 0 0 180px;
   min-width: 180px;
@@ -188,26 +196,32 @@ function sendManual() {
 .preset-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .preset-btn {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  padding: 0.25rem 0.4rem;
+  padding: var(--space-1) var(--space-2);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.05rem;
-  background: var(--secondary-surface, var(--surface));
-  font-size: 0.85rem;
+  background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
+  color: var(--pc-text, inherit);
+  font-size: var(--font-sm);
+}
+.bank-row .select {
+  background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
+  color: var(--pc-text, inherit);
+  border-color: color-mix(in srgb, var(--pc-text, var(--primary)) 32%, var(--border));
 }
 .preset-btn small {
-  color: var(--muted);
-  font-size: 0.7rem;
+  color: color-mix(in srgb, var(--pc-text, var(--pedal-muted, var(--muted))) 70%, var(--pedal-muted, var(--muted)));
+  font-size: var(--font-xs);
 }
 .pc-active {
   margin: 0;
-  font-size: 0.9rem;
-  color: var(--muted);
+  font-size: var(--font-sm);
+  color: var(--pedal-muted, var(--muted));
 }
 </style>

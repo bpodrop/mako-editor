@@ -56,7 +56,6 @@
       />
 
       <PcSender
-        :pedal-name="selectedConfig?.device"
         :pc-config="selectedConfig?.midi?.pc"
         :config="selectedConfig"
         :channel="channel"
@@ -73,7 +72,7 @@
             <button class="btn" type="button" :disabled="!canApply" @click="applyPresetChanges">
               {{ t('controls.applyPreset') }}
             </button>
-            <button class="btn ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
+            <button class="btn btn--ghost" type="button" :disabled="!canCancel" @click="cancelPresetChanges">
               {{ t('controls.cancelPreset') }}
             </button>
           </template>
@@ -325,6 +324,8 @@ const controlsCardStyle = computed(() => {
   if (bg) style.backgroundColor = bg;
   const textColor = cfg?.textColor;
   if (textColor) style.color = textColor;
+  const secondaryText = cfg?.secondaryTextColor;
+  if (secondaryText) style['--pedal-muted'] = secondaryText;
   const secondary = cfg?.secondaryBgColor;
   if (secondary) style['--secondary-surface'] = secondary;
   return style;
@@ -335,10 +336,10 @@ const controlsCardStyle = computed(() => {
 .pedal-card {
   border: 1px solid var(--border);
   border-radius: 1.25rem;
-  padding: 1rem;
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
   background: var(--surface);
   box-shadow: var(--shadow-1);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
@@ -347,42 +348,40 @@ const controlsCardStyle = computed(() => {
 .pedal-card:hover,
 .pedal-card:focus-within {
   transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
-  box-shadow:
-    0 18px 40px color-mix(in srgb, var(--primary) 24%, transparent),
-    var(--shadow-1);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-strong);
 }
 .card-header {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: flex-start;
 }
 .card-body {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 .card-title {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .card-subtitle {
   margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--pedal-muted, var(--muted));
+  font-size: var(--font-sm);
 }
 .color-dot {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: var(--space-3);
+  height: var(--space-3);
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.15);
 }
 .card-actions {
   display: flex;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .icon-btn {
   border: 1px solid var(--pedal-accent, var(--border));
@@ -403,40 +402,40 @@ const controlsCardStyle = computed(() => {
 .controls-header {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 .controls-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 .mode-info {
   margin: 0;
-  color: var(--muted);
+  color: var(--pedal-muted, var(--muted));
 }
 .dirty-indicator {
   margin: 0;
-  font-weight: 600;
-  color: var(--warning, #8a6d3b);
+  font-weight: var(--weight-semibold);
+  color: var(--warning);
 }
 .empty {
   margin: 0;
-  color: var(--muted);
+  color: var(--pedal-muted, var(--muted));
 }
 .controls-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 .status {
   margin: 0;
   color: var(--muted);
 }
-.btn.ghost {
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
-  color: var(--primary);
+
+:global(.is-compact) .pedal-card {
+  padding: var(--space-3);
+  gap: var(--space-2);
 }
 </style>
