@@ -14,7 +14,8 @@
     "legal": "Mentions légales",
     "infoTitle": "Infos 💡",
     "tipMidi": "Cette application a besoin d'un accès au Web MIDI pour communiquer avec vos appareils. Autorisez l'accès lorsque votre navigateur le demande.",
-    "tipPwa": "Application installable (PWA) - ajoutez-la à votre écran d'accueil pour l'utiliser aussi en mode hors ligne."
+    "tipPwa": "Application installable (PWA) - ajoutez-la à votre écran d'accueil pour l'utiliser aussi en mode hors ligne.",
+    "guide": "Guide utilisateur"
   },
   "controls": {
     "heading": "Contrôles",
@@ -90,8 +91,73 @@
     "export": "Exporter"
   },
   "footer": {
+    "guide": "Guide utilisateur",
     "legal": "Mentions légales",
     "github": "Voir le projet sur GitHub"
+  },
+  "manual": {
+    "back": "← Retour à l'éditeur",
+    "title": "Guide utilisateur rapide",
+    "lead": "Quelques étapes pour installer et piloter vos pédales Walrus Audio Mako.",
+    "start": {
+      "title": "Démarrer",
+      "items": {
+        "prereq": "Prérequis : Node.js 18+, Chrome/Edge en HTTPS ou localhost (Web MIDI).",
+        "install": "Installer les dépendances : `npm install`.",
+        "dev": "Dev : `npm run dev` puis ouvrir http://localhost:5173.",
+        "build": "Build : `npm run build` pour un déploiement HTTPS."
+      }
+    },
+    "ui": {
+      "title": "Interface",
+      "items": {
+        "menu": "Menu (engrenage) : choisir la sortie MIDI, changer la langue, lire les astuces.",
+        "board": "Board : liste latérale pour sélectionner/supprimer; cartes avec les contrôles de la pédale active.",
+        "modes": "Modes : Live envoi immédiat; Preset conserve des brouillons avec compteur de modifications.",
+        "importExport": "Import/Export sur chaque carte pour les fichiers JSON de preset."
+      }
+    },
+    "add": {
+      "title": "Ajouter ou éditer une pédale",
+      "items": {
+        "open": "Cliquer sur « Ajouter une pédale » (+) pour ouvrir le dialogue.",
+        "pick": "Choisir le modèle (D1/M1/R1/ACS1 ou tout autre JSON présent).",
+        "channel": "Sélectionner le canal MIDI (un canal libre est suggéré) et valider.",
+        "edit": "Utiliser le bouton ✎ sur une carte pour changer modèle/canal plus tard."
+      }
+    },
+    "mode": {
+      "title": "Live vs Preset",
+      "items": {
+        "live": "Live : chaque changement envoie son CC immédiatement et devient la valeur validée.",
+        "preset": "Preset : les changements restent en brouillon; un badge compte les contrôles modifiés.",
+        "apply": "Appliquer : envoie uniquement les contrôles modifiés puis remet le compteur à zéro.",
+        "cancel": "Annuler : restaure les valeurs validées sans envoyer de MIDI."
+      }
+    },
+    "pc": {
+      "title": "Program Change",
+      "items": {
+        "manual": "Saisir un numéro de PC dans la plage autorisée puis cliquer sur « Select ».",
+        "banks": "Si des banques sont définies, choisir la banque puis cliquer sur un preset.",
+        "bankSwitch": "Si un contrôle bankSwitch existe, il est envoyé avant le PC pour aligner la pédale."
+      }
+    },
+    "io": {
+      "title": "Import / Export",
+      "items": {
+        "export": "Export : télécharge un JSON avec appareil, canal, valeurs validées, horodatage.",
+        "import": "Import : charge un JSON, sélectionne appareil/canal si présents, met à jour l’UI/le stockage sans envoyer de MIDI."
+      }
+    },
+    "persist": {
+      "title": "Persistance & PWA",
+      "items": {
+        "storage": "Board, canaux, ordre, valeurs validées, langue, mode sont sauvegardés dans localStorage.",
+        "pwa": "L’app est installable (PWA) et met en cache les assets principaux.",
+        "troubleshootMidi": "Si aucune sortie MIDI : utiliser HTTPS/localhost, autoriser l’accès MIDI, puis rafraîchir la liste."
+      }
+    }
   },
   "locale": {
     "label": "Langue",
