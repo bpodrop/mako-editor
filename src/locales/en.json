@@ -14,7 +14,8 @@
     "legal": "Legal notice",
     "infoTitle": "Tips 💡",
     "tipMidi": "This app needs Web MIDI access to communicate with your gear. Allow access when the browser asks.",
-    "tipPwa": "Installable (PWA) — add it to your home screen to use it offline too."
+    "tipPwa": "Installable (PWA) — add it to your home screen to use it offline too.",
+    "guide": "User guide"
   },
   "controls": {
     "heading": "Controls",
@@ -90,8 +91,73 @@
     "export": "Export"
   },
   "footer": {
+    "guide": "User guide",
     "legal": "Legal notice",
     "github": "View the project on GitHub"
+  },
+  "manual": {
+    "back": "← Back to the editor",
+    "title": "Quick User Guide",
+    "lead": "Follow these steps to set up and control your Walrus Audio Mako pedals.",
+    "start": {
+      "title": "Start",
+      "items": {
+        "prereq": "Prerequisites: Node.js 18+, Chrome/Edge in HTTPS or localhost (Web MIDI).",
+        "install": "Install dependencies: `npm install`.",
+        "dev": "Dev: `npm run dev` then open http://localhost:5173.",
+        "build": "Build: `npm run build` for HTTPS deployment."
+      }
+    },
+    "ui": {
+      "title": "Interface",
+      "items": {
+        "menu": "Menu (gear): pick MIDI output, change language, read tips.",
+        "board": "Board: side list to select/remove pedals; cards show controls for the active pedal.",
+        "modes": "Mode switch: Live sends immediately; Preset keeps changes as drafts with a dirty counter.",
+        "importExport": "Import/Export buttons on each card for preset JSON files."
+      }
+    },
+    "add": {
+      "title": "Add or edit a pedal",
+      "items": {
+        "open": "Click “Add pedal” (+) to open the dialog.",
+        "pick": "Choose the pedal model (D1/M1/R1/ACS1 or any other JSON present).",
+        "channel": "Pick a MIDI channel (a free channel is suggested) and confirm.",
+        "edit": "Use the ✎ button on a card to change model/channel later."
+      }
+    },
+    "mode": {
+      "title": "Live vs Preset",
+      "items": {
+        "live": "Live: each change sends its CC immediately and becomes the new committed value.",
+        "preset": "Preset: changes stay in draft; a badge counts pending controls.",
+        "apply": "Apply: sends only the dirty controls, then resets the counter.",
+        "cancel": "Cancel: restores committed values without sending MIDI."
+      }
+    },
+    "pc": {
+      "title": "Program Change",
+      "items": {
+        "manual": "Enter a PC number in the allowed range then click “Select”.",
+        "banks": "If banks are defined, choose a bank then click a preset button.",
+        "bankSwitch": "When a bankSwitch control exists, it is sent before the PC to align the pedal."
+      }
+    },
+    "io": {
+      "title": "Import / Export",
+      "items": {
+        "export": "Export: downloads a JSON with device, channel, committed control values, timestamp.",
+        "import": "Import: loads a JSON, selects device/channel if present, updates UI/storage without sending MIDI."
+      }
+    },
+    "persist": {
+      "title": "Persistence & PWA",
+      "items": {
+        "storage": "Board, channels, order, committed values, locale, mode are saved in localStorage.",
+        "pwa": "The app is installable (PWA) and caches core assets.",
+        "troubleshootMidi": "If no MIDI outputs: use HTTPS/localhost, allow MIDI access, then refresh the list."
+      }
+    }
   },
   "locale": {
     "label": "Language",

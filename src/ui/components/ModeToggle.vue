@@ -146,8 +146,9 @@ function sanitize(value?: string | null) {
 }
 .tooltip {
   position: absolute;
-  top: calc(100% + 0.35rem);
-  right: 0;
+  top: 50%;
+  left: calc(100% + 0.5rem);
+  transform: translateY(-50%);
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid var(--border);

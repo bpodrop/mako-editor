@@ -61,7 +61,10 @@
           </div>
         </section>
 
-        <section class="drawer-section">
+        <section class="drawer-section drawer-links">
+          <button class="link-btn" type="button" @click="openGuide">
+            {{ t('menu.guide') }}
+          </button>
           <button class="link-btn" type="button" @click="openLegal">
             {{ t('menu.legal') }}
           </button>
@@ -79,6 +82,7 @@ import LocaleSwitcher from './LocaleSwitcher.vue';
 
 const emit = defineEmits<{
   (e: 'open-legal'): void;
+  (e: 'open-guide'): void;
 }>();
 
 const open = ref(false);
@@ -96,6 +100,11 @@ function onKeydown(e: KeyboardEvent) {
 
 function openLegal() {
   emit('open-legal');
+  close();
+}
+
+function openGuide() {
+  emit('open-guide');
   close();
 }
 
@@ -165,6 +174,10 @@ onBeforeUnmount(() => {
 .drawer-title { margin: 0; font-size: 1.1rem; }
 .drawer-content { padding: 1rem; overflow: auto; }
 .drawer-section { margin-bottom: 1rem; }
+.drawer-links {
+  display: grid;
+  gap: 0.5rem;
+}
 .drawer-meta .info-box {
   border: 1px solid var(--border);
   background: var(--bg);

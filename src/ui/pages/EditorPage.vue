@@ -11,7 +11,16 @@
             <p class="hero-lede">{{ t('app.subtitle') }}</p>
           </div>
           <div class="hero-actions">
-            <BurgerMenu @open-legal="navigateLegal" />
+            <button
+              class="help-btn"
+              type="button"
+              :aria-label="t('menu.guide')"
+              :title="t('menu.guide')"
+              @click="navigateGuide"
+            >
+              ?
+            </button>
+            <BurgerMenu @open-legal="navigateLegal" @open-guide="navigateGuide" />
           </div>
         </div>
       </div>
@@ -112,6 +121,9 @@
         © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
       </small>
       <div class="footer-actions">
+        <button class="link-btn guide-link" type="button" @click="navigateGuide">
+          {{ t('footer.guide') }}
+        </button>
         <button class="link-btn legal-link" type="button" @click="navigateLegal">
           {{ t('footer.legal') }}
         </button>
@@ -257,6 +269,10 @@ function onUpdateChannel(payload: { id: string; channel: number }) {
 
 function navigateLegal() {
   void router.push({ name: 'legal' });
+}
+
+function navigateGuide() {
+  void router.push({ name: 'guide' });
 }
 
 function applyLayoutMode(matches: boolean, { preserveState = false }: { preserveState?: boolean } = {}) {
@@ -409,6 +425,28 @@ function toggleNavigator() {
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+.help-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-contrast);
+  font-weight: var(--weight-bold);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.help-btn:hover,
+.help-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: var(--focus-ring);
+  background: rgba(255, 255, 255, 0.2);
+}
+.help-btn:focus-visible {
+  outline: 2px solid var(--primary-contrast);
+  outline-offset: 2px;
 }
 .hero-actions :deep(.burger-btn) {
   border-color: rgba(255, 255, 255, 0.4);
