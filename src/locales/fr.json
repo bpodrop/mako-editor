@@ -66,6 +66,8 @@
     "collapse": "Réduire la carte",
     "expand": "Déployer la carte",
     "noSelectionSingle": "Sélectionnez une pédale pour afficher ses contrôles.",
+    "emptyStateTitle": "Aucune pédale pour le moment.",
+    "emptyStateAction": "Ajoutez une pédale pour commencer.",
     "visibleCount": "{count} pédale(s) affichée(s).",
     "dirtyLabel": "Modifications en attente",
     "moveUp": "Monter",
