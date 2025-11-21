@@ -335,10 +335,10 @@ const controlsCardStyle = computed(() => {
 .pedal-card {
   border: 1px solid var(--border);
   border-radius: 1.25rem;
-  padding: 1rem;
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
   background: var(--surface);
   box-shadow: var(--shadow-1);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
@@ -355,34 +355,34 @@ const controlsCardStyle = computed(() => {
 .card-header {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: flex-start;
 }
 .card-body {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 .card-title {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .card-subtitle {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--font-sm);
 }
 .color-dot {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: var(--space-3);
+  height: var(--space-3);
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.15);
 }
 .card-actions {
   display: flex;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .icon-btn {
   border: 1px solid var(--pedal-accent, var(--border));
@@ -403,12 +403,12 @@ const controlsCardStyle = computed(() => {
 .controls-header {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 .controls-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -418,7 +418,7 @@ const controlsCardStyle = computed(() => {
 }
 .dirty-indicator {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--warning);
 }
 .empty {
@@ -428,7 +428,7 @@ const controlsCardStyle = computed(() => {
 .controls-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 .status {
   margin: 0;

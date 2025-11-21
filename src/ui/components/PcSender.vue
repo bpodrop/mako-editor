@@ -172,11 +172,11 @@ function sendManual() {
 </script>
 
 <style scoped>
-.pc { display: flex; flex-direction: column; gap: .75rem; color: var(--pc-text, inherit); }
+.pc { display: flex; flex-direction: column; gap: var(--space-3); color: var(--pc-text, inherit); }
 .pc-header { display: flex; align-items: baseline; justify-content: space-between; }
 .pc-title { margin: 0; }
-.pc-hint { color: var(--muted); font-weight: 600; }
-.pc-row { display: flex; gap: .5rem; align-items: center; }
+.pc-hint { color: var(--muted); font-weight: var(--weight-semibold); font-size: var(--font-sm); }
+.pc-row { display: flex; gap: var(--space-2); align-items: center; }
 .pc-input {
   flex: 1;
   min-width: 0;
@@ -186,12 +186,7 @@ function sendManual() {
 }
 .pc-help { color: var(--muted); }
 .bank-row .select { flex: 1; }
-.bank-presets {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
+.bank-presets { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: flex-start; }
 .bank-presets .bank-row {
   flex: 0 0 180px;
   min-width: 180px;
@@ -202,19 +197,19 @@ function sendManual() {
 .preset-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 .preset-btn {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  padding: 0.25rem 0.4rem;
+  padding: var(--space-1) var(--space-2);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.05rem;
   background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
   color: var(--pc-text, inherit);
-  font-size: 0.85rem;
+  font-size: var(--font-sm);
 }
 .bank-row .select {
   background: var(--pc-secondary, var(--secondary-surface, var(--surface)));
@@ -223,11 +218,11 @@ function sendManual() {
 }
 .preset-btn small {
   color: color-mix(in srgb, var(--pc-text, var(--muted)) 70%, var(--muted));
-  font-size: 0.7rem;
+  font-size: var(--font-xs);
 }
 .pc-active {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--font-sm);
   color: var(--muted);
 }
 </style>
