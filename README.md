@@ -1,17 +1,17 @@
 # Mako MIDI Editor (PWA)
 
-Current version: V0.1.2-beta
+Current version: V0.1.3
 
-Web MIDI application built with Vue 3 to control Walrus Audio Mako pedals (D1, M1, R1) using Program Change (PC) and Control Change (CC). The UI auto-generates controls from JSON configuration files and ships as a PWA (installable, basic offline capability).
+PWA built with Vue 3 to control Walrus Audio Mako pedals (D1, M1, R1, ACS1) using Program Change (PC) and Control Change (CC). The UI auto-generates controls from pedal JSON files, supports English/French, and ships as an installable PWA.
 
 ## Features
 
-- Send MIDI messages: Program Change and Control Change
-- Select MIDI output and channel (1–16)
-- Dynamic pedal controls (range, enum, zoneEnum, toggle, momentary)
-- Ready-to-use configs: D1, M1, R1
-- Local persistence of values per pedal (localStorage)
-- PWA: installable, auto-update, works over HTTPS/localhost
+- Multi-pedal board: add/edit/remove pedals, assign per-instance MIDI channels, navigate via a side list; board layout and values persist in localStorage.
+- Interaction modes: Live sends CC immediately; Preset records changes, shows a dirty counter, and lets you Apply/Cancel them in batch.
+- Program Change panel: manual PC field plus bank/preset grid when `pc.banks` exist; if a `bankSwitch` control exists it is sent before the PC.
+- Dynamic CC UI from JSON: range, enum, zoneEnum, toggle, momentary; hidden controls are skipped; optional colors style each pedal card and PC block.
+- Import/Export per pedal: JSON includes device, channel, and committed values; import can auto-select the device/channel and updates stored values without sending MIDI.
+- PWA + i18n: installable, offline-ready basics, English/French UI with persisted locale and document title showing the current version.
 
 ## Tech Stack
 
@@ -42,22 +42,23 @@ npm run preview
 
 ## Usage
 
-1. Open the app (dev: `npm run dev`, prod: deploy over HTTPS).
+1. Run the app (`npm run dev` locally; deploy behind HTTPS for production).
 2. Allow MIDI access when prompted by the browser.
-3. Pick a MIDI output and channel.
-4. Select a pedal configuration (D1, M1 or R1).
-5. Use:
-   - Program Change: send a preset PC (0–127).
-   - Controls: each UI control sends the CC defined in the configuration.
+3. Open the menu (gear button) to pick a MIDI output and language.
+4. Add pedals with the + button; choose the model and MIDI channel (the app suggests a free channel).
+5. Switch Live/Preset depending on whether you want immediate CC sends or staged changes.
+6. Program Change: use bank/preset buttons when available or type a PC number within the configured range.
+7. Controls: tweak parameters; in Preset mode a dirty badge appears until you click Apply (sends all dirty CC) or Cancel (revert to committed values).
+8. Import/Export: buttons on each card export/import JSON. Imports update UI/local storage only; no MIDI is sent automatically.
 
 Notes:
+- Board, locale, mode, and committed control values persist in localStorage. Clear site data to reset.
 - The browser must expose the Web MIDI API and be served over HTTPS/localhost.
-- Control values persist per device via localStorage.
 
-## Save / Load
+## Import / Export (preset JSON)
 
-- “Save (file)” exports a JSON file with the selected device, current MIDI channel, and all control values.
-- “Load (file)” imports a previously exported JSON and applies values (no MIDI is sent during import).
+- Export creates a JSON file with the current pedal, channel, and committed control values.
+- Import reads a JSON file and updates the matching pedal/card without sending MIDI.
 
 Expected JSON shape (example):
 
@@ -76,43 +77,57 @@ Notes:
 - On import, if `device` matches a known option, the app selects it automatically.
 - If `channel` is present, it is applied; otherwise the current channel is kept.
 - Only control IDs known by the selected configuration are applied.
-- Import updates UI state and local persistence without sending CC messages.
+- Import updates UI state and local persistence without sending CC messages; in Preset mode you can still review before applying.
 
 ## Supported Devices
 
 Each pedal is described by a JSON file:
-- `src/config/D1.json` — Walrus Audio Mako D1
-- `src/config/M1.json` — Walrus Audio Mako M1
-- `src/config/R1.json` — Walrus Audio Mako R1
+- `src/config/D1.json` — Walrus Audio Mako D1 MK1
+- `src/config/M1.json` — Walrus Audio Mako M1 MK1
+- `src/config/R1.json` — Walrus Audio Mako R1 MK1
+- `src/config/ACS1.json` — Walrus Audio Mako ACS1 MK1
 
 You can add other pedals by creating new JSON files in `src/config/`.
 
 ## Add a Pedal (JSON schema)
 
-Each file must follow this minimal shape:
+Each file must follow this shape (extra fields are ignored by the renderer):
 
 ```jsonc
 {
   "device": "Device name",
   "schemaVersion": 1,
-  "midi": { "channel": 1, "pc": { "range": [0, 127] } },
+  "color": "#cccccc",                // optional: accent dot
+  "backgroundColor": "#f5f5f5",      // optional: card/PC background
+  "secondaryBgColor": "#e8e8e8",     // optional: secondary surface
+  "textColor": "#111111",            // optional: main text color
+  "secondaryTextColor": "#555555",   // optional: muted text color
+  "midi": {
+    "channel": 1,
+    "pc": {
+      "range": [0, 127],
+      "banks": [
+        { "bank": "A", "presets": { "red": 0, "green": 1, "blue": 2, "extended": [10, 20] } }
+      ]
+    }
+  },
   "controls": [
     // Examples of supported controls
     { "id": "mix", "label": "Mix", "cc": 15, "type": "range", "min": 0, "max": 127 },
     { "id": "program", "label": "Program", "cc": 24, "type": "enum", "map": { "A": 0, "B": 1 } },
-    { "id": "bank", "label": "Bank", "cc": 27, "type": "zoneEnum", "zones": [
+    { "id": "bankSwitch", "label": "Bank", "cc": 27, "type": "zoneEnum", "zones": [
       { "name": "A", "min": 0, "max": 42 },
       { "name": "B", "min": 43, "max": 85 },
       { "name": "C", "min": 86, "max": 127 }
     ] },
     { "id": "bypass", "label": "Bypass", "cc": 29, "type": "toggle", "off": 0, "on": 127 },
-    { "id": "tap", "label": "Tap", "cc": 30, "type": "momentary", "value": 127 }
+    { "id": "tap", "label": "Tap", "cc": 30, "type": "momentary", "value": 127, "hidden": true }
   ],
   "notes": ["Optional device-specific notes"]
 }
 ```
 
-The app automatically loads all `*.json` files from `src/config/` via `import.meta.glob` and sorts them by device name.
+The app automatically loads all `*.json` files from `src/config/` via `import.meta.glob` and sorts them by device name. If `pc.banks` is present, the PC UI shows bank/preset buttons and sends the `bankSwitch` control (when defined) before the Program Change. Controls marked with `"hidden": true` are not rendered.
 
 Supported control types (`src/core/entities/controls.ts`):
 - `range` (min, max)
@@ -123,12 +138,15 @@ Supported control types (`src/core/entities/controls.ts`):
 
 ## Project Architecture
 
-- `src/app` — bootstrap (Vue mount, PWA)
-- `src/ui` — UI components (device/channel pickers, PC/CC, control rendering)
+- `src/app` — bootstrap (Vue mount, router, PWA, i18n wiring)
+- `src/ui` — UI components/pages (device/channel picker, PC/CC, board)
+- `src/features/pedal-controls` — rendered control widgets (range/enum/etc.)
 - `src/application` — application services (message-sending facade)
 - `src/core` — domain (MIDI entities, byte builders, ports)
 - `src/adapters` — infrastructure (Web MIDI implementation of `MidiGateway`)
 - `src/config` — JSON definitions and helpers (list/load/visibility)
+- `src/locales` — translations (en/fr)
+- `src/styles` — global styles
 - `public` — PWA assets (icons)
 
 The project follows a UI / Application / Domain / Infrastructure split to make testing and adding new MIDI backends easier.
@@ -137,6 +155,7 @@ The project follows a UI / Application / Domain / Infrastructure split to make t
 
 - Web MIDI: primarily available in Chrome/Edge; Safari may require recent versions or flags.
 - HTTPS required (or `localhost`) for MIDI access and PWA installation.
+- Only MIDI output is used; SysEx is not requested.
 - The Service Worker caches basic assets (NetworkFirst for scripts/styles).
 
 ## NPM Scripts
@@ -157,5 +176,5 @@ This project is licensed under the MIT License. See `LICENSE` for details.
 
 ## Disclaimer
 
-Walrus Audio and the pedal names mentioned (D1, M1, R1, etc.) are trademarks and/or copyrighted works of their respective owners. This project is independent and is not affiliated with, endorsed by, or sponsored by Walrus Audio. These marks and names have no association with the author of this project.
+Walrus Audio and the pedal names mentioned (D1, M1, R1, ACS1, etc.) are trademarks and/or copyrighted works of their respective owners. This project is independent and is not affiliated with, endorsed by, or sponsored by Walrus Audio. These marks and names have no association with the author of this project.
 
