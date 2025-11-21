@@ -153,12 +153,14 @@ const {
   draftValues,
   setDraftValue,
   commitValue,
+  commitMany,
   resetDraft,
   snapshotCommitted,
   getDirtyIds,
 } = useControlValues(instanceRef);
 
 const statusMessage = ref('');
+const pendingImport = ref<{ device: string; values: Record<string, unknown> } | null>(null);
 const dirtyIdList = computed(() => getDirtyIds());
 const dirtySet = computed(() => new Set(dirtyIdList.value));
 const dirtyCount = computed(() => dirtyIdList.value.length);
@@ -181,6 +183,9 @@ watch(dirtyIdList, () => {
 watch(dirtyCount, (count) => {
   emit('dirty-state', { id: props.instance.id, dirty: count > 0 });
 }, { immediate: true });
+
+watch(() => props.instance.device, applyPendingImport);
+watch(selectedConfig, applyPendingImport);
 
 function isControlDirty(id: string) {
   return dirtySet.value.has(id);
@@ -251,6 +256,28 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return !!v && typeof v === 'object' && !Array.isArray(v);
 }
 
+function normalizeImportedValues(values: Record<string, unknown>, config?: PedalConfig | undefined) {
+  const allowedIds = new Set((config?.controls ?? []).map(c => c.id));
+  const normalized: Record<string, number> = {};
+  for (const [k, v] of Object.entries(values)) {
+    if (!allowedIds.size || allowedIds.has(k)) {
+      const num = typeof v === 'number' ? v : Number(v);
+      if (!Number.isNaN(num)) normalized[k] = num;
+    }
+  }
+  return normalized;
+}
+
+function applyPendingImport() {
+  const pending = pendingImport.value;
+  if (!pending) return;
+  if (props.instance.device && props.instance.device === pending.device) {
+    const normalized = normalizeImportedValues(pending.values, selectedConfig.value);
+    if (Object.keys(normalized).length > 0) commitMany(normalized);
+    pendingImport.value = null;
+  }
+}
+
 async function onImportFile(ev: Event) {
   const input = ev.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -273,12 +300,14 @@ async function onImportFile(ev: Event) {
     if (importedChannel != null) emit('update-channel', { id: props.instance.id, channel: importedChannel });
 
     const targetConfig = config ?? selectedConfig.value;
-    const allowedIds = new Set((targetConfig?.controls ?? []).map(c => c.id));
-    for (const [k, v] of Object.entries(vals)) {
-      if (!allowedIds.size || allowedIds.has(k)) {
-        const num = typeof v === 'number' ? v : Number(v);
-        if (!Number.isNaN(num)) commitValue(k, num);
+    const normalized = normalizeImportedValues(vals, targetConfig);
+    if (props.instance.device && props.instance.device === device) {
+      if (Object.keys(normalized).length > 0) {
+        commitMany(normalized);
       }
+    } else {
+      pendingImport.value = { device, values: vals };
+      applyPendingImport();
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
