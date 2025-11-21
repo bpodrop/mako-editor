@@ -243,7 +243,7 @@ function handleRemove(id: string) {
   font-size: 1rem;
 }
 .delete-btn:hover {
-  color: var(--danger, #c00);
+  color: var(--danger);
 }
 .navigator-fab {
   position: sticky;

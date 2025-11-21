@@ -4,6 +4,9 @@
   --surface: #ffffff;
   --fg: #111;
   --muted: #666;
+  --success: #2ea043;
+  --warning: #c8842d;
+  --danger: #d1242f;
   --primary: #2f6feb;
   --primary-rgb: 47, 111, 235;
   --primary-contrast: #fff;
@@ -26,6 +29,9 @@
     --surface: #12161c;
     --fg: #f2f4f6;
     --muted: #9aa3ad;
+    --success: #3fb950;
+    --warning: #e3b341;
+    --danger: #ff7b72;
     --border: #273140;
     --primary-rgb: 47, 111, 235;
     --shadow-1: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
@@ -110,7 +116,7 @@ button.btn:active:not(:disabled) { transform: translateY(1px); }
 .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .75rem; }
 .label { font-weight: 600; color: inherit; }
 .row { display: flex; gap: .5rem; align-items: center; }
-.error { color: #b00020; }
+.error { color: var(--danger); }
 
 /* Range input styling */
 input[type="range"] { height: 2rem; background: transparent; }

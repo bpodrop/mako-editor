@@ -210,9 +210,9 @@ function handleConfirm() {
   background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 .dialog-mode-tag[data-mode='edit'] {
-  color: var(--warning, #a15c25);
-  border-color: color-mix(in srgb, var(--warning, #a15c25) 60%, transparent);
-  background: color-mix(in srgb, var(--warning, #a15c25) 18%, transparent);
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 60%, transparent);
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
 }
 .dialog-header h2 {
   margin: 0 0 0.35rem;

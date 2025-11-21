@@ -419,7 +419,7 @@ const controlsCardStyle = computed(() => {
 .dirty-indicator {
   margin: 0;
   font-weight: 600;
-  color: var(--warning, #8a6d3b);
+  color: var(--warning);
 }
 .empty {
   margin: 0;
