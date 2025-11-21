@@ -2,7 +2,6 @@
   <div class="pc" :style="pcStyle">
     <div class="pc-header">
       <h2 class="pc-title">{{ t('pcSender.title') }}</h2>
-      <span v-if="pedalName" class="pc-hint">{{ pedalName }}</span>
     </div>
 
     <div v-if="banks.length || displayPresets.length" class="bank-presets">
@@ -67,7 +66,6 @@ type BankPreset = { id: string; name: string; value: number | null; range?: [num
 type BankView = { name: string; presets: BankPreset[] };
 
 const props = defineProps<{
-  pedalName?: string;
   pcConfig?: PcConfig;
   config?: PedalConfig;
   channel?: number;

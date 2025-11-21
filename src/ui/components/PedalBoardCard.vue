@@ -56,7 +56,6 @@
       />
 
       <PcSender
-        :pedal-name="selectedConfig?.device"
         :pc-config="selectedConfig?.midi?.pc"
         :config="selectedConfig"
         :channel="channel"
