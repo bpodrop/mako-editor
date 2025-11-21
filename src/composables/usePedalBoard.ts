@@ -209,15 +209,6 @@ export function usePedalBoard() {
   }
 
   function removeInstance(id: string) {
-    if (instances.value.length <= 1) {
-      const [current] = instances.value;
-      if (current && current.id === id) {
-        cleanupInstanceStorage(current.id);
-        const replacement = createInstance();
-        setInstances([replacement]);
-        return;
-      }
-    }
     cleanupInstanceStorage(id);
     setInstances(instances.value.filter((inst) => inst.id !== id));
   }

@@ -11,6 +11,11 @@
 3. Vérifier qu’un nouveau bloc apparaît avec le premier modèle pré-sélectionné et un canal MIDI suggéré.
 4. Changer le modèle et confirmer que les contrôles se mettent à jour.
 
+## Suppression de toutes les pédales
+1. Supprimer les pédales une par une.
+2. Vérifier qu’aucune pédale n’est recréée automatiquement et que le message d’invitation à ajouter une pédale réapparaît.
+3. Cliquer sur « Ajouter une pédale » pour confirmer que l’on peut repartir d’un board vide.
+
 ## Duplication d’une pédale existante
 1. Dans un bloc existant, cliquer sur l’icône « Dupliquer ».
 2. Vérifier qu’un nouveau bloc est ajouté avec le même modèle et les mêmes valeurs de contrôles.
