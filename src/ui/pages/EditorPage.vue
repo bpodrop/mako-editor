@@ -118,7 +118,7 @@
 
     <footer class="footer">
       <small class="copyright">
-        © {{ currentYear }} - {{ appVersion }} - <a href="https://fr.audiofanzine.com/membres/207406/" target="_blank" rel="noopener noreferrer">benbao</a>
+        © {{ currentYear }} - {{ appVersion }} - <a href="https://github.com/bpodrop" target="_blank" rel="noopener noreferrer">bpodrop</a>
       </small>
       <div class="footer-actions">
         <button class="link-btn guide-link" type="button" @click="navigateGuide">
